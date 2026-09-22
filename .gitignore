@@ -15,6 +15,9 @@
 *.sln.docstates
 *.code-workspace
 
+# local-only working notes and chat transcripts
+docs/context/*
+
 # mac stuff
 .DS_Store
 **/.DS_Store
