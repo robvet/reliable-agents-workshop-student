@@ -1,0 +1,4 @@
+#!/bin/bash
+# Start the mcp_sql MCP server
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+bash "$SCRIPT_DIR/scripts/bash/start-mcp.sh"

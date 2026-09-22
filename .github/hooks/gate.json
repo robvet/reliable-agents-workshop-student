@@ -1,0 +1,11 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "type": "command",
+        "command": "bash .github/hooks/gate.sh",
+        "timeout": 15
+      }
+    ]
+  }
+}

@@ -1,0 +1,27 @@
+{
+    "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
+    "python.analysis.indexing": false,
+    "python.venvFolders": [],
+    "python-envs.pythonProjects": [
+    {
+        "path": ".",
+        "envManager": "ms-python.python:venv",
+        "packageManager": "ms-python.python:pip"
+    }
+    ],
+    "files.watcherExclude": {
+        "**/.venv/**": true,
+        "**/__pycache__/**": true
+    },
+    "search.exclude": {
+        "**/.venv/**": true,
+        "**/__pycache__/**": true
+    },
+    "ai-toolkit.discovery.enabled": false,
+    "ai-toolkit.mcp.autoDiscover": false,
+    "ai-toolkit.foundry.autoLogin": false,
+    "azure-ai-studio.agent.discoveryEnabled": false,
+    "editor.formatOnSave": true,
+    "terminal.integrated.defaultProfile.osx": "bash",
+    "powershell.integratedConsole.startInBackground": true
+}

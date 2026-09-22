@@ -1,0 +1,46 @@
+# Suggestive prompt collection (nested contract).
+# Shape: entities -> entity_name -> prompt_area_key -> { label, prompt }
+
+entities:
+  outages:
+    outage_status:
+      label: "Outage Status"
+      prompt: "List all outages and their status"
+    outage_affected_assets:
+      label: "Affected Assets"
+      prompt: "What assets are affected by the outage for XFMR-1014?"
+    outage_waiting_on_crew:
+      label: "Waiting on Crew"
+      prompt: "Which outages are still waiting on a crew, and how long have they been open?"
+  events:
+    event_severity:
+      label: "High Severity Events"
+      prompt: "Which events are high severity?"
+    event_summary:
+      label: "Regional Events"
+      prompt: "What active events are affecting the South region right now?"
+    event_active_vs_ended:
+      label: "Active vs Ended"
+      prompt: "How many events are currently active, and how many have ended?"
+  assets:
+    asset_information:
+      label: "Asset Information"
+      prompt: "Provide detailed information for asset Feeder-100"
+    asset_history:
+      label: "Asset History"
+      prompt: "What's the failure history and reliability for transformer XFMR-1000?"
+    asset_downstream:
+      label: "Downstream Assets"
+      prompt: "What service locations and meters are downstream of Feeder-100?"
+  crew:
+    crew_assignments:
+      label: "Crew Assignments"
+      prompt: "Which outages currently have a crew assigned?"
+    crew_by_region:
+      label: "Crews by Region"
+      prompt: "Which outages are crews from North Region working on?"
+    crew_availability:
+      label: "Crew Availability"
+      prompt: "How many crews are available in each region?"
+
+

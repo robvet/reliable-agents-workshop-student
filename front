@@ -1,0 +1,6 @@
+#!/bin/bash
+# Start ONLY the frontend (static files on :5500).
+# Use this when you want to run/debug the backend separately (e.g. in the VS Code
+# debugger) while still serving the UI.
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+bash "$SCRIPT_DIR/scripts/bash/start-frontend.sh"

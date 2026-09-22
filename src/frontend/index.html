@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reliable Agents Workshop &amp; Accelerator</title>
+    <link rel="icon" type="image/png" href="images/lens.png?v=20260824a">
+    <link rel="apple-touch-icon" href="images/lens.png?v=20260824a">
+    <link rel="stylesheet" href="styles.css?v=20260919g-4-card-revert">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+</head>
+<body>
+
+    <!-- ============================================================ -->
+    <!-- LEFT SIDEBAR                                                  -->
+    <!-- ============================================================ -->
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h1 class="sidebar-title">Control Plane</h1>
+        </div>
+
+        <!-- Navigation Links (placeholders for future features) -->
+        <nav class="sidebar-nav">
+            <a href="#" id="nav-home-link" class="nav-link active">Home</a>
+            <a href="#" id="nav-outages-link" class="nav-link">Outages</a>
+            <a href="#" id="nav-agentic-link" class="nav-link">Command Center</a>
+            <a href="#" id="nav-map-link" class="nav-link">Asset Map</a>
+            <hr class="nav-separator">
+            <a href="images/architecture-09-20.svg" id="nav-architecture-link" class="nav-link">Architecture</a>
+            <a href="html/data-dictionary.html" id="nav-datamodel-link" class="nav-link">Data Dictionary</a>
+            <a href="html/business-case.html" id="nav-businesscase-link" class="nav-link">Business Case</a>
+            <hr class="nav-separator">
+            <a href="#" id="nav-generator-link" class="nav-link">Synthetic Data</a>
+            <a href="#" id="nav-reasoning-link" class="nav-link">Reasoning</a>
+        </nav>
+
+        <!-- Model Selection — radio buttons styled as pills -->
+        <div class="model-section">
+            <h3 class="section-label">Model</h3>
+            <div class="model-radios">
+                <label class="model-radio model-gpt">
+                    <input type="radio" name="model" value="gpt" checked>
+                    <span class="model-pill">GPT</span>
+                </label>
+                <label class="model-radio model-grok">
+                    <input type="radio" name="model" value="grok">
+                    <span class="model-pill">Grok</span>
+                </label>
+                <label class="model-radio model-deepseek">
+                    <input type="radio" name="model" value="deepseek">
+                    <span class="model-pill">DeepSeek</span>
+                </label>
+                <label class="model-radio model-gemini">
+                    <input type="radio" name="model" value="gemini">
+                    <span class="model-pill">Gemini</span>
+                </label>
+                <label class="model-radio model-anthropic">
+                    <input type="radio" name="model" value="anthropic">
+                    <span class="model-pill">Anthropic</span>
+                </label>
+            </div>
+        </div>
+
+    </aside>
+
+    <!-- ============================================================ -->
+    <!-- MAIN CONTENT                                                  -->
+    <!-- ============================================================ -->
+    <main class="main-content">
+
+        <!-- Reusable full-panel loading overlay - shown while a panel's initial
+             data fetch is in flight, so landing on a page never looks frozen. -->
+        <div id="page-loading-overlay" class="page-loading-overlay hidden">
+            <div class="spinner"></div>
+            <p id="page-loading-message">Loading...</p>
+        </div>
+
+        <!-- Header Bar -->
+        <header class="top-header">
+            <div class="header-left">
+                <img src="images/lens.png?v=20260820d" alt="Reliable Agents Workshop &amp; Accelerator" class="header-lens">
+                <div class="header-copy">
+                    <h2 class="header-title">Reliable Agents Workshop &amp; Accelerator</h2>
+                    <span class="header-subtitle">Asset Restoration UseCase</span>
+                </div>
+            </div>
+            <div class="header-right">
+                <img src="images/agent-framework-logo.png" alt="Microsoft AgentFramework" class="header-logo">
+                <span class="powered-by">Powered by Microsoft AgentFramework</span>
+            </div>
+        </header>
+
+        <section class="top-header-extension" aria-label="Reliable Agents capability summary">
+            <p>Manage Assets, Outages, Crews, and Restoration.</p>
+            <!-- <p><strong>Future:</strong> Reliable Agents can be extended across the full asset lifecycle to monitor asset health, predict and detect failures, assess operational impact, coordinate restoration, and continuously improve health scoring through event and maintenance history.</p> -->
+        </section>
+
+        <section id="home-panel" class="content-panel">
+            <iframe id="home-overview-frame" class="home-overview-frame" src="html/home-page-embed.html" title="Reliable Agents capabilities overview"></iframe>
+        </section>
+
+        <section id="agentic-panel" class="content-panel hidden">
+            <!-- Prompt Suggestions Panel -->
+            <div id="suggestions-panel" class="suggestions-panel">
+                <h3 class="section-label">Prompt Suggestions</h3>
+                <div id="suggestions-list" class="suggestions-list">
+                    <span class="suggestions-wait">Please wait!</span>
+                </div>
+            </div>
+
+            <!-- Prompt Input Area -->
+            <div class="prompt-area">
+                <!-- File upload row (hidden for now — kept in DOM so app.js listeners stay valid) -->
+                <div id="file-drop-zone" class="file-drop-zone hidden" tabindex="0" role="button" aria-label="Attach files">
+                    <button id="btn-add-file" class="btn-add-file" type="button">Browse</button>
+                    <div class="file-drop-copy">
+                        <span class="file-drop-title">Drop files here</span>
+                        <span class="file-drop-subtitle">TXT, Markdown, PDF, or DOCX</span>
+                    </div>
+                    <input type="file" id="file-input" multiple accept=".txt,.md,.pdf,.docx" hidden>
+                    <div id="file-chips" class="file-chips">
+                        <!-- File chips appear here -->
+                    </div>
+                    <span id="file-limit-note" class="file-limit-note hidden">Files will be combined and analyzed as one transcript</span>
+                </div>
+
+                <!-- Prompt text + action buttons -->
+                <div class="prompt-row">
+                    <textarea id="prompt-textarea" class="prompt-textarea" placeholder="Select a prompt suggestion or type your analysis request..." rows="4"></textarea>
+                    <div class="action-buttons">
+                        <button id="btn-analyze" class="action-btn btn-analyze" title="Run Analysis">🔍 Analyze</button>
+                        <details id="export-menu" class="export-menu">
+                            <summary id="btn-extract" class="action-btn btn-extract" title="Export Results">📤 Export</summary>
+                            <div class="export-options">
+                                <button id="btn-export-clipboard" class="export-option" type="button">📋 Clipboard</button>
+                                <button id="btn-export-file" class="export-option" type="button">💾 File</button>
+                                <button id="btn-export-print" class="export-option" type="button">🖨️ Print</button>
+                            </div>
+                        </details>
+                        <button id="btn-clear" class="action-btn btn-clear" title="Clear All">🗑️ Clear</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loading Indicator (shown during inference) -->
+            <div id="loading" class="loading hidden">
+                <div class="spinner"></div>
+                <span>Analyzing...</span>
+                <span id="elapsed-timer" class="elapsed-timer">0s</span>
+            </div>
+
+            <!-- Results Area -->
+            <div id="results-area" class="results-area">
+                <div id="results-placeholder" class="results-placeholder">
+                </div>
+                <div id="output-artifacts" class="output-artifacts hidden"></div>
+                <div id="results-content" class="results-content hidden"></div>
+                <div id="asset-results" class="asset-results hidden"></div>
+                <div id="results-meta" class="results-meta hidden"></div>
+            </div>
+
+            <!-- Instrumentation — live pipeline steps (intent -> agent steps) -->
+            <div id="instrumentation" class="instrumentation hidden">
+                <div class="instrumentation-header">ReAct Execution Trace</div>
+                <div id="instrumentation-steps" class="instrumentation-steps"></div>
+            </div>
+        </section>
+
+        <section id="map-panel" class="content-panel hidden">
+            <div class="map-toolbar">
+                <span class="map-chip map-chip-substation">S = Substation</span>
+                <span class="map-chip map-chip-feeder">F = Feeder</span>
+                <span class="map-chip map-chip-transformer">T = Transformer</span>
+                <span class="map-chip map-chip-default">• = Other/Unknown</span>
+                <span id="map-weather-chip" class="map-chip map-chip-weather">Weather: loading...</span>
+                <button id="map-outage-toggle" class="map-chip map-toggle" type="button">Show Outages</button>
+                <button id="map-simulate-storm-toggle" class="map-chip map-toggle" type="button">Simulate Storm</button>
+            </div>
+            <div id="map-alert-panel" class="map-alert-panel hidden"></div>
+            <div id="asset-map" class="asset-map"></div>
+        </section>
+
+        <section id="generator-panel" class="content-panel hidden">
+            <div class="generator-hero">
+                <h1>welcome to: Synthetic Data Generator</h1>
+                <p>
+                    Generate synthetic asset, outage, crew, and customer data for the Reliable Agents
+                    demo environment. Adjust the volumes below, preview the forecast, then
+                    generate or clear the dataset.
+                </p>
+                <div class="callout">
+                    <strong>Heads up.</strong> Generating replaces all existing synthetic data in
+                    the database. Clearing removes it entirely. Both actions require confirmation.
+                </div>
+            </div>
+
+            <div class="generator-form">
+                <div class="generator-field">
+                    <label for="gen-num-locations">Target Service Locations</label>
+                    <input type="number" id="gen-num-locations" min="50" max="1000" step="10" value="100">
+                </div>
+                <div class="generator-field">
+                    <label for="gen-crew-count">Field Crew Staffing</label>
+                    <input type="number" id="gen-crew-count" min="5" max="50" value="20">
+                </div>
+            </div>
+
+            <div id="generator-forecast" class="generator-forecast"></div>
+
+            <div class="generator-actions">
+                <button id="btn-generator-generate" class="action-btn btn-analyze" type="button">Generate Synthetic Data</button>
+                <button id="btn-generator-clear" class="action-btn btn-clear" type="button">Clear Synthetic Data</button>
+            </div>
+
+            <div id="generator-status" class="generator-status hidden"></div>
+        </section>
+
+        <section id="outages-panel" class="content-panel hidden">
+            <div class="generator-hero">
+                <h1>Outage Management</h1>
+                <p>
+                    Create an outage against a grid asset, then move it through its status
+                    lifecycle as crews confirm, respond, and restore service.
+                </p>
+            </div>
+
+            <div class="generator-form">
+                <div class="generator-field">
+                    <label for="outage-asset">Asset</label>
+                    <select id="outage-asset"></select>
+                    <a href="#prompt-textarea" id="outage-asset-ask-link" class="asset-result-link">Ask about selected asset</a>
+                </div>
+                <div class="generator-field">
+                    <label for="outage-event">Event</label>
+                    <select id="outage-event">
+                        <option value="">Create new default event (LOW severity)</option>
+                    </select>
+                </div>
+                <div class="generator-field hidden" id="outage-crew-field">
+                    <label for="outage-crew">Crew</label>
+                    <select id="outage-crew"></select>
+                </div>
+            </div>
+
+            <div class="generator-actions">
+                <button id="btn-outage-create" class="action-btn btn-analyze" type="button">Create Outage</button>
+                <button id="btn-outage-refresh" class="action-btn btn-clear" type="button">Refresh List</button>
+            </div>
+
+            <div class="generator-field">
+                <label for="outage-note">Field Notes (applied to the next status update below)</label>
+                <textarea id="outage-note" class="prompt-textarea" rows="2"
+                    placeholder="What is the crew seeing on site? e.g. 'Transformer sparking, small fire starting.'"></textarea>
+            </div>
+
+            <div id="outage-status" class="generator-status hidden"></div>
+
+            <table class="outage-table">
+                <thead>
+                    <tr>
+                        <th class="col-asset">Asset</th>
+                        <th class="col-outage-id">Outage ID</th>
+                        <th class="col-event">Event</th>
+                        <th class="col-severity">Severity</th>
+                        <th class="col-status">Status</th>
+                        <th class="col-crew">Crew</th>
+                        <th class="col-impact">Impact</th>
+                        <th class="col-action">Action</th>
+                    </tr>
+                </thead>
+                <tbody id="outage-list"></tbody>
+            </table>
+        </section>
+
+        <div id="analyze-confirm" class="confirm-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="analyze-confirm-title">
+            <div id="analyze-confirm-dialog" class="confirm-dialog">
+                <h2 id="analyze-confirm-title">Analyze Conversation?</h2>
+                <p id="analyze-confirm-message" class="confirm-message hidden"></p>
+                <div class="confirm-actions">
+                    <button id="btn-analyze-cancel" class="confirm-btn confirm-btn-secondary" type="button">Cancel</button>
+                    <button id="btn-analyze-confirm" class="confirm-btn confirm-btn-primary" type="button">Analyze</button>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/marked@15.0.12/marked.min.js"></script>
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+    <script src="app.js?v=20260920a-map-popup-outage-status"></script>
+</body>
+</html>

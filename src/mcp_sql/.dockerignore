@@ -1,0 +1,24 @@
+# Keep the local dev cruft — and especially the macOS pgEdge binary — out of
+# the Linux image. The Dockerfile builds a fresh Linux binary in stage 1.
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+build/
+*.egg-info/
+vendor/
+
+# Local macOS pgEdge binary (Mach-O arm64) — must never enter the image.
+pgedge-postgres-mcp
+*.dSYM/
+pgedge-postgres-mcp/
+
+# Secrets / local env — provided via Container App config at runtime.
+.env
+.env.*
+
+# Misc
+.DS_Store
+_probe_reasoning.py
+test_*.py
+README.md

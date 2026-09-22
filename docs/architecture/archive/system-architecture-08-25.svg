@@ -1,0 +1,401 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2000 2580" width="2000" height="2580" font-family="'Segoe UI', 'Inter', system-ui, sans-serif">
+  <defs>
+    <marker id="arw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#334155"/>
+    </marker>
+    <marker id="arwT" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#0D9488"/>
+    </marker>
+    <marker id="arwP" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#7C3AED"/>
+    </marker>
+    <filter id="sh" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="#0F172A" flood-opacity="0.13"/>
+    </filter>
+    <g id="jsonDoc">
+      <rect x="0" y="0" width="21" height="27" rx="3" fill="#FFFFFF" stroke="#0369A1" stroke-width="1.6"/>
+      <path d="M14,0 L21,7 L14,7 Z" fill="#BAE6FD" stroke="#0369A1" stroke-width="1.2"/>
+      <text x="10.5" y="21" text-anchor="middle" font-family="'Cascadia Code','Consolas',monospace" font-size="11.5" font-weight="700" fill="#0369A1" style="white-space: pre;">{ }</text>
+    </g>
+    <g id="strDoc">
+      <rect x="0" y="0" width="21" height="27" rx="3" fill="#FFFBEB" stroke="#D97706" stroke-width="1.6"/>
+      <path d="M14,0 L21,7 L14,7 Z" fill="#FDE68A" stroke="#D97706" stroke-width="1.2"/>
+      <text x="10.5" y="21" text-anchor="middle" font-family="'Cascadia Code','Consolas',monospace" font-size="12" font-weight="700" fill="#B45309" style="white-space: pre;">"</text>
+    </g>
+    <style>
+      .t    { fill:#0F172A; }
+      .ttl  { font-size:36px; font-weight:700; letter-spacing:-0.6px; }
+      .sub  { font-size:15px; fill:#475569; }
+      .band { font-size:13px; font-weight:700; letter-spacing:1.5px; }
+      .h    { font-size:16px; font-weight:700; }
+      .b    { font-size:13px; fill:#334155; }
+      .s    { font-size:11.5px; fill:#64748B; }
+      .mono { font-family:'Cascadia Code','Consolas',monospace; font-size:12.5px; }
+      .pay  { font-size:10.5px; fill:#475569; font-weight:600; }
+      .lbl  { font-size:11.5px; fill:#475569; font-style:italic; }
+      .badge{ font-size:12px; font-weight:700; }
+      .flow { stroke:#334155; stroke-width:2; fill:none; }
+      .ret  { stroke:#0D9488; stroke-width:1.8; fill:none; stroke-dasharray:6 5; }
+      .ghost{ stroke:#94A3B8; stroke-width:1.6; fill:none; stroke-dasharray:4 5; }
+      .mem  { stroke:#7C3AED; stroke-width:1.6; fill:none; stroke-dasharray:5 4; }
+    </style>
+  </defs>
+  <rect width="2000" height="2580" fill="#FFFFFF"/>
+  <text class="t ttl" x="41" y="56" style="white-space: pre; font-size: 36px;">Reliable Agents Workshop &amp; Accelerator</text>
+  <rect x="715.029" y="29.194" width="120" height="32" rx="16" fill="#0EA5E9"/>
+  <text x="775.029" y="51.194" text-anchor="middle" font-size="15" font-weight="700" fill="#FFFFFF" style="white-space: pre; font-size: 16px;">ver 1.0</text>
+  <text class="sub" x="40" y="84" style="white-space: pre;">A Workshop &amp; Accelerator for Constructing Reliable, Production-Grade Agentic Systems</text>
+  <rect x="40" y="98" width="1920" height="3" fill="#0EA5E9"/>
+  <rect x="40" y="120" width="360" height="300" rx="10" fill="#F8FAFC" stroke="#CBD5E1"/>
+  <text class="t band" x="60" y="150" style="white-space: pre;">LEGEND</text>
+  <rect x="60" y="164" width="20" height="20" rx="4" fill="#FEF3C7" stroke="#D97706"/>
+  <text class="b" x="92" y="179" style="white-space: pre;">LLM call — non-deterministic</text>
+  <rect x="60" y="196" width="20" height="20" rx="4" fill="#E0F2FE" stroke="#0369A1"/>
+  <text class="b" x="92" y="211" style="white-space: pre;">Deterministic code path</text>
+  <rect x="60" y="228" width="20" height="20" rx="4" fill="#FEE2E2" stroke="#DC2626"/>
+  <text class="b" x="92" y="243" style="white-space: pre;">Security boundary</text>
+  <rect x="60" y="260" width="20" height="20" rx="4" fill="#EDE9FE" stroke="#7C3AED"/>
+  <text class="b" x="92" y="275" style="white-space: pre;">Domain agent</text>
+  <rect x="60" y="292" width="20" height="20" rx="4" fill="#CCFBF1" stroke="#0D9488"/>
+  <text class="b" x="92" y="307" style="white-space: pre;">Data plane / infrastructure</text>
+  <line x1="60" y1="326" x2="380" y2="326" stroke="#CBD5E1"/>
+  <g transform="matrix(1, 0, 0, 1, 60, 336)">
+    <rect x="0" y="0" width="21" height="27" rx="3" fill="#FFFFFF" stroke="#0369A1" stroke-width="1.6"/>
+    <path d="M14,0 L21,7 L14,7 Z" fill="#BAE6FD" stroke="#0369A1" stroke-width="1.2"/>
+    <text x="10.5" y="21" text-anchor="middle" font-family="'Cascadia Code','Consolas',monospace" font-size="11.5" font-weight="700" fill="#0369A1" style="white-space: pre;">{ }</text>
+  </g>
+  <text class="b" x="92" y="354" style="white-space: pre;">Structured data — validated Pydantic</text>
+  <g transform="matrix(1, 0, 0, 1, 60, 374)">
+    <rect x="0" y="0" width="21" height="27" rx="3" fill="#FFFBEB" stroke="#D97706" stroke-width="1.6"/>
+    <path d="M14,0 L21,7 L14,7 Z" fill="#FDE68A" stroke="#D97706" stroke-width="1.2"/>
+    <text x="10.5" y="21" text-anchor="middle" font-family="'Cascadia Code','Consolas',monospace" font-size="12" font-weight="700" fill="#B45309" style="white-space: pre;">"</text>
+  </g>
+  <text class="b" x="92" y="392" style="white-space: pre;">Unstructured text — a raw string</text>
+  <rect x="40" y="440" width="360" height="372" rx="10" fill="#ECFEFF" stroke="#22D3EE"/>
+  <text class="t band" x="60" y="470" style="white-space: pre;">WHERE DETERMINISM LIVES</text>
+  <line x1="60" y1="482" x2="380" y2="482" stroke="#22D3EE"/>
+  <text class="b" x="60" y="506" font-weight="600" style="white-space: pre;">Fixed intent taxonomy</text>
+  <text class="s" x="60" y="524" style="white-space: pre;">9 predefined intents. The model may choose exactly one.</text>
+  <text class="b" x="60" y="552" font-weight="600" style="white-space: pre;">RoutingMap allow-list</text>
+  <text class="s" x="60" y="570" style="white-space: pre;">Each intent authorizes a fixed set of agents. The model</text>
+  <text class="s" x="60" y="586" style="white-space: pre;">may never reach for an agent outside that set.</text>
+  <text class="b" x="60" y="614" font-weight="600" style="white-space: pre;">JSON structured inputs / outputs</text>
+  <text class="s" x="60" y="632" style="white-space: pre;">Intent is the last unstructured moment; every hop after</text>
+  <text class="s" x="60" y="648" style="white-space: pre;">it is a validated Pydantic object.</text>
+  <text class="b" x="60" y="676" font-weight="600" style="white-space: pre;">ReAct loop is bounded &amp; validated</text>
+  <text class="s" x="60" y="694" style="white-space: pre;">The model proposes one agent; code checks allow-list</text>
+  <text class="s" x="60" y="710" style="white-space: pre;">membership and caps the loop at 8 steps.</text>
+  <text class="b" x="60" y="738" font-weight="600" style="white-space: pre;">Read-only SQL statements</text>
+  <text class="s" x="60" y="756" style="white-space: pre;">Only SELECT / WITH reach the database; writes are</text>
+  <text class="s" x="60" y="772" style="white-space: pre;">not allowed — enforced outside the model's reach.</text>
+  <text class="s" x="60" y="788" font-weight="700" fill="#0E7490" style="white-space: pre;">The model reasons and writes the answer.</text>
+  <text class="s" x="60" y="804" font-weight="700" fill="#0E7490" style="white-space: pre;">Routing, validation, and security are all code.</text>
+  <rect x="40" y="820" width="360" height="430" rx="10" fill="#FFFBEB" stroke="#FCD34D"/>
+  <text class="t band" x="60" y="850" style="white-space: pre;">FALLBACK PATHS</text>
+  <line x1="60" y1="862" x2="380" y2="862" stroke="#FCD34D"/>
+  <text class="b" x="60" y="886" font-weight="700" fill="#0E7490" style="white-space: pre;">GRACEFUL DEGRADE — no error surfaced</text>
+  <text class="b" x="60" y="910" font-weight="600" style="white-space: pre;">UNKNOWN / no results</text>
+  <text class="s" x="60" y="928" style="white-space: pre;">Helpful redirect to asset health &amp; restoration.</text>
+  <text class="b" x="60" y="952" font-weight="600" style="white-space: pre;">intent == ERROR</text>
+  <text class="s" x="60" y="970" style="white-space: pre;">Soft apology; detail tucked into artifacts["error"].</text>
+  <text class="b" x="60" y="994" font-weight="600" style="white-space: pre;">Narrator synthesis fails</text>
+  <text class="s" x="60" y="1012" style="white-space: pre;">Deterministic stitch of agent summaries.</text>
+  <line x1="60" y1="1032" x2="380" y2="1032" stroke="#FCD34D"/>
+  <text class="b" x="60" y="1056" font-weight="700" fill="#B91C1C" style="white-space: pre;">REPORTED AS 'error' EVENT</text>
+  <text class="s" x="60" y="1078" style="white-space: pre;">Classify fails.</text>
+  <text class="s" x="60" y="1096" style="white-space: pre;">Proposed agent off the allow-list, or loop exceeds 8 steps.</text>
+  <text class="s" x="60" y="1114" style="white-space: pre;">Agent unavailable or fails.</text>
+  <text class="s" x="60" y="1132" style="white-space: pre;">ReAct cannot reach stop-confidence.</text>
+  <rect x="60" y="1150" width="320" height="80" rx="6" fill="#FEF2F2" stroke="#F87171" stroke-dasharray="4 4"/>
+  <text class="s" x="72" y="1172" fill="#B91C1C" font-weight="700" style="white-space: pre;">HTTP 200 is already sent.</text>
+  <text class="s" x="72" y="1192" fill="#B91C1C" style="white-space: pre;">The outcome lives in the final / error stream event,</text>
+  <text class="s" x="72" y="1210" fill="#B91C1C" style="white-space: pre;">never in the status code. No path throws a 500.</text>
+  <rect x="1060" y="108" width="470" height="80" rx="9" fill="#E0E7FF" stroke="#4F46E5" filter="url(#sh)"/>
+  <text class="h" x="1080" y="134" fill="#3730A3" style="white-space: pre;">Web UI — index.html + app.js</text>
+  <text class="mono" x="1080" y="156" fill="#4338CA" style="white-space: pre;">API_BASE_URL = http://localhost:8010</text>
+  <text class="s" x="1080" y="176" style="white-space: pre;">Two feeds in: Execution Trace panel + the answer.</text>
+  <path class="flow" d="M1295,188 V244" marker-end="url(#arw)"/>
+  <g transform="matrix(1, 0, 0, 1, 1313, 196)">
+    <rect x="0" y="0" width="21" height="27" rx="3" fill="#FFFBEB" stroke="#D97706" stroke-width="1.6"/>
+    <path d="M14,0 L21,7 L14,7 Z" fill="#FDE68A" stroke="#D97706" stroke-width="1.2"/>
+    <text x="10.5" y="21" text-anchor="middle" font-family="'Cascadia Code','Consolas',monospace" font-size="12" font-weight="700" fill="#B45309" style="white-space: pre;">"</text>
+  </g>
+  <text class="pay" x="1341" y="208" style="white-space: pre;">Unstructured Data</text>
+  <text class="s" x="1341" y="222" style="white-space: pre;">raw user text · POST /chat/stream</text>
+  <rect x="1060" y="248" width="470" height="104" rx="9" fill="#E0F2FE" stroke="#0369A1" filter="url(#sh)"/>
+  <text class="h" x="1080" y="272" fill="#075985" style="white-space: pre;">ApiRoutes — FastAPI :8010</text>
+  <text class="mono" x="1080" y="292" fill="#075985" style="white-space: pre;">/chat/stream · /map/assets · /prompt-library · /health</text>
+  <text class="s" x="1080" y="310" style="white-space: pre;">Read/answer path → Orchestrator (ReAct). Injects MCP Tools.</text>
+  <text class="s" x="1080" y="326" style="white-space: pre;">Write path → /outages, /generator/* bypass the orchestrator.</text>
+  <text class="s" x="1080" y="342" style="white-space: pre;">See the deterministic write path (lower left).</text>
+  <path class="flow" d="M1295,352 V404" marker-end="url(#arw)"/>
+  <g transform="matrix(1, 0, 0, 1, 1313, 358)">
+    <rect x="0" y="0" width="21" height="27" rx="3" fill="#FFFBEB" stroke="#D97706" stroke-width="1.6"/>
+    <path d="M14,0 L21,7 L14,7 Z" fill="#FDE68A" stroke="#D97706" stroke-width="1.2"/>
+    <text x="10.5" y="21" text-anchor="middle" font-family="'Cascadia Code','Consolas',monospace" font-size="12" font-weight="700" fill="#B45309" style="white-space: pre;">"</text>
+  </g>
+  <text class="pay" x="1341" y="378" style="white-space: pre;">Unstructured Data — still a string</text>
+  <path class="ret" d="M700,408 V140 H1056" marker-end="url(#arwT)"/>
+  <text class="s" x="772" y="134" fill="#0F766E" font-weight="600" style="white-space: pre;">Execution Trace feed — play-by-play</text>
+  <path class="ret" d="M740,408 V174 H1056" marker-end="url(#arwT)"/>
+  <text class="s" x="772" y="168" fill="#0F766E" font-weight="600" style="white-space: pre;">Response feed — final answer (ChatResult)</text>
+  <rect x="640" y="408" width="1240" height="104" rx="10" fill="#E0F2FE" stroke="#0369A1" stroke-width="2.5" filter="url(#sh)"/>
+  <text class="h" x="664" y="438" fill="#075985" font-size="18" style="white-space: pre;">Orchestrator — Deterministic outer pipeline wrapping probabilistic, model-based operations</text>
+  <text class="s" x="664" y="462" style="white-space: pre;">classify → reason → compose. Owns no domain logic.</text>
+  <text class="s" x="664" y="480" style="white-space: pre;">Injected: ReActReasoning (proposes the next agent); Orchestrator owns the loop.</text>
+  <text class="s" x="664" y="498" style="white-space: pre;">Every path out emits a terminal 'final' or 'error' event.</text>
+  <rect x="430" y="408" width="180" height="150" rx="9" fill="#F5F3FF" stroke="#7C3AED" filter="url(#sh)"/>
+  <text class="h" x="520" y="436" fill="#5B21B6" text-anchor="middle" font-size="13" style="white-space: pre;">Conversation</text>
+  <text class="h" x="520" y="454" fill="#5B21B6" text-anchor="middle" font-size="13" style="white-space: pre;">Memory</text>
+  <text class="s" x="520" y="476" text-anchor="middle" style="white-space: pre;">IConversationMemory</text>
+  <text class="s" x="520" y="496" text-anchor="middle" style="white-space: pre;">session-lived.</text>
+  <text class="s" x="520" y="514" text-anchor="middle" style="white-space: pre;">Loaded before</text>
+  <text class="s" x="520" y="530" text-anchor="middle" style="white-space: pre;">classify (follow-ups).</text>
+  <path class="mem" d="M610,470 H636" marker-end="url(#arwP)"/>
+  <path class="mem" d="M636,486 H610" marker-end="url(#arwP)"/>
+  <path class="flow" d="M745,512 V577" marker-end="url(#arw)"/>
+  <g transform="matrix(1, 0, 0, 1, 646, 518)">
+    <rect x="0" y="0" width="21" height="27" rx="3" fill="#FFFBEB" stroke="#D97706" stroke-width="1.6"/>
+    <path d="M14,0 L21,7 L14,7 Z" fill="#FDE68A" stroke="#D97706" stroke-width="1.2"/>
+    <text x="10.5" y="21" text-anchor="middle" font-family="'Cascadia Code','Consolas',monospace" font-size="12" font-weight="700" fill="#B45309" style="white-space: pre;">"</text>
+  </g>
+  <text class="pay" x="644" y="558" style="white-space: pre;">Unstructured Data</text>
+  <text class="s" x="644" y="572" style="white-space: pre;">raw string</text>
+  <path class="flow" d="M875,581 V512" marker-end="url(#arw)"/>
+  <g transform="matrix(1, 0, 0, 1, 890, 528)">
+    <rect x="0" y="0" width="21" height="27" rx="3" fill="#FFFFFF" stroke="#0369A1" stroke-width="1.6"/>
+    <path d="M14,0 L21,7 L14,7 Z" fill="#BAE6FD" stroke="#0369A1" stroke-width="1.2"/>
+    <text x="10.5" y="21" text-anchor="middle" font-family="'Cascadia Code','Consolas',monospace" font-size="11.5" font-weight="700" fill="#0369A1" style="white-space: pre;">{ }</text>
+  </g>
+  <text class="pay" x="918" y="540" style="white-space: pre;">Structured Data</text>
+  <text class="s" x="918" y="554" style="white-space: pre;">IntentResult</text>
+  <path class="flow" d="M1120,512 V577" marker-end="url(#arw)"/>
+  <g transform="matrix(1, 0, 0, 1, 1130, 528)">
+    <rect x="0" y="0" width="21" height="27" rx="3" fill="#FFFFFF" stroke="#0369A1" stroke-width="1.6"/>
+    <path d="M14,0 L21,7 L14,7 Z" fill="#BAE6FD" stroke="#0369A1" stroke-width="1.2"/>
+    <text x="10.5" y="21" text-anchor="middle" font-family="'Cascadia Code','Consolas',monospace" font-size="11.5" font-weight="700" fill="#0369A1" style="white-space: pre;">{ }</text>
+  </g>
+  <text class="pay" x="1158" y="540" style="white-space: pre;">Structured Data</text>
+  <text class="s" x="1158" y="554" style="white-space: pre;">IntentResult + allow-list</text>
+  <path class="flow" d="M1400,581 V512" marker-end="url(#arw)"/>
+  <g transform="matrix(1, 0, 0, 1, 1410, 528)">
+    <rect x="0" y="0" width="21" height="27" rx="3" fill="#FFFFFF" stroke="#0369A1" stroke-width="1.6"/>
+    <path d="M14,0 L21,7 L14,7 Z" fill="#BAE6FD" stroke="#0369A1" stroke-width="1.2"/>
+    <text x="10.5" y="21" text-anchor="middle" font-family="'Cascadia Code','Consolas',monospace" font-size="11.5" font-weight="700" fill="#0369A1" style="white-space: pre;">{ }</text>
+  </g>
+  <text class="pay" x="1438" y="540" style="white-space: pre;">Structured Data</text>
+  <text class="s" x="1438" y="554" style="white-space: pre;">AgentResults</text>
+  <path class="flow" d="M1600,512 V577" marker-end="url(#arw)"/>
+  <g transform="matrix(1, 0, 0, 1, 1610, 528)">
+    <rect x="0" y="0" width="21" height="27" rx="3" fill="#FFFFFF" stroke="#0369A1" stroke-width="1.6"/>
+    <path d="M14,0 L21,7 L14,7 Z" fill="#BAE6FD" stroke="#0369A1" stroke-width="1.2"/>
+    <text x="10.5" y="21" text-anchor="middle" font-family="'Cascadia Code','Consolas',monospace" font-size="11.5" font-weight="700" fill="#0369A1" style="white-space: pre;">{ }</text>
+  </g>
+  <text class="pay" x="1638" y="540" style="white-space: pre;">Structured Data</text>
+  <text class="s" x="1638" y="554" style="white-space: pre;">IntentResult + AgentResults</text>
+  <path class="flow" d="M1830,581 V512" marker-end="url(#arw)"/>
+  <g transform="matrix(1, 0, 0, 1, 1840, 528)">
+    <rect x="0" y="0" width="21" height="27" rx="3" fill="#FFFFFF" stroke="#0369A1" stroke-width="1.6"/>
+    <path d="M14,0 L21,7 L14,7 Z" fill="#BAE6FD" stroke="#0369A1" stroke-width="1.2"/>
+    <text x="10.5" y="21" text-anchor="middle" font-family="'Cascadia Code','Consolas',monospace" font-size="11.5" font-weight="700" fill="#0369A1" style="white-space: pre;">{ }</text>
+  </g>
+  <text class="pay" x="1868" y="540" style="white-space: pre;">Structured Data</text>
+  <text class="s" x="1868" y="554" style="white-space: pre;">ChatResult</text>
+  <rect x="660" y="581" width="290" height="120" rx="9" fill="#FEF3C7" stroke="#D97706" stroke-width="2" filter="url(#sh)"/>
+  <text class="h" x="678" y="604" fill="#92400E" font-size="15" style="white-space: pre;">Intent Classifier</text>
+  <text class="b" x="678" y="626" style="white-space: pre;">Invokes an SLM model call to classify</text>
+  <text class="s" x="678" y="644" style="white-space: pre;">Extracts intent and key entities.</text>
+  <text class="s" x="678" y="662" style="white-space: pre;">(Last unstructured moment on control path)</text>
+  <text class="s" x="678" y="680" style="white-space: pre;">Returns IntentResult to the pipeline —</text>
+  <text class="s" x="678" y="696" style="white-space: pre;">not directly to Reasoning.</text>
+  <rect x="1080" y="581" width="360" height="120" rx="9" fill="#F5F3FF" stroke="#7C3AED" stroke-width="2" filter="url(#sh)"/>
+  <text class="h" x="1098" y="606" fill="#5B21B6" font-size="15" style="white-space: pre;">Reasoning — ReActReasoning (Decide only)</text>
+  <text class="s" x="1098" y="630" style="white-space: pre;">One model call per step: propose the next agent (or stop).</text>
+  <text class="s" x="1098" y="652" style="white-space: pre;">The Decide → Dispatch → Observe LOOP is owned by the</text>
+  <text class="s" x="1098" y="672" style="white-space: pre;">Orchestrator, not here. This box only picks the agent.</text>
+  <rect x="1560" y="581" width="310" height="120" rx="9" fill="#FEF3C7" stroke="#D97706" stroke-width="2" filter="url(#sh)"/>
+  <text class="h" x="1578" y="608" fill="#92400E" font-size="15" style="white-space: pre;">Response Assembler</text>
+  <text class="b" x="1578" y="630" style="white-space: pre;">MODEL CALL — inference model</text>
+  <text class="s" x="1578" y="650" style="white-space: pre;">AnswerNarratorService renders the</text>
+  <text class="s" x="1578" y="668" style="white-space: pre;">structured data into natural language,</text>
+  <text class="s" x="1578" y="686" style="white-space: pre;">matching the user prompt.</text>
+  <text class="band" x="676" y="924" fill="#6D28D9" style="white-space: pre;">REASONING — SINGLE ReAct LOOP, OWNED BY THE ORCHESTRATOR</text>
+  <path class="flow" d="M1250,701 V918" marker-end="url(#arw)"/>
+  <g transform="matrix(1, 0, 0, 1, 1258, 726)">
+    <rect x="0" y="0" width="21" height="27" rx="3" fill="#FFFFFF" stroke="#0369A1" stroke-width="1.6"/>
+    <path d="M14,0 L21,7 L14,7 Z" fill="#BAE6FD" stroke="#0369A1" stroke-width="1.2"/>
+    <text x="10.5" y="21" text-anchor="middle" font-family="'Cascadia Code','Consolas',monospace" font-size="11.5" font-weight="700" fill="#0369A1" style="white-space: pre;">{ }</text>
+  </g>
+  <text class="pay" x="1286" y="738" style="white-space: pre;">Structured Data</text>
+  <text class="s" x="1286" y="752" style="white-space: pre;">IntentResult</text>
+  <path class="flow" d="M1130,701 V730 H636 V1015 H652" marker-end="url(#arw)"/>
+  <g transform="matrix(1, 0, 0, 1, 500, 850)">
+    <rect x="0" y="0" width="21" height="27" rx="3" fill="#FFFFFF" stroke="#0369A1" stroke-width="1.6"/>
+    <path d="M14,0 L21,7 L14,7 Z" fill="#BAE6FD" stroke="#0369A1" stroke-width="1.2"/>
+    <text x="10.5" y="21" text-anchor="middle" font-family="'Cascadia Code','Consolas',monospace" font-size="11.5" font-weight="700" fill="#0369A1" style="white-space: pre;">{ }</text>
+  </g>
+  <text class="pay" x="530" y="862" style="white-space: pre;">Structured Data</text>
+  <text class="s" x="530" y="876" style="white-space: pre;">IntentResult</text>
+  <!-- Plan-and-Execute reasoning panel removed 2026-09: the app is ReAct-only. -->
+  <rect x="656" y="944" width="850" height="190" rx="10" fill="#FAF5FF" stroke="#7C3AED" stroke-width="2"/>
+  <text class="band" x="676" y="970" fill="#6D28D9" style="white-space: pre;">ReAct — DECIDE · ACT · OBSERVE, ONE AGENT AT A TIME</text>
+  <rect x="700" y="980" width="230" height="98" rx="9" fill="#FEF3C7" stroke="#D97706" stroke-width="2" filter="url(#sh)"/>
+  <text class="h" x="716" y="1008" fill="#92400E" font-size="14" style="white-space: pre;">Decide</text>
+  <text class="b" x="716" y="1030" style="white-space: pre;">MODEL CALL</text>
+  <text class="s" x="716" y="1050" style="white-space: pre;">Picks the next agent</text>
+  <text class="s" x="716" y="1066" style="white-space: pre;">(ReActDecision).</text>
+  <path class="flow" d="M930,1029 H962" marker-end="url(#arw)"/>
+  <rect x="966" y="980" width="255" height="98" rx="9" fill="#E0F2FE" stroke="#0369A1" stroke-width="2" filter="url(#sh)"/>
+  <text class="h" x="982" y="1008" fill="#075985" font-size="14" style="white-space: pre;">Dispatch</text>
+  <text class="s" x="982" y="1032" style="white-space: pre;">Runs the chosen agent</text>
+  <text class="s" x="982" y="1052" style="white-space: pre;">(must be allowed).</text>
+  <path class="flow" d="M1221,1029 H1253" marker-end="url(#arw)"/>
+  <rect x="1255" y="980" width="230" height="98" rx="9" fill="#E0F2FE" stroke="#0369A1" stroke-width="2" filter="url(#sh)"/>
+  <text class="h" x="1271" y="1008" fill="#075985" font-size="14" style="white-space: pre;">Observe</text>
+  <text class="s" x="1271" y="1032" style="white-space: pre;">Adds the result; loops</text>
+  <text class="s" x="1271" y="1052" style="white-space: pre;">until confident.</text>
+  <path class="flow" d="M1370,1078 V1106 H815 V1078" marker-end="url(#arw)"/>
+  <text class="lbl" x="1092" y="1120" text-anchor="middle" fill="#64748B" style="white-space: pre;">loop until confident or 8 steps</text>
+  <path class="flow" d="M1040,1134 V1188" fill="none"/>
+  <path class="flow" d="M740,1188 H1815" fill="none"/>
+  <path class="flow" d="M740,1188 V1221" marker-end="url(#arw)"/>
+  <path class="flow" d="M955,1188 V1221" marker-end="url(#arw)"/>
+  <path class="flow" d="M1170,1188 V1221" marker-end="url(#arw)"/>
+  <path class="flow" d="M1385,1188 V1221" marker-end="url(#arw)"/>
+  <path class="flow" d="M1600,1188 V1221" marker-end="url(#arw)"/>
+  <path class="flow" d="M1815,1188 V1221" marker-end="url(#arw)"/>
+  <g transform="matrix(1, 0, 0, 1, 1060, 1146)">
+    <rect x="0" y="0" width="21" height="27" rx="3" fill="#FFFFFF" stroke="#0369A1" stroke-width="1.6"/>
+    <path d="M14,0 L21,7 L14,7 Z" fill="#BAE6FD" stroke="#0369A1" stroke-width="1.2"/>
+    <text x="10.5" y="21" text-anchor="middle" font-family="'Cascadia Code','Consolas',monospace" font-size="11.5" font-weight="700" fill="#0369A1" style="white-space: pre;">{ }</text>
+  </g>
+  <text class="pay" x="1088" y="1158" style="white-space: pre;">Structured Data</text>
+  <text class="s" x="1088" y="1172" style="white-space: pre;">AgentRequest — entities + enriched prompt</text>
+  <path class="flow" d="M1480,1188 V1134" marker-end="url(#arw)"/>
+  <g transform="matrix(1, 0, 0, 1, 1492, 1146)">
+    <rect x="0" y="0" width="21" height="27" rx="3" fill="#FFFFFF" stroke="#0369A1" stroke-width="1.6"/>
+    <path d="M14,0 L21,7 L14,7 Z" fill="#BAE6FD" stroke="#0369A1" stroke-width="1.2"/>
+    <text x="10.5" y="21" text-anchor="middle" font-family="'Cascadia Code','Consolas',monospace" font-size="11.5" font-weight="700" fill="#0369A1" style="white-space: pre;">{ }</text>
+  </g>
+  <text class="pay" x="1520" y="1158" style="white-space: pre;">Structured Data</text>
+  <text class="s" x="1520" y="1172" style="white-space: pre;">Agent Result</text>
+  <rect x="640" y="1221" width="200" height="126" rx="9" fill="#EDE9FE" stroke="#7C3AED" filter="url(#sh)"/>
+  <text class="h" x="740" y="1290" fill="#5B21B6" text-anchor="middle" font-size="15" style="white-space: pre;">Direct Query</text>
+  <text class="h" x="740" y="1310" fill="#5B21B6" text-anchor="middle" font-size="15" style="white-space: pre;">Agent</text>
+  <rect x="855" y="1221" width="200" height="126" rx="9" fill="#EDE9FE" stroke="#7C3AED" filter="url(#sh)"/>
+  <text class="h" x="955" y="1290" fill="#5B21B6" text-anchor="middle" font-size="15" style="white-space: pre;">Asset</text>
+  <text class="h" x="955" y="1310" fill="#5B21B6" text-anchor="middle" font-size="15" style="white-space: pre;">Agent</text>
+  <rect x="1070" y="1221" width="200" height="126" rx="9" fill="#EDE9FE" stroke="#7C3AED" filter="url(#sh)"/>
+  <text class="h" x="1170" y="1290" fill="#5B21B6" text-anchor="middle" font-size="15" style="white-space: pre;">Event</text>
+  <text class="h" x="1170" y="1310" fill="#5B21B6" text-anchor="middle" font-size="15" style="white-space: pre;">Agent</text>
+  <rect x="1285" y="1221" width="200" height="126" rx="9" fill="#EDE9FE" stroke="#7C3AED" filter="url(#sh)"/>
+  <text class="h" x="1385" y="1290" fill="#5B21B6" text-anchor="middle" font-size="15" style="white-space: pre;">Crew</text>
+  <text class="h" x="1385" y="1310" fill="#5B21B6" text-anchor="middle" font-size="15" style="white-space: pre;">Agent</text>
+  <rect x="1500" y="1221" width="200" height="126" rx="9" fill="#EDE9FE" stroke="#7C3AED" filter="url(#sh)"/>
+  <text class="h" x="1600" y="1290" fill="#5B21B6" text-anchor="middle" font-size="15" style="white-space: pre;">Customer</text>
+  <text class="h" x="1600" y="1310" fill="#5B21B6" text-anchor="middle" font-size="15" style="white-space: pre;">Agent</text>
+  <rect x="1715" y="1221" width="200" height="126" rx="9" fill="#EDE9FE" stroke="#7C3AED" filter="url(#sh)"/>
+  <text class="h" x="1815" y="1290" fill="#5B21B6" text-anchor="middle" font-size="15" style="white-space: pre;">Reliability</text>
+  <text class="h" x="1815" y="1310" fill="#5B21B6" text-anchor="middle" font-size="15" style="white-space: pre;">Agent</text>
+  <path class="flow" d="M1400,1362 V1520" marker-end="url(#arw)"/>
+  <g transform="matrix(1, 0, 0, 1, 1060, 1448)">
+    <rect x="0" y="0" width="21" height="27" rx="3" fill="#FFFFFF" stroke="#0369A1" stroke-width="1.6"/>
+    <path d="M14,0 L21,7 L14,7 Z" fill="#BAE6FD" stroke="#0369A1" stroke-width="1.2"/>
+    <text x="10.5" y="21" text-anchor="middle" font-family="'Cascadia Code','Consolas',monospace" font-size="11.5" font-weight="700" fill="#0369A1" style="white-space: pre;">{ }</text>
+  </g>
+  <text class="pay" x="1088" y="1460" style="white-space: pre;">Structured Data</text>
+  <text class="s" x="1088" y="1474" style="white-space: pre;">MCP call — a natural-language question as payload</text>
+  <path class="flow" d="M1560,1520 V1362" marker-end="url(#arw)"/>
+  <g transform="matrix(1, 0, 0, 1, 1572, 1448)">
+    <rect x="0" y="0" width="21" height="27" rx="3" fill="#FFFFFF" stroke="#0369A1" stroke-width="1.6"/>
+    <path d="M14,0 L21,7 L14,7 Z" fill="#BAE6FD" stroke="#0369A1" stroke-width="1.2"/>
+    <text x="10.5" y="21" text-anchor="middle" font-family="'Cascadia Code','Consolas',monospace" font-size="11.5" font-weight="700" fill="#0369A1" style="white-space: pre;">{ }</text>
+  </g>
+  <text class="pay" x="1600" y="1460" style="white-space: pre;">Structured Data</text>
+  <text class="s" x="1600" y="1474" style="white-space: pre;">query result (rows)</text>
+  <line x1="640" y1="1362" x2="1915" y2="1362" stroke="#0F172A" stroke-width="3"/>
+  <text x="1277" y="1396" text-anchor="middle" fill="#6D28D9" font-size="20" font-weight="700" letter-spacing="2" style="white-space: pre;">DOMAIN AGENTS</text>
+  <!-- Deterministic write path (added 2026-09): outage lifecycle + data generator, direct Postgres. -->
+  <rect x="40" y="1300" width="575" height="432" rx="10" fill="#FFF7ED" stroke="#FB923C"/>
+  <text class="t band" x="60" y="1330" fill="#9A3412" style="white-space: pre;">DETERMINISTIC WRITE PATH — BYPASSES THE ORCHESTRATOR</text>
+  <line x1="60" y1="1342" x2="595" y2="1342" stroke="#FB923C"/>
+  <text class="s" x="60" y="1366" style="white-space: pre;">No intent classifier, no reasoning, no MCP. Plain REST →</text>
+  <text class="s" x="60" y="1382" style="white-space: pre;">service → direct Postgres. The one sanctioned write path.</text>
+  <rect x="60" y="1400" width="535" height="66" rx="9" fill="#E0E7FF" stroke="#4F46E5"/>
+  <text class="h" x="76" y="1424" fill="#3730A3" font-size="15" style="white-space: pre;">ApiRoutes — write &amp; generator endpoints</text>
+  <text class="mono" x="76" y="1445" fill="#4338CA" font-size="11" style="white-space: pre;">POST /outages · /outages/{id}/transition · GET /outages</text>
+  <text class="mono" x="76" y="1460" fill="#4338CA" font-size="11" style="white-space: pre;">POST /generator/generate · /clear · GET /generator/forecast</text>
+  <path class="flow" d="M180,1466 V1500" marker-end="url(#arw)"/>
+  <path class="flow" d="M470,1466 V1500" marker-end="url(#arw)"/>
+  <rect x="60" y="1500" width="258" height="104" rx="9" fill="#E0F2FE" stroke="#0369A1"/>
+  <text class="h" x="76" y="1524" fill="#075985" font-size="14" style="white-space: pre;">OutageLifecycleService</text>
+  <text class="s" x="76" y="1546" style="white-space: pre;">create_outage · transition</text>
+  <text class="s" x="76" y="1566" style="white-space: pre;">DETECTED → CONFIRMED →</text>
+  <text class="s" x="76" y="1582" style="white-space: pre;">CREW_ASSIGNED → RESTORED →</text>
+  <text class="s" x="76" y="1598" style="white-space: pre;">CLOSED (+ paired history log)</text>
+  <rect x="338" y="1500" width="257" height="104" rx="9" fill="#E0F2FE" stroke="#0369A1"/>
+  <text class="h" x="354" y="1524" fill="#075985" font-size="14" style="white-space: pre;">GeneratorDatabase</text>
+  <text class="s" x="354" y="1546" style="white-space: pre;">SpatialDataGenerator</text>
+  <text class="s" x="354" y="1566" style="white-space: pre;">seed / clear synthetic grid</text>
+  <text class="s" x="354" y="1582" style="white-space: pre;">data (substations → meters,</text>
+  <text class="s" x="354" y="1598" style="white-space: pre;">outages). Optional; 503 if unset.</text>
+  <path class="flow" d="M189,1604 V1636" marker-end="url(#arw)"/>
+  <path class="flow" d="M466,1604 V1636" marker-end="url(#arw)"/>
+  <rect x="60" y="1636" width="535" height="82" rx="9" fill="#FEE2E2" stroke="#DC2626" stroke-width="2"/>
+  <text class="h" x="76" y="1660" fill="#991B1B" style="white-space: pre;">Direct Postgres connection — WRITES ENABLED</text>
+  <text class="s" x="76" y="1680" fill="#B91C1C" style="white-space: pre;">SQLAlchemy session, not MCP. The read path stays read-only;</text>
+  <text class="s" x="76" y="1698" fill="#B91C1C" style="white-space: pre;">writes are confined to these two services by design.</text>
+  <g transform="translate(0,120)">
+    <rect x="1180" y="1400" width="620" height="1000" rx="12" fill="#F0FDFA" stroke="#99F6E4" stroke-dasharray="5 4"/>
+    <text class="band" x="1204" y="1428" fill="#0F766E" style="white-space: pre;">DATA LEG — HOW ANY DATA AGENT REACHES POSTGRES</text>
+    <rect x="1220" y="1440" width="540" height="64" rx="9" fill="#CCFBF1" stroke="#0D9488" filter="url(#sh)"/>
+    <text class="h" x="1240" y="1466" fill="#115E59" style="white-space: pre;">McpClient — outbound adapter, stateless</text>
+    <text class="s" x="1240" y="1488" style="white-space: pre;">One fresh session per call. Streamable HTTP.</text>
+    <path class="flow" d="M1490,1504 V1535" marker-end="url(#arw)"/>
+    <rect x="1220" y="1535" width="540" height="440" rx="10" fill="#FFFFFF" stroke="#0D9488" stroke-width="2"/>
+    <rect x="1220" y="1535" width="540" height="30" rx="10" fill="#0D9488"/>
+    <rect x="1220" y="1553" width="540" height="12" fill="#0D9488"/>
+    <text class="h" x="1240" y="1556" fill="#FFFFFF" font-size="13" style="white-space: pre;">mcp_sql — SEPARATE PROCESS · FastMCP :8000/mcp</text>
+    <rect x="1240" y="1583" width="250" height="54" rx="8" fill="#CCFBF1" stroke="#0D9488"/>
+    <text class="h" x="1365" y="1607" fill="#115E59" text-anchor="middle" font-size="14" style="white-space: pre;">ask(question)</text>
+    <text class="s" x="1365" y="1627" text-anchor="middle" style="white-space: pre;">natural language in</text>
+    <rect x="1510" y="1583" width="230" height="54" rx="8" fill="#E0F2FE" stroke="#0369A1"/>
+    <text class="h" x="1625" y="1607" fill="#075985" text-anchor="middle" font-size="14" style="white-space: pre;">run_sql(query)</text>
+    <text class="s" x="1625" y="1627" text-anchor="middle" style="white-space: pre;">NO LLM — caller's SQL</text>
+    <path class="flow" d="M1365,1637 V1663" marker-end="url(#arw)"/>
+    <rect x="1240" y="1663" width="250" height="48" rx="8" fill="#CCFBF1" stroke="#0D9488"/>
+    <text class="b" x="1365" y="1686" text-anchor="middle" font-weight="600" fill="#115E59" style="white-space: pre;">_cached_schema()</text>
+    <text class="s" x="1365" y="1703" text-anchor="middle" style="white-space: pre;">lazy, first ask only</text>
+    <path class="flow" d="M1365,1711 V1737" marker-end="url(#arw)"/>
+    <rect x="1240" y="1737" width="250" height="72" rx="8" fill="#FEF3C7" stroke="#D97706" stroke-width="2"/>
+    <text class="h" x="1258" y="1761" fill="#92400E" font-size="14" style="white-space: pre;">nl2sql.to_sql()</text>
+    <text class="s" x="1258" y="1781" style="white-space: pre;">MODEL CALL</text>
+    <text class="s" x="1258" y="1799" style="white-space: pre;">returns SQL + reasoning</text>
+    <path class="flow" d="M1365,1809 V1835" marker-end="url(#arw)"/>
+    <path class="flow" d="M1625,1637 V1835" marker-end="url(#arw)"/>
+    <rect x="1240" y="1835" width="500" height="80" rx="8" fill="#FEF2F2" stroke="#F87171" stroke-dasharray="5 4"/>
+    <text class="h" x="1258" y="1859" fill="#991B1B" font-size="14" style="white-space: pre;">check() + _with_limit()</text>
+    <text class="s" x="1258" y="1879" style="white-space: pre;">SELECT / WITH only · single statement · LIMIT n</text>
+    <text class="s" x="1258" y="1899" fill="#B91C1C" font-style="italic" style="white-space: pre;">Fast-fail convenience — NOT the security boundary.</text>
+    <path class="flow" d="M1490,1915 V2005" marker-end="url(#arw)"/>
+    <rect x="1220" y="2005" width="540" height="54" rx="9" fill="#CCFBF1" stroke="#0D9488" filter="url(#sh)"/>
+    <text class="h" x="1240" y="2029" fill="#115E59" font-size="14" style="white-space: pre;">upstream.py</text>
+    <text class="s" x="1240" y="2048" style="white-space: pre;">Per-call stdio subprocess.</text>
+    <path class="flow" d="M1490,2059 V2089" marker-end="url(#arw)"/>
+    <rect x="1220" y="2089" width="540" height="96" rx="9" fill="#FEE2E2" stroke="#DC2626" stroke-width="3" filter="url(#sh)"/>
+    <text class="h" x="1240" y="2115" fill="#991B1B" style="white-space: pre;">pgEdge Postgres MCP — query_database</text>
+    <text class="mono" x="1240" y="2137" fill="#991B1B" style="white-space: pre;">PGEDGE_DB_ALLOW_WRITES=false sslmode=require</text>
+    <text class="s" x="1240" y="2157" fill="#B91C1C" font-weight="600" style="white-space: pre;">This + the read-only grant is the real security boundary.</text>
+    <text class="s" x="1240" y="2174" fill="#B91C1C" style="white-space: pre;">Enforced outside any process the model can influence.</text>
+    <path class="flow" d="M1490,2185 V2215" marker-end="url(#arw)"/>
+    <g filter="url(#sh)">
+      <path d="M1400,2230 a90,16 0 0,1 180,0 v46 a90,16 0 0,1 -180,0 z" fill="#99F6E4" stroke="#0D9488" stroke-width="2"/>
+      <ellipse cx="1490" cy="2230" rx="90" ry="16" fill="#CCFBF1" stroke="#0D9488" stroke-width="2"/>
+      <text class="h" x="1490" y="2266" fill="#115E59" text-anchor="middle" font-size="15" style="white-space: pre;">Postgres</text>
+    </g>
+    <text class="lbl" x="1490" y="2308" text-anchor="middle" fill="#0D9488" style="white-space: pre;">rows → parsed to list[dict] → back up as AgentResult</text>
+    <line x1="40" y1="2410" x2="1960" y2="2410" stroke="#CBD5E1"/>
+    <text class="s" x="40" y="2436" style="white-space: pre;">Model calls: #1 classify intent · #2 decide next agent per step (ReAct) · #3 NL2SQL · #4 narrate answer. Between them: fixed intent taxonomy, allow-list, 8-step cap, statement checks, write-disabled grant — all code (read path). Outage / generator writes bypass all of this.</text>
+  </g>
+</svg>

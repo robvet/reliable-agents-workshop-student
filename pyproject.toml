@@ -1,0 +1,61 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "model-fusion-demo"
+version = "0.1.0"
+description = "ResponseAI Playground — a FastAPI multi-agent demo fanning a prompt across multiple LLMs."
+readme = "README.md"
+requires-python = ">=3.11"
+
+dependencies = [
+    "fastapi",
+    "uvicorn[standard]",
+    "pydantic[dotenv]",
+    "pydantic-settings",
+    # Microsoft Agent Framework orchestration layer (preview builds)
+    "agent-framework>=1.0.0,<2.0.0",
+    # Model provider SDKs
+    "azure-identity",
+    "openai",
+    "google-genai",
+    "anthropic",
+    # UI + supporting libs
+    "requests",
+    "jinja2",
+    "httpx",
+    "python-docx",
+    "pypdf",
+    # Data generator feature (src/app/data, src/app/generator) - the only part
+    # of the app that connects to PostgreSQL directly instead of via MCP.
+    "sqlalchemy>=2.0.30",
+    "psycopg2-binary>=2.9.9",
+    "faker>=25.0.0",
+    # OpenTelemetry — pinned to compatible versions
+    "opentelemetry-api==1.39.0",
+    "opentelemetry-sdk==1.39.0",
+    "opentelemetry-instrumentation-fastapi==0.60b0",
+    "opentelemetry-instrumentation-logging==0.60b0",
+    "opentelemetry-instrumentation-httpx==0.60b0",
+    "azure-monitor-opentelemetry-exporter==1.0.0b46",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest",
+    "pytest-asyncio",  # Enables `async def` test functions
+    "httpx",
+    "debugpy",  # VS Code debugging
+    "rich",     # Colorized console logging + pretty tracebacks
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"
+markers = [
+    "asyncio: mark a test as an asyncio coroutine",
+]

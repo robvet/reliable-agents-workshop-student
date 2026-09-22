@@ -1,0 +1,55 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Cleanup",
+            "type": "shell",
+            "command": "python cleanup.py",
+            "options": {
+                "cwd": "${workspaceFolder}/scripts/cleanup"
+            },
+            "presentation": {
+                "reveal": "silent",
+                "panel": "shared"
+            },
+            "problemMatcher": []
+        },
+        {
+            "label": "Backend",
+            "type": "shell",
+            "command": "bash ./scripts/bash/start-backend.sh",
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated",
+                "group": "servers"
+            },
+            "problemMatcher": [],
+            "isBackground": true
+        },
+        {
+            "label": "Start All",
+            "dependsOn": [
+                "Backend"
+            ],
+            "dependsOrder": "parallel",
+            "problemMatcher": [],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            }
+        },
+        {
+            "label": "Open Browser",
+            "type": "shell",
+            "command": "Start-Sleep -Seconds 2; Start-Process 'http://127.0.0.1:8010/docs'",
+            "windows": {
+                "command": "powershell.exe",
+                "args": [
+                    "-Command",
+                    "Start-Sleep -Seconds 2; Start-Process 'http://127.0.0.1:8010/docs'"
+                ]
+            },
+            "problemMatcher": []
+        }
+    ]
+}

@@ -1,0 +1,26 @@
+[project]
+name = "mcp-sql"
+version = "0.1.0"
+description = "Disposable POC: remote MCP server exposing run_sql/ask over an Azure Postgres Flexible Server, via the pgEdge Postgres MCP stdio subprocess."
+requires-python = ">=3.11"
+dependencies = [
+    "fastmcp",
+    "mcp>=1.0,<2.0",
+    "pydantic-settings",
+    "agent-framework-openai>=1.12.0,<2.0.0",
+    "azure-identity",
+    "azure-monitor-opentelemetry",
+    "python-dotenv",
+    "pytest",
+    "pytest-asyncio",
+]
+
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools]
+py-modules = ["config", "telemetry", "upstream", "nl2sql", "server"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"

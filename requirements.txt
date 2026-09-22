@@ -1,0 +1,54 @@
+fastapi
+
+# Microsoft Agent Framework orchestration layer.
+# Used by Orchestrator search flow via ChatAgent + provider chat clients.
+# The live app imports only `agent_framework` (core) and `agent_framework.openai`.
+# agent-framework-openai (Production/Stable) provides `agent_framework.openai` and
+# depends on agent-framework-core + the openai SDK, so it pulls everything needed.
+# We deliberately do NOT use the `agent-framework` meta package: its [all] extra
+# drags in the preview-only `agent-framework-copilotstudio`, which makes pip
+# backtrack through every beta when installing without --pre. This pin pulls
+# no preview packages, so the resolve is clean and fast. agent-framework-openai
+# depends on agent-framework-core, so core is resolved automatically.
+agent-framework-openai==1.12.0
+
+# MCP client SDK — backend connects to the mcp_sql server via `from mcp import
+# ClientSession` (src/app/tools/mcp_client.py). Previously arrived transitively
+# through the agent-framework meta package; pinned explicitly now that we use
+# the leaner agent-framework-openai.
+mcp>=1.0,<2.0
+
+# Model provider SDKs used by Agent Framework clients and legacy agents
+debugpy  # Required for VS Code debugging
+uvicorn[standard]
+pydantic[dotenv]
+pydantic-settings
+azure-identity
+openai
+google-genai
+anthropic
+requests
+jinja2
+httpx
+rich  # Colorized console logging + pretty tracebacks (dev debugging)
+
+# Data generator feature (src/app/data, src/app/generator) - the only part of
+# the app that connects to PostgreSQL directly instead of going through MCP.
+sqlalchemy>=2.0.30
+psycopg2-binary>=2.9.9
+faker>=25.0.0
+
+# Weather feature (src/app/tools/weather_client.py, src/app/agents/weather_agent.py) -
+# point-in-polygon matching of asset coordinates against NWS alert polygons.
+shapely>=2.0
+
+# OpenTelemetry - pinned to compatible versions
+opentelemetry-api==1.39.0
+opentelemetry-sdk==1.39.0
+opentelemetry-instrumentation-fastapi==0.60b0
+opentelemetry-instrumentation-logging==0.60b0
+opentelemetry-instrumentation-httpx==0.60b0
+azure-monitor-opentelemetry-exporter==1.0.0b46
+python-docx
+pypdf
+pytest-asyncio

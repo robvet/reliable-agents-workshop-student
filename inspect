@@ -1,0 +1,4 @@
+#!/bin/bash
+# Start the MCP Inspector UI (server URL comes from mcp-inspector.json)
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+exec npx -y @modelcontextprotocol/inspector --config "$SCRIPT_DIR/mcp-inspector.json"

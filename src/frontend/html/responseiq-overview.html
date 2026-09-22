@@ -1,0 +1,525 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reliable Agents Workshop &amp; Accelerator | System Overview</title>
+  <script>
+    (() => {
+      const theme = "light";
+      document.documentElement.setAttribute("data-theme", theme);
+    })();
+  </script>
+  <style>
+    :root {
+      color-scheme: light;
+      --cp-bg: #f7f4ef;
+      --cp-bg-elevated: #fcfbf8;
+      --cp-surface: #ffffff;
+      --cp-surface-soft: #f5f5f5;
+      --cp-border: #dedede;
+      --cp-border-strong: #919191;
+      --cp-text: #242424;
+      --cp-text-muted: #5c5c5c;
+      --cp-text-soft: #6f6f6f;
+      --cp-accent: #b11f4b;
+      --cp-accent-hover: #9a1a41;
+      --cp-accent-soft: rgba(177, 31, 75, 0.08);
+      --cp-accent-fg: #ffffff;
+      --cp-success: #16a34a;
+      --cp-danger: #dc2626;
+      --cp-warning: #f59e0b;
+      --cp-link: #0078d4;
+      --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.12);
+      --cp-overlay: rgba(255, 255, 255, 0.8);
+      --cp-panel: rgba(255, 255, 255, 0.86);
+      --cp-panel-strong: rgba(255, 255, 255, 0.96);
+      --cp-sheen: rgba(255, 255, 255, 0.55);
+      --cp-highlight: rgba(177, 31, 75, 0.12);
+    }
+    html[data-theme="dark"] {
+      color-scheme: dark;
+      --cp-bg: #3d3b3a;
+      --cp-bg-elevated: #343231;
+      --cp-surface: #292929;
+      --cp-surface-soft: #2e2e2e;
+      --cp-border: #474747;
+      --cp-border-strong: #5f5f5f;
+      --cp-text: #dedede;
+      --cp-text-muted: #919191;
+      --cp-text-soft: #b0b0b0;
+      --cp-accent: #fd8ea1;
+      --cp-accent-hover: #fb7b91;
+      --cp-accent-soft: rgba(253, 142, 161, 0.14);
+      --cp-accent-fg: #1a1a1a;
+      --cp-success: #4ade80;
+      --cp-danger: #f87171;
+      --cp-warning: #fbbf24;
+      --cp-link: #4da6ff;
+      --cp-shadow: 0 18px 48px rgba(0, 0, 0, 0.32);
+      --cp-overlay: rgba(41, 41, 41, 0.88);
+      --cp-panel: rgba(41, 41, 41, 0.72);
+      --cp-panel-strong: rgba(41, 41, 41, 0.96);
+      --cp-sheen: rgba(255, 255, 255, 0.04);
+      --cp-highlight: rgba(253, 142, 161, 0.12);
+    }
+
+    * { box-sizing: border-box; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        linear-gradient(135deg, var(--cp-accent-soft), transparent 42%),
+        var(--cp-bg);
+      color: var(--cp-text);
+      font-family: "Segoe UI", Aptos, Calibri, -apple-system, BlinkMacSystemFont, sans-serif;
+    }
+
+    .page-shell {
+      width: min(1180px, calc(100% - 32px));
+      margin: 0 auto;
+      padding: 28px 0 48px;
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      min-height: 340px;
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(280px, 0.75fr);
+      gap: 32px;
+      align-items: center;
+      padding: clamp(28px, 6vw, 64px);
+      border: 1px solid var(--cp-border);
+      border-top: 5px solid var(--cp-accent);
+      background: var(--cp-surface);
+      box-shadow: var(--cp-shadow);
+    }
+
+    .eyebrow,
+    .status-label,
+    .section-kicker {
+      margin: 0 0 12px;
+      color: var(--cp-accent);
+      font-family: Consolas, "Courier New", Courier, monospace;
+      font-size: 0.78rem;
+      font-weight: 700;
+      letter-spacing: 0;
+      text-transform: uppercase;
+    }
+
+    h1 {
+      margin: 0;
+      max-width: 760px;
+      font-size: clamp(3rem, 7vw, 5.75rem);
+      line-height: 0.95;
+      letter-spacing: 0;
+    }
+
+    .hero-copy {
+      max-width: 720px;
+      margin: 24px 0 0;
+      color: var(--cp-text-soft);
+      font-size: clamp(1rem, 2vw, 1.24rem);
+      line-height: 1.6;
+    }
+
+    .principle {
+      margin-top: 28px;
+      padding: 16px 18px;
+      border-left: 4px solid var(--cp-accent);
+      background: var(--cp-accent-soft);
+      font-weight: 650;
+      line-height: 1.45;
+    }
+
+    .system-loop {
+      min-height: 236px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      align-content: center;
+    }
+
+    .loop-step {
+      min-height: 104px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 16px;
+      border: 1px solid var(--cp-border);
+      border-radius: 0.625rem;
+      background: var(--cp-bg-elevated);
+    }
+
+    .loop-step strong { font-size: 1rem; }
+    .loop-step span { color: var(--cp-text-muted); font-size: 0.78rem; }
+    .loop-step:nth-child(1) { border-top: 4px solid var(--cp-accent); }
+    .loop-step:nth-child(2) { border-top: 4px solid var(--cp-link); }
+    .loop-step:nth-child(3) { border-top: 4px solid var(--cp-success); }
+    .loop-step:nth-child(4) { border-top: 4px solid var(--cp-warning); }
+
+    .section {
+      padding: 72px 0 0;
+    }
+
+    .section-heading {
+      display: grid;
+      grid-template-columns: minmax(0, 0.7fr) minmax(280px, 1.3fr);
+      gap: 32px;
+      align-items: end;
+      margin-bottom: 26px;
+    }
+
+    h2 {
+      margin: 0;
+      font-size: clamp(2rem, 4vw, 3.15rem);
+      line-height: 1.08;
+      letter-spacing: 0;
+    }
+
+    .section-intro {
+      margin: 0;
+      color: var(--cp-text-soft);
+      font-size: 1rem;
+      line-height: 1.65;
+    }
+
+    .card-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 16px;
+    }
+
+    .card {
+      position: relative;
+      padding: 24px;
+      border: 1px solid var(--cp-border);
+      border-radius: 16px;
+      background: var(--cp-surface);
+      box-shadow: 0 0 2px var(--cp-border), 0 1px 2px var(--cp-border);
+    }
+
+    .card::before {
+      content: "";
+      position: absolute;
+      top: 24px;
+      left: 0;
+      width: 4px;
+      height: 34px;
+      background: var(--card-accent, var(--cp-accent));
+    }
+
+    .card h3 {
+      margin: 0 0 14px;
+      font-size: 1.16rem;
+      letter-spacing: 0;
+    }
+
+    .card ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .card li {
+      position: relative;
+      margin-top: 10px;
+      padding-left: 18px;
+      color: var(--cp-text-soft);
+      font-size: 0.94rem;
+      line-height: 1.48;
+    }
+
+    .card li::before {
+      content: "";
+      position: absolute;
+      top: 0.58em;
+      left: 0;
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--card-accent, var(--cp-accent));
+    }
+
+    .card strong { color: var(--cp-text); }
+    .accent-blue { --card-accent: var(--cp-link); }
+    .accent-green { --card-accent: var(--cp-success); }
+    .accent-gold { --card-accent: var(--cp-warning); }
+
+    .agent-strip {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    .agent {
+      min-height: 112px;
+      padding: 16px;
+      border: 1px solid var(--cp-border);
+      border-bottom: 4px solid var(--cp-accent);
+      border-radius: 0.625rem;
+      background: var(--cp-bg-elevated);
+    }
+
+    .agent:nth-child(2) { border-bottom-color: var(--cp-warning); }
+    .agent:nth-child(3) { border-bottom-color: var(--cp-success); }
+    .agent:nth-child(4) { border-bottom-color: var(--cp-link); }
+    .agent strong { display: block; margin-bottom: 7px; }
+    .agent span { color: var(--cp-text-muted); font-size: 0.8rem; line-height: 1.4; }
+
+    .future-band {
+      padding: 32px;
+      border: 1px solid var(--cp-border);
+      border-radius: 16px;
+      background: var(--cp-bg-elevated);
+    }
+
+    .future-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    .future-item {
+      min-height: 148px;
+      padding: 18px;
+      border: 1px solid var(--cp-border);
+      border-radius: 0.625rem;
+      background: var(--cp-surface);
+    }
+
+    .future-item strong {
+      display: block;
+      margin-bottom: 9px;
+      color: var(--cp-accent);
+    }
+
+    .future-item p {
+      margin: 0;
+      color: var(--cp-text-soft);
+      font-size: 0.88rem;
+      line-height: 1.5;
+    }
+
+    footer {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      margin-top: 56px;
+      padding-top: 20px;
+      border-top: 1px solid var(--cp-border);
+      color: var(--cp-text-muted);
+      font-size: 0.78rem;
+    }
+
+    @media (max-width: 820px) {
+      .hero,
+      .section-heading { grid-template-columns: 1fr; }
+      .card-grid,
+      .future-grid { grid-template-columns: 1fr; }
+      .agent-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .hero { min-height: auto; }
+    }
+
+    @media (max-width: 520px) {
+      .page-shell { width: min(100% - 20px, 1180px); padding-top: 10px; }
+      .hero { padding: 26px 20px; }
+      .section { padding-top: 52px; }
+      .system-loop,
+      .agent-strip { grid-template-columns: 1fr; }
+      .future-band { padding: 22px 18px; }
+      footer { flex-direction: column; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page-shell">
+    <section class="hero" aria-labelledby="page-title">
+      <div>
+        <p class="eyebrow">Business Use Case</p>
+        <h1 id="page-title">Reliable Agents Workshop &amp; Accelerator</h1>
+        <p class="hero-copy">
+          A practical blueprint for building AI agents your business can actually trust - proven on a
+          real-world challenge: keeping the power grid running, one outage at a time.
+        </p>
+        <div class="principle">
+          The AI suggests the next step. Your business rules make the final call - every time, with a
+          complete record of why.
+        </div>
+      </div>
+
+      <div class="system-loop" aria-label="Reliable Agents operating loop">
+        <div class="loop-step"><strong>Understand</strong><span>Figures out what you need</span></div>
+        <div class="loop-step"><strong>Reason</strong><span>Picks the right expert for the job</span></div>
+        <div class="loop-step"><strong>Act</strong><span>Takes the next step</span></div>
+        <div class="loop-step"><strong>Explain</strong><span>Answers in plain language</span></div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="what-title">
+      <div class="section-heading">
+        <div>
+          <p class="section-kicker">01 / The system</p>
+          <h2 id="what-title">What Reliable Agents is</h2>
+        </div>
+        <p class="section-intro">
+          Reliable Agents pairs AI with built-in guardrails. A coordinator manages the conversation;
+          specialists handle the actual work; every answer is checked before it reaches you. The
+          proving ground here is grid operations: tracking assets, managing outages, dispatching
+          crews, and coordinating restoration.
+        </p>
+      </div>
+
+      <div class="card-grid">
+        <article class="card">
+          <h3>Operational AI, kept on a leash</h3>
+          <ul>
+            <li><strong>Ask in plain English</strong> - about assets, outages, crews, or performance history.</li>
+            <li><strong>A control layer decides what happens next</strong> - the AI never acts on its own.</li>
+            <li><strong>Every answer is checked</strong> for accuracy before it ever reaches you.</li>
+          </ul>
+        </article>
+
+        <article class="card accent-blue">
+          <h3>A coordinated specialist team</h3>
+          <ul>
+            <li><strong>One coordinator</strong> manages the whole conversation, start to finish.</li>
+            <li><strong>Four specialists</strong> handle assets, outages, crew dispatch, and performance history.</li>
+            <li><strong>One secure, read-only connection</strong> to your data - no way to change records by accident.</li>
+          </ul>
+        </article>
+      </div>
+
+      <div class="agent-strip" aria-label="Current Reliable Agents domain agents">
+        <div class="agent"><strong>Asset</strong><span>Grid equipment - substations, feeders, transformers - and its health history</span></div>
+        <div class="agent"><strong>Outage</strong><span>Full lifecycle: reported, confirmed, crew assigned, restored, closed</span></div>
+        <div class="agent"><strong>Crew</strong><span>Availability, assignment, and regional coverage</span></div>
+        <div class="agent"><strong>Reliability</strong><span>Performance history, failure patterns, and maintenance record</span></div>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="use-title">
+      <div class="section-heading">
+        <div>
+          <p class="section-kicker">02 / Supported today</p>
+          <h2 id="use-title">Key use cases</h2>
+        </div>
+        <p class="section-intro">
+          Current capabilities center on grid asset tracking, outage management, crew dispatch, and
+          restoration: understanding what happened, tracing impact, finding operational resources, and
+          answering connected questions.
+        </p>
+      </div>
+
+      <div class="card-grid">
+        <article class="card">
+          <h3>Outage response</h3>
+          <ul>
+            <li>Report, confirm, and track outages through to restoration.</li>
+            <li>Summarize impact and current restoration status.</li>
+            <li>Connect outage facts with affected infrastructure.</li>
+          </ul>
+        </article>
+
+        <article class="card accent-blue">
+          <h3>Asset topology and impact</h3>
+          <ul>
+            <li>Trace substation, feeder, and transformer relationships.</li>
+            <li>Locate assets on the operational map.</li>
+            <li>Follow affected network paths and connected locations.</li>
+          </ul>
+        </article>
+
+        <article class="card accent-green">
+          <h3>Crew dispatch and restoration</h3>
+          <ul>
+            <li>Review crew availability and operating-region coverage.</li>
+            <li>Assign crews to outages and track restoration progress.</li>
+            <li>Compare active outages with available response capacity.</li>
+          </ul>
+        </article>
+
+        <article class="card accent-gold">
+          <h3>Reliability and recurring issues</h3>
+          <ul>
+            <li>Explore historical event patterns and repeat offenders.</li>
+            <li>Ask cause, duration, and performance questions.</li>
+            <li>Combine reliability history with asset and outage context.</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <h3>Cross-domain investigation</h3>
+          <ul>
+            <li>Coordinate several specialists for one multi-part question.</li>
+            <li>Carry verified findings from one step into the next.</li>
+            <li>Return one clear answer, with a visible paper trail of how it got there.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <section class="section" aria-labelledby="does-title">
+      <div class="section-heading">
+        <div>
+          <p class="section-kicker">03 / Why it's safe to trust</p>
+          <h2 id="does-title">How it works</h2>
+        </div>
+        <p class="section-intro">
+          Every request follows the same guarded path - the AI never acts alone, never touches your
+          data directly, and never leaves you guessing why it did something.
+        </p>
+      </div>
+
+      <div class="card-grid">
+        <article class="card accent-green">
+          <h3>It listens carefully</h3>
+          <ul>
+            <li>Figures out exactly what you're asking - and only that.</li>
+            <li>Only ever hands your request to the right specialist, never a random guess.</li>
+            <li>Handles both simple questions and ones that need several experts working together.</li>
+          </ul>
+        </article>
+
+        <article class="card accent-gold">
+          <h3>It never runs wild</h3>
+          <ul>
+            <li>Takes one careful step at a time - never an open-ended chain of actions.</li>
+            <li>Every step is checked against your business rules before it happens.</li>
+            <li>Automatically stops itself - it can't loop forever or wander off-task.</li>
+          </ul>
+        </article>
+
+        <article class="card accent-blue">
+          <h3>It can look, but never touch</h3>
+          <ul>
+            <li>Reads your data to answer questions - accurately, every time.</li>
+            <li>Physically cannot write, change, or delete anything in your systems.</li>
+            <li>The map and dashboards draw from that same trusted, read-only source.</li>
+          </ul>
+        </article>
+
+        <article class="card">
+          <h3>It shows its work</h3>
+          <ul>
+            <li>You see each step as it happens, not just a final answer out of nowhere.</li>
+            <li>Every answer comes with a clear, human-readable explanation.</li>
+            <li>If something goes wrong, it fails safely and tells you why - it never guesses.</li>
+          </ul>
+        </article>
+      </div>
+    </section>
+
+    <footer>
+      <span>Reliable Agents - Business Use Case</span>
+      <span>Verified against the live system, September 2026</span>
+    </footer>
+  </main>
+</body>
+</html>

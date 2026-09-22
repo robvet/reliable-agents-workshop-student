@@ -1,0 +1,411 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2000 2580" width="2000" height="2580" font-family="'Segoe UI', 'Inter', system-ui, sans-serif">
+  <defs>
+    <marker id="arw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#334155"/>
+    </marker>
+    <marker id="arwT" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#0D9488"/>
+    </marker>
+    <marker id="arwG" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#94A3B8"/>
+    </marker>
+    <marker id="arwP" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 z" fill="#7C3AED"/>
+    </marker>
+    <filter id="sh" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2.5" flood-color="#0F172A" flood-opacity="0.13"/>
+    </filter>
+
+    <!-- structured payload icon -->
+    <g id="jsonDoc">
+      <rect x="0" y="0" width="21" height="27" rx="3" fill="#FFFFFF" stroke="#0369A1" stroke-width="1.6"/>
+      <path d="M14,0 L21,7 L14,7 Z" fill="#BAE6FD" stroke="#0369A1" stroke-width="1.2"/>
+      <text x="10.5" y="21" text-anchor="middle" font-family="'Cascadia Code','Consolas',monospace" font-size="11.5" font-weight="700" fill="#0369A1">{ }</text>
+    </g>
+
+    <!-- unstructured string icon -->
+    <g id="strDoc">
+      <rect x="0" y="0" width="21" height="27" rx="3" fill="#FFFBEB" stroke="#D97706" stroke-width="1.6"/>
+      <path d="M14,0 L21,7 L14,7 Z" fill="#FDE68A" stroke="#D97706" stroke-width="1.2"/>
+      <text x="10.5" y="21" text-anchor="middle" font-family="'Cascadia Code','Consolas',monospace" font-size="12" font-weight="700" fill="#B45309">"</text>
+    </g>
+
+    <style><![CDATA[
+      .t    { fill:#0F172A; }
+      .ttl  { font-size:36px; font-weight:700; letter-spacing:-0.6px; }
+      .sub  { font-size:15px; fill:#475569; }
+      .band { font-size:13px; font-weight:700; letter-spacing:1.5px; }
+      .h    { font-size:16px; font-weight:700; }
+      .b    { font-size:13px; fill:#334155; }
+      .s    { font-size:11.5px; fill:#64748B; }
+      .mono { font-family:'Cascadia Code','Consolas',monospace; font-size:12.5px; }
+      .pay  { font-size:10.5px; fill:#475569; font-weight:600; }
+      .lbl  { font-size:11.5px; fill:#475569; font-style:italic; }
+      .badge{ font-size:12px; font-weight:700; }
+      .flow { stroke:#334155; stroke-width:2; fill:none; }
+      .ret  { stroke:#0D9488; stroke-width:1.8; fill:none; stroke-dasharray:6 5; }
+      .ghost{ stroke:#94A3B8; stroke-width:1.6; fill:none; stroke-dasharray:4 5; }
+      .mem  { stroke:#7C3AED; stroke-width:1.6; fill:none; stroke-dasharray:5 4; }
+    ]]></style>
+  </defs>
+
+  <rect width="2000" height="2580" fill="#FFFFFF"/>
+
+  <!-- ================= HEADER ================= -->
+  <text class="t ttl" x="40" y="56">AgentLens</text>
+  <rect x="330" y="30" width="120" height="32" rx="16" fill="#0EA5E9"/>
+  <text x="390" y="52" text-anchor="middle" font-size="15" font-weight="700" fill="#FFFFFF">ver 1.0</text>
+  <text class="sub" x="40" y="84">A Workshop &amp; Accelerator for Constructing Reliable, Production-Grade Agentic Systems</text>
+  <rect x="40" y="98" width="1920" height="3" fill="#0EA5E9"/>
+
+  <!-- ================= LEFT: LEGEND ================= -->
+  <rect x="40" y="120" width="360" height="300" rx="10" fill="#F8FAFC" stroke="#CBD5E1"/>
+  <text class="t band" x="60" y="150">LEGEND</text>
+  <rect x="60" y="164" width="20" height="20" rx="4" fill="#FEF3C7" stroke="#D97706"/>
+  <text class="b" x="92" y="179">LLM call — non-deterministic</text>
+  <rect x="60" y="196" width="20" height="20" rx="4" fill="#E0F2FE" stroke="#0369A1"/>
+  <text class="b" x="92" y="211">Deterministic code path</text>
+  <rect x="60" y="228" width="20" height="20" rx="4" fill="#FEE2E2" stroke="#DC2626"/>
+  <text class="b" x="92" y="243">Security boundary</text>
+  <rect x="60" y="260" width="20" height="20" rx="4" fill="#EDE9FE" stroke="#7C3AED"/>
+  <text class="b" x="92" y="275">Domain agent</text>
+  <rect x="60" y="292" width="20" height="20" rx="4" fill="#CCFBF1" stroke="#0D9488"/>
+  <text class="b" x="92" y="307">Data plane / infrastructure</text>
+  <line x1="60" y1="326" x2="380" y2="326" stroke="#CBD5E1"/>
+  <use href="#jsonDoc" x="60" y="336"/>
+  <text class="b" x="92" y="354">Structured data — validated Pydantic</text>
+  <use href="#strDoc" x="60" y="374"/>
+  <text class="b" x="92" y="392">Unstructured text — a raw string</text>
+
+  <!-- ================= LEFT: DETERMINISM ================= -->
+  <rect x="40" y="440" width="360" height="372" rx="10" fill="#ECFEFF" stroke="#22D3EE"/>
+  <text class="t band" x="60" y="470">WHERE DETERMINISM LIVES</text>
+  <line x1="60" y1="482" x2="380" y2="482" stroke="#22D3EE"/>
+  <text class="b" x="60" y="506" font-weight="600">Fixed intent taxonomy</text>
+  <text class="s" x="60" y="524">9 predefined intents. The model may choose exactly one.</text>
+  <text class="b" x="60" y="552" font-weight="600">RoutingMap allow-list</text>
+  <text class="s" x="60" y="570">Each intent authorizes a fixed set of agents. The model</text>
+  <text class="s" x="60" y="586">may never reach for an agent outside that set.</text>
+  <text class="b" x="60" y="614" font-weight="600">JSON structured inputs / outputs</text>
+  <text class="s" x="60" y="632">Intent is the last unstructured moment; every hop after</text>
+  <text class="s" x="60" y="648">it is a validated Pydantic object.</text>
+  <text class="b" x="60" y="676" font-weight="600">Plan is validated (Plan-&amp;-Execute)</text>
+  <text class="s" x="60" y="694">The planner proposes; code checks 1–8 steps and</text>
+  <text class="s" x="60" y="710">allow-list membership before anything runs.</text>
+  <text class="b" x="60" y="738" font-weight="600">Read-only SQL statements</text>
+  <text class="s" x="60" y="756">Only SELECT / WITH reach the database; writes are</text>
+  <text class="s" x="60" y="772">not allowed — enforced outside the model's reach.</text>
+  <text class="s" x="60" y="788" font-weight="700" fill="#0E7490">The model reasons and writes the answer.</text>
+  <text class="s" x="60" y="804" font-weight="700" fill="#0E7490">Routing, validation, and security are all code.</text>
+
+  <!-- ================= LEFT: FALLBACK ================= -->
+  <rect x="40" y="820" width="360" height="430" rx="10" fill="#FFFBEB" stroke="#FCD34D"/>
+  <text class="t band" x="60" y="850">FALLBACK PATHS</text>
+  <line x1="60" y1="862" x2="380" y2="862" stroke="#FCD34D"/>
+  <text class="b" x="60" y="886" font-weight="700" fill="#0E7490">GRACEFUL DEGRADE — no error surfaced</text>
+  <text class="b" x="60" y="910" font-weight="600">UNKNOWN / no results</text>
+  <text class="s" x="60" y="928">Helpful redirect to asset health &amp; restoration.</text>
+  <text class="b" x="60" y="952" font-weight="600">intent == ERROR</text>
+  <text class="s" x="60" y="970">Soft apology; detail tucked into artifacts["error"].</text>
+  <text class="b" x="60" y="994" font-weight="600">Narrator synthesis fails</text>
+  <text class="s" x="60" y="1012">Deterministic stitch of agent summaries.</text>
+  <line x1="60" y1="1032" x2="380" y2="1032" stroke="#FCD34D"/>
+  <text class="b" x="60" y="1056" font-weight="700" fill="#B91C1C">REPORTED AS 'error' EVENT</text>
+  <text class="s" x="60" y="1078">Classify fails.</text>
+  <text class="s" x="60" y="1096">Plan invalid — empty, &gt; 8 steps, or off the allow-list.</text>
+  <text class="s" x="60" y="1114">Agent unavailable or fails.</text>
+  <text class="s" x="60" y="1132">ReAct cannot reach stop-confidence.</text>
+  <rect x="60" y="1150" width="320" height="80" rx="6" fill="#FEF2F2" stroke="#F87171" stroke-dasharray="4 4"/>
+  <text class="s" x="72" y="1172" fill="#B91C1C" font-weight="700">HTTP 200 is already sent.</text>
+  <text class="s" x="72" y="1192" fill="#B91C1C">The outcome lives in the final / error stream event,</text>
+  <text class="s" x="72" y="1210" fill="#B91C1C">never in the status code. No path throws a 500.</text>
+
+  <!-- ================= CLIENT / API ================= -->
+  <rect x="1060" y="108" width="470" height="80" rx="9" fill="#E0E7FF" stroke="#4F46E5" filter="url(#sh)"/>
+  <text class="h" x="1080" y="134" fill="#3730A3">Web UI — index.html + app.js</text>
+  <text class="mono" x="1080" y="156" fill="#4338CA">API_BASE_URL = http://localhost:8010</text>
+  <text class="s" x="1080" y="176">Two feeds in: Execution Trace panel + the answer.</text>
+
+  <path class="flow" d="M1295,188 V244" marker-end="url(#arw)"/>
+  <use href="#strDoc" x="1313" y="196"/>
+  <text class="pay" x="1341" y="208">Unstructured Data</text>
+  <text class="s" x="1341" y="222">raw user text · POST /chat/stream</text>
+
+  <rect x="1060" y="248" width="470" height="104" rx="9" fill="#E0F2FE" stroke="#0369A1" filter="url(#sh)"/>
+  <text class="h" x="1080" y="272" fill="#075985">ApiRoutes — FastAPI :8010</text>
+  <text class="mono" x="1080" y="292" fill="#075985">/chat/stream · /map/assets · /prompt-library · /health</text>
+  <text class="s" x="1080" y="310">Routes the request to the chosen reasoning strategy</text>
+  <text class="s" x="1080" y="326">(reasoning_strategy: ReAct or Plan-&amp;-Execute).</text>
+  <text class="s" x="1080" y="342">Injects MCP Tools</text>
+
+  <path class="flow" d="M1295,352 V404" marker-end="url(#arw)"/>
+  <use href="#strDoc" x="1313" y="358"/>
+  <text class="pay" x="1341" y="378">Unstructured Data — still a string</text>
+
+  <!-- two return feeds to the Web UI, both emitted by the Orchestrator's stream:
+       (1) Execution Trace play-by-play, (2) the final response. -->
+  <path class="ret" d="M700,408 V140 H1056" marker-end="url(#arwT)"/>
+  <text class="s" x="772" y="134" fill="#0F766E" font-weight="600">Execution Trace feed — play-by-play</text>
+  <path class="ret" d="M740,408 V174 H1056" marker-end="url(#arwT)"/>
+  <text class="s" x="772" y="168" fill="#0F766E" font-weight="600">Response feed — final answer (ChatResult)</text>
+
+  <!-- ================= ORCHESTRATOR ================= -->
+  <rect x="640" y="408" width="1240" height="104" rx="10" fill="#E0F2FE" stroke="#0369A1" stroke-width="2.5" filter="url(#sh)"/>
+  <text class="h" x="664" y="438" fill="#075985" font-size="18">Orchestrator — Deterministic outer pipeline wrapping probabilistic, model-based operations</text>
+  <text class="s" x="664" y="462">classify → reason → compose. Owns no domain logic.</text>
+  <text class="s" x="664" y="480">Injected: IReasoning (ReAct or Plan-&amp;-Execute reasoning components).</text>
+  <text class="s" x="664" y="498">Every path out emits a terminal 'final' or 'error' event.</text>
+
+  <!-- conversation memory -->
+  <rect x="430" y="408" width="180" height="150" rx="9" fill="#F5F3FF" stroke="#7C3AED" filter="url(#sh)"/>
+  <text class="h" x="520" y="436" fill="#5B21B6" text-anchor="middle" font-size="13">Conversation</text>
+  <text class="h" x="520" y="454" fill="#5B21B6" text-anchor="middle" font-size="13">Memory</text>
+  <text class="s" x="520" y="476" text-anchor="middle">IConversationMemory</text>
+  <text class="s" x="520" y="496" text-anchor="middle">session-lived.</text>
+  <text class="s" x="520" y="514" text-anchor="middle">Loaded before</text>
+  <text class="s" x="520" y="530" text-anchor="middle">classify (follow-ups).</text>
+  <path class="mem" d="M610,470 H636" marker-end="url(#arwP)"/>
+  <path class="mem" d="M636,486 H610" marker-end="url(#arwP)"/>
+
+  <!-- orchestrator <-> intent classifier: raw string down (left), IntentResult back up (right) -->
+  <path class="flow" d="M745,512 V577" marker-end="url(#arw)"/>
+  <use href="#strDoc" x="646" y="518"/>
+  <text class="pay" x="644" y="558">Unstructured Data</text>
+  <text class="s" x="644" y="572">raw string</text>
+  <path class="flow" d="M875,581 V512" marker-end="url(#arw)"/>
+  <use href="#jsonDoc" x="890" y="528"/>
+  <text class="pay" x="918" y="540">Structured Data</text>
+  <text class="s" x="918" y="554">IntentResult</text>
+
+  <!-- orchestrator <-> reasoning: IntentResult+allow-list down (left), AgentResults up (right) -->
+  <path class="flow" d="M1120,512 V577" marker-end="url(#arw)"/>
+  <use href="#jsonDoc" x="1130" y="528"/>
+  <text class="pay" x="1158" y="540">Structured Data</text>
+  <text class="s" x="1158" y="554">IntentResult + allow-list</text>
+  <path class="flow" d="M1400,581 V512" marker-end="url(#arw)"/>
+  <use href="#jsonDoc" x="1410" y="528"/>
+  <text class="pay" x="1438" y="540">Structured Data</text>
+  <text class="s" x="1438" y="554">AgentResults</text>
+
+  <!-- orchestrator <-> response assembler: input down (left), ChatResult up (right) -->
+  <path class="flow" d="M1600,512 V577" marker-end="url(#arw)"/>
+  <use href="#jsonDoc" x="1610" y="528"/>
+  <text class="pay" x="1638" y="540">Structured Data</text>
+  <text class="s" x="1638" y="554">IntentResult + AgentResults</text>
+  <path class="flow" d="M1830,581 V512" marker-end="url(#arw)"/>
+  <use href="#jsonDoc" x="1840" y="528"/>
+  <text class="pay" x="1868" y="540">Structured Data</text>
+  <text class="s" x="1868" y="554">ChatResult</text>
+
+  <!-- children row -->
+  <rect x="660" y="581" width="290" height="120" rx="9" fill="#FEF3C7" stroke="#D97706" stroke-width="2" filter="url(#sh)"/>
+  <text class="h" x="678" y="604" fill="#92400E" font-size="15">Intent Classifier</text>
+  <text class="b" x="678" y="626">Invokes an SLM model call to classify</text>
+  <text class="s" x="678" y="644">Extracts intent and key entities.</text>
+  <text class="s" x="678" y="662">(Last unstructured moment on control path)</text>
+  <text class="s" x="678" y="680">Returns IntentResult to the pipeline —</text>
+  <text class="s" x="678" y="696">not directly to Reasoning.</text>
+
+  <rect x="1080" y="581" width="360" height="120" rx="9" fill="#F5F3FF" stroke="#7C3AED" stroke-width="2" filter="url(#sh)"/>
+  <text class="h" x="1098" y="606" fill="#5B21B6" font-size="15">Reasoning — IReasoning (pluggable)</text>
+  <text class="s" x="1098" y="630">Application injects reasoning component at start-up:</text>
+  <text class="s" x="1098" y="652">• Iterative reasoning loop (ReAct)</text>
+  <text class="s" x="1098" y="672">• Upfront full plan (Plan-&amp;-Execute)</text>
+
+  <rect x="1560" y="581" width="310" height="120" rx="9" fill="#FEF3C7" stroke="#D97706" stroke-width="2" filter="url(#sh)"/>
+  <text class="h" x="1578" y="608" fill="#92400E" font-size="15">Response Assembler</text>
+  <text class="b" x="1578" y="630">MODEL CALL — inference model</text>
+  <text class="s" x="1578" y="650">AnswerNarratorService renders the</text>
+  <text class="s" x="1578" y="668">structured data into natural language,</text>
+  <text class="s" x="1578" y="686">matching the user prompt.</text>
+
+  <!-- ================= REASONING LANES ================= -->
+  <text class="band" x="664" y="760" fill="#6D28D9">REASONING STRATEGIES — ONE RUNS PER REQUEST</text>
+
+  <!-- Reasoning hands the IntentResult to whichever strategy runs; a clear arrow to each lane -->
+  <path class="flow" d="M1250,701 V776" marker-end="url(#arw)"/>
+  <use href="#jsonDoc" x="1258" y="726"/>
+  <text class="pay" x="1286" y="738">Structured Data</text>
+  <text class="s" x="1286" y="752">IntentResult</text>
+  <path class="flow" d="M1130,701 V730 H636 V1015 H652" marker-end="url(#arw)"/>
+  <use href="#jsonDoc" x="500" y="850"/>
+  <text class="pay" x="530" y="862">Structured Data</text>
+  <text class="s" x="530" y="876">IntentResult</text>
+
+  <!-- Lane A: Plan-and-Execute -->
+  <rect x="656" y="780" width="850" height="150" rx="10" fill="#FAF5FF" stroke="#7C3AED" stroke-width="2"/>
+  <text class="band" x="676" y="806" fill="#6D28D9">PLAN-AND-EXECUTE — PLAN ONCE, VALIDATE, RUN IN ORDER</text>
+
+  <rect x="700" y="816" width="230" height="96" rx="9" fill="#FEF3C7" stroke="#D97706" stroke-width="2" filter="url(#sh)"/>
+  <text class="h" x="716" y="844" fill="#92400E" font-size="14">Build Plan</text>
+  <text class="b" x="716" y="866">MODEL CALL</text>
+  <text class="s" x="716" y="886">Proposes the full plan</text>
+  <text class="s" x="716" y="902">(ExecutionPlan).</text>
+
+  <path class="flow" d="M930,864 H962" marker-end="url(#arw)"/>
+
+  <rect x="966" y="816" width="255" height="96" rx="9" fill="#E0F2FE" stroke="#0369A1" stroke-width="2" filter="url(#sh)"/>
+  <text class="h" x="982" y="844" fill="#075985" font-size="14">Validate</text>
+  <text class="s" x="982" y="868">Checks the plan: 1–8 steps,</text>
+  <text class="s" x="982" y="888">agents allowed. Else stops.</text>
+
+  <path class="flow" d="M1221,864 H1253" marker-end="url(#arw)"/>
+
+  <rect x="1255" y="816" width="230" height="96" rx="9" fill="#E0F2FE" stroke="#0369A1" stroke-width="2" filter="url(#sh)"/>
+  <text class="h" x="1271" y="844" fill="#075985" font-size="14">Execute</text>
+  <text class="s" x="1271" y="868">Runs the steps in order,</text>
+  <text class="s" x="1271" y="888">feeding results forward.</text>
+
+  <!-- Lane B: ReAct -->
+  <rect x="656" y="944" width="850" height="190" rx="10" fill="#FAF5FF" stroke="#7C3AED" stroke-width="2"/>
+  <text class="band" x="676" y="970" fill="#6D28D9">ReAct — DECIDE · ACT · OBSERVE, ONE AGENT AT A TIME</text>
+
+  <rect x="700" y="980" width="230" height="98" rx="9" fill="#FEF3C7" stroke="#D97706" stroke-width="2" filter="url(#sh)"/>
+  <text class="h" x="716" y="1008" fill="#92400E" font-size="14">Decide</text>
+  <text class="b" x="716" y="1030">MODEL CALL</text>
+  <text class="s" x="716" y="1050">Picks the next agent</text>
+  <text class="s" x="716" y="1066">(ReActDecision).</text>
+
+  <path class="flow" d="M930,1029 H962" marker-end="url(#arw)"/>
+
+  <rect x="966" y="980" width="255" height="98" rx="9" fill="#E0F2FE" stroke="#0369A1" stroke-width="2" filter="url(#sh)"/>
+  <text class="h" x="982" y="1008" fill="#075985" font-size="14">Dispatch</text>
+  <text class="s" x="982" y="1032">Runs the chosen agent</text>
+  <text class="s" x="982" y="1052">(must be allowed).</text>
+
+  <path class="flow" d="M1221,1029 H1253" marker-end="url(#arw)"/>
+
+  <rect x="1255" y="980" width="230" height="98" rx="9" fill="#E0F2FE" stroke="#0369A1" stroke-width="2" filter="url(#sh)"/>
+  <text class="h" x="1271" y="1008" fill="#075985" font-size="14">Observe</text>
+  <text class="s" x="1271" y="1032">Adds the result; loops</text>
+  <text class="s" x="1271" y="1052">until confident.</text>
+
+  <!-- ReAct loop back (contained inside the lane) -->
+  <path class="flow" d="M1370,1078 V1106 H815 V1078" marker-end="url(#arw)"/>
+  <text class="lbl" x="1092" y="1120" text-anchor="middle" fill="#64748B">loop until confident or 8 steps</text>
+
+  <!-- reasoning -> agents: AgentRequest dispatch (flow left, centered label) fans to all agents -->
+  <path class="flow" d="M1040,1134 V1188" fill="none"/>
+  <path class="flow" d="M740,1188 H1815" fill="none"/>
+  <path class="flow" d="M740,1188 V1221" marker-end="url(#arw)"/>
+  <path class="flow" d="M955,1188 V1221" marker-end="url(#arw)"/>
+  <path class="flow" d="M1170,1188 V1221" marker-end="url(#arw)"/>
+  <path class="flow" d="M1385,1188 V1221" marker-end="url(#arw)"/>
+  <path class="flow" d="M1600,1188 V1221" marker-end="url(#arw)"/>
+  <path class="flow" d="M1815,1188 V1221" marker-end="url(#arw)"/>
+  <use href="#jsonDoc" x="1060" y="1146"/>
+  <text class="pay" x="1088" y="1158">Structured Data</text>
+  <text class="s" x="1088" y="1172">AgentRequest — entities + enriched prompt</text>
+
+  <!-- agents return an AgentResult up to the reasoning strategy (flow right, solid black) -->
+  <path class="flow" d="M1480,1188 V1134" marker-end="url(#arw)"/>
+  <use href="#jsonDoc" x="1492" y="1146"/>
+  <text class="pay" x="1520" y="1158">Structured Data</text>
+  <text class="s" x="1520" y="1172">Agent Result</text>
+
+  <rect x="640" y="1221" width="200" height="126" rx="9" fill="#EDE9FE" stroke="#7C3AED" filter="url(#sh)"/>
+  <text class="h" x="740" y="1290" fill="#5B21B6" text-anchor="middle" font-size="15">Direct Query</text>
+  <text class="h" x="740" y="1310" fill="#5B21B6" text-anchor="middle" font-size="15">Agent</text>
+
+  <rect x="855" y="1221" width="200" height="126" rx="9" fill="#EDE9FE" stroke="#7C3AED" filter="url(#sh)"/>
+  <text class="h" x="955" y="1290" fill="#5B21B6" text-anchor="middle" font-size="15">Asset</text>
+  <text class="h" x="955" y="1310" fill="#5B21B6" text-anchor="middle" font-size="15">Agent</text>
+
+  <rect x="1070" y="1221" width="200" height="126" rx="9" fill="#EDE9FE" stroke="#7C3AED" filter="url(#sh)"/>
+  <text class="h" x="1170" y="1290" fill="#5B21B6" text-anchor="middle" font-size="15">Event</text>
+  <text class="h" x="1170" y="1310" fill="#5B21B6" text-anchor="middle" font-size="15">Agent</text>
+
+  <rect x="1285" y="1221" width="200" height="126" rx="9" fill="#EDE9FE" stroke="#7C3AED" filter="url(#sh)"/>
+  <text class="h" x="1385" y="1290" fill="#5B21B6" text-anchor="middle" font-size="15">Crew</text>
+  <text class="h" x="1385" y="1310" fill="#5B21B6" text-anchor="middle" font-size="15">Agent</text>
+
+  <rect x="1500" y="1221" width="200" height="126" rx="9" fill="#EDE9FE" stroke="#7C3AED" filter="url(#sh)"/>
+  <text class="h" x="1600" y="1290" fill="#5B21B6" text-anchor="middle" font-size="15">Customer</text>
+  <text class="h" x="1600" y="1310" fill="#5B21B6" text-anchor="middle" font-size="15">Agent</text>
+
+  <rect x="1715" y="1221" width="200" height="126" rx="9" fill="#EDE9FE" stroke="#7C3AED" filter="url(#sh)"/>
+  <text class="h" x="1815" y="1290" fill="#5B21B6" text-anchor="middle" font-size="15">Reliability</text>
+  <text class="h" x="1815" y="1310" fill="#5B21B6" text-anchor="middle" font-size="15">Agent</text>
+
+  <!-- shared agent rail (black line) <-> data leg: input down, output up; both meet the rail -->
+  <path class="flow" d="M1400,1362 V1520" marker-end="url(#arw)"/>
+  <use href="#jsonDoc" x="1060" y="1448"/>
+  <text class="pay" x="1088" y="1460">Structured Data</text>
+  <text class="s" x="1088" y="1474">MCP call — a natural-language question as payload</text>
+  <path class="flow" d="M1560,1520 V1362" marker-end="url(#arw)"/>
+  <use href="#jsonDoc" x="1572" y="1448"/>
+  <text class="pay" x="1600" y="1460">Structured Data</text>
+  <text class="s" x="1600" y="1474">query result (rows)</text>
+
+  <!-- solid separator line under the agents, with the DOMAIN AGENTS label beneath it -->
+  <line x1="640" y1="1362" x2="1915" y2="1362" stroke="#0F172A" stroke-width="3"/>
+  <text x="1277" y="1396" text-anchor="middle" fill="#6D28D9" font-size="20" font-weight="700" letter-spacing="2">DOMAIN AGENTS</text>
+
+  <g transform="translate(0,120)">
+  <!-- ================= DATA LEG ================= -->
+  <rect x="1180" y="1400" width="620" height="1000" rx="12" fill="#F0FDFA" stroke="#99F6E4" stroke-dasharray="5 4"/>
+  <text class="band" x="1204" y="1428" fill="#0F766E">DATA LEG — HOW ANY DATA AGENT REACHES POSTGRES</text>
+
+  <rect x="1220" y="1440" width="540" height="64" rx="9" fill="#CCFBF1" stroke="#0D9488" filter="url(#sh)"/>
+  <text class="h" x="1240" y="1466" fill="#115E59">McpClient — outbound adapter, stateless</text>
+  <text class="s" x="1240" y="1488">One fresh session per call. Streamable HTTP.</text>
+
+  <path class="flow" d="M1490,1504 V1535" marker-end="url(#arw)"/>
+
+  <rect x="1220" y="1535" width="540" height="440" rx="10" fill="#FFFFFF" stroke="#0D9488" stroke-width="2"/>
+  <rect x="1220" y="1535" width="540" height="30" rx="10" fill="#0D9488"/>
+  <rect x="1220" y="1553" width="540" height="12" fill="#0D9488"/>
+  <text class="h" x="1240" y="1556" fill="#FFFFFF" font-size="13">mcp_sql — SEPARATE PROCESS · FastMCP :8000/mcp</text>
+
+  <rect x="1240" y="1583" width="250" height="54" rx="8" fill="#CCFBF1" stroke="#0D9488"/>
+  <text class="h" x="1365" y="1607" fill="#115E59" text-anchor="middle" font-size="14">ask(question)</text>
+  <text class="s" x="1365" y="1627" text-anchor="middle">natural language in</text>
+
+  <rect x="1510" y="1583" width="230" height="54" rx="8" fill="#E0F2FE" stroke="#0369A1"/>
+  <text class="h" x="1625" y="1607" fill="#075985" text-anchor="middle" font-size="14">run_sql(query)</text>
+  <text class="s" x="1625" y="1627" text-anchor="middle">NO LLM — caller's SQL</text>
+
+  <path class="flow" d="M1365,1637 V1663" marker-end="url(#arw)"/>
+  <rect x="1240" y="1663" width="250" height="48" rx="8" fill="#CCFBF1" stroke="#0D9488"/>
+  <text class="b" x="1365" y="1686" text-anchor="middle" font-weight="600" fill="#115E59">_cached_schema()</text>
+  <text class="s" x="1365" y="1703" text-anchor="middle">lazy, first ask only</text>
+
+  <path class="flow" d="M1365,1711 V1737" marker-end="url(#arw)"/>
+  <rect x="1240" y="1737" width="250" height="72" rx="8" fill="#FEF3C7" stroke="#D97706" stroke-width="2"/>
+  <text class="h" x="1258" y="1761" fill="#92400E" font-size="14">nl2sql.to_sql()</text>
+  <text class="s" x="1258" y="1781">MODEL CALL</text>
+  <text class="s" x="1258" y="1799">returns SQL + reasoning</text>
+
+  <path class="flow" d="M1365,1809 V1835" marker-end="url(#arw)"/>
+  <path class="flow" d="M1625,1637 V1835" marker-end="url(#arw)"/>
+
+  <rect x="1240" y="1835" width="500" height="80" rx="8" fill="#FEF2F2" stroke="#F87171" stroke-dasharray="5 4"/>
+  <text class="h" x="1258" y="1859" fill="#991B1B" font-size="14">check() + _with_limit()</text>
+  <text class="s" x="1258" y="1879">SELECT / WITH only · single statement · LIMIT n</text>
+  <text class="s" x="1258" y="1899" fill="#B91C1C" font-style="italic">Fast-fail convenience — NOT the security boundary.</text>
+
+  <path class="flow" d="M1490,1915 V2005" marker-end="url(#arw)"/>
+  <rect x="1220" y="2005" width="540" height="54" rx="9" fill="#CCFBF1" stroke="#0D9488" filter="url(#sh)"/>
+  <text class="h" x="1240" y="2029" fill="#115E59" font-size="14">upstream.py</text>
+  <text class="s" x="1240" y="2048">Per-call stdio subprocess.</text>
+
+  <path class="flow" d="M1490,2059 V2089" marker-end="url(#arw)"/>
+  <rect x="1220" y="2089" width="540" height="96" rx="9" fill="#FEE2E2" stroke="#DC2626" stroke-width="3" filter="url(#sh)"/>
+  <text class="h" x="1240" y="2115" fill="#991B1B">pgEdge Postgres MCP — query_database</text>
+  <text class="mono" x="1240" y="2137" fill="#991B1B">PGEDGE_DB_ALLOW_WRITES=false   sslmode=require</text>
+  <text class="s" x="1240" y="2157" fill="#B91C1C" font-weight="600">This + the read-only grant is the real security boundary.</text>
+  <text class="s" x="1240" y="2174" fill="#B91C1C">Enforced outside any process the model can influence.</text>
+
+  <path class="flow" d="M1490,2185 V2215" marker-end="url(#arw)"/>
+  <g filter="url(#sh)">
+    <path d="M1400,2230 a90,16 0 0,1 180,0 v46 a90,16 0 0,1 -180,0 z" fill="#99F6E4" stroke="#0D9488" stroke-width="2"/>
+    <ellipse cx="1490" cy="2230" rx="90" ry="16" fill="#CCFBF1" stroke="#0D9488" stroke-width="2"/>
+    <text class="h" x="1490" y="2266" fill="#115E59" text-anchor="middle" font-size="15">Postgres</text>
+  </g>
+  <text class="lbl" x="1490" y="2308" text-anchor="middle" fill="#0D9488">rows → parsed to list[dict] → back up as AgentResult</text>
+
+  <!-- footer -->
+  <line x1="40" y1="2410" x2="1960" y2="2410" stroke="#CBD5E1"/>
+  <text class="s" x="40" y="2436">Model calls: #1 classify intent · #2 plan once (Plan-&amp;-Execute) or decide per step (ReAct) · #3 NL2SQL · #4 narrate answer. Between them: fixed intent taxonomy, allow-list, 1–8 step validation, statement checks, write-disabled grant — all code.</text>
+  </g>
+</svg>

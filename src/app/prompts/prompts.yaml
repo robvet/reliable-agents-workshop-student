@@ -1,0 +1,68 @@
+# Prompt library for the Reliable Agents UI.
+# Each entry: a stable key mapping to { name, user_prompt }.
+#   name        -> the chip label shown in the UI
+#   user_prompt -> the text inserted into the prompt box when the chip is clicked
+# Served by GET /prompt-library (PromptRepository.get_all).
+
+unknown_example:
+  name: "Test Prompt"
+  user_prompt: "Where is Los Angeles?"
+
+dispatch_crew:
+  name: "Dispatch Crew - restore Outage"
+  user_prompt: "Dispatch a crew to restore the outage on XFMR-1005"
+
+outage_status:
+  name: "Outage Status for xfmr-1026"
+  user_prompt: "what is the status of the status of the outage affecting XFMR-1026?"
+
+feeder_information:
+  name: "Feeder Information"
+  user_prompt: "Give me detailed information about asset Feeder-100"
+
+feeder_child_assets:
+  name: "Feeder Child Assets"
+  user_prompt: "List the child assets for Feeder-100"
+
+transformer_information:
+  name: "Transformer Information"
+  user_prompt: "Give me detailed information about asset XFMR-1000"
+
+active_outages:
+  name: "All Active Outages"
+  user_prompt: "List all active outages, including the asset, impact, crew assigned, and estimated restoration time"
+
+active_outage_summary:
+  name: "Summarize Active Outages"
+  user_prompt: "Give me a status summary of all active outages right now"
+
+# dispatch_with_assets:
+#   name: "Dispatch Crew to Fix Outage"
+#   user_prompt: "Dispatch a crew to restore the outage on Feeder-100 and tell me which assets are affected"
+
+crew_assignments_outages:
+  name: "Outages and Crew Assignments"
+  user_prompt: "Show me the current outages and the crews assigned to them"
+
+crew_assignments_west:
+  name: "Crew Assignments for South Outages"
+  user_prompt: "What crews are assigned to active outages in the South region?"
+
+west_status:
+  name: "South Region Outages"
+  user_prompt: "Give me a status summary of ongoing outages and crews in the South region"
+
+major_event:
+  name: "Assets Impacted by Major Storm"
+  user_prompt: "How many assets are impacted by the major storm event across the North region?"
+
+east_cross_domain:
+  name: "South Assets + Events"
+  user_prompt: "Which assets and active events are affecting the South region right now?"
+
+reliability:
+  name: "History of Transformer XFMR-1000"
+  user_prompt: "What's the failure history and reliability for transformer XFMR-1000?"
+
+
+

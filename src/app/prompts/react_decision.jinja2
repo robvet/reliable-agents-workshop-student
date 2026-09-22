@@ -1,0 +1,12 @@
+User request and observations:
+{{ user_prompt }}
+
+Available agents:
+{% for name, description in agents.items() %}
+- {{ name }}: {{ description }}
+{% endfor %}
+
+Choose the next agent needed (or null if none). State your confidence (0.0-1.0)
+that the existing observations already fully satisfy the user's original request -
+including every domain the request explicitly names. Briefly explain the decision
+in reasoning.

@@ -1,0 +1,33 @@
+{#
+  Intent Classification Task Template
+
+  Purpose: Per-request content for the intent classification model call. All static
+  rules (taxonomy, decision order, tie-breakers, examples) live in the system persona
+  (system/intent_classifier_persona.jinja2) instead, since they never vary by request -
+  keeping them in the system role also gives them stronger instruction authority than
+  user-role content. This file carries only what actually changes per call: the prompt
+  itself and (when present) prior-turn history.
+
+  Variables passed in:
+    - user_prompt (str): The user's raw prompt
+
+  Output shape: NOT described here, on purpose. See system/intent_classifier_persona.jinja2
+  for why - the schema (response_format=IntentResult) is the enforcement, not prose.
+
+  Used by: app/intent/llm_intent_classifier.py (LlmIntentClassifier.classify)
+#}
+{% if history %}
+Conversation so far (most recent last) - use ONLY to resolve follow-ups, not to reclassify past turns:
+{% for turn in history %}
+- User: {{ turn.prompt }}
+  Answer: {{ turn.answer }}
+  Entities: {{ turn.entities }}
+{% endfor %}
+
+Continuation vs. new topic:
+- If the current prompt depends on the history above - it is elliptical, uses references like "that", "it", "a different one", or omits a subject named earlier - treat it as a CONTINUATION: carry forward the relevant entities from the most recent related turn, and indicate that it continues the previous turn.
+- Otherwise treat it as a NEW topic: use only the current prompt, do not carry prior entities, and indicate that it does not continue the previous turn.
+
+{% endif %}
+User prompt:
+{{ user_prompt }}
