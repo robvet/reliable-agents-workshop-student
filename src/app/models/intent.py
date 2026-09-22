@@ -1,28 +1,26 @@
 from enum import Enum
 
-
 class Intent(str, Enum):
+    # Map to concrete user intents recognized by the system
     EVENT_RESPONSE = "EVENT_RESPONSE"
     SITUATIONAL_AWARENESS = "SITUATIONAL_AWARENESS"
     RELIABILITY = "RELIABILITY"
     MAJOR_EVENT = "MAJOR_EVENT"
     CUSTOMER_STATUS = "CUSTOMER_STATUS"
     CROSS_DOMAIN = "CROSS_DOMAIN"
-    # Open-ended read-only lookup against Reliable Agents' own domains ("list the assets
-    # in the south region"). These questions go directly to the dedicated query agent.
-    # Off-domain questions fall to UNKNOWN.
+    # Map open-ended read-only lookup rqeuests to a dedicated query agent
     DOMAIN_LOOKUP = "DOMAIN_LOOKUP"
+    # Map questions that fall outside of the application domain to UNKNOWN.
     UNKNOWN = "UNKNOWN"
-    # *********************************************
-    # *********  Architectural Insights *************
-    # *********************************************
-    # ERROR is a SYSTEM control state, not a user intent. It means "the intent
-    # hop itself failed" (model call threw, or returned no valid structure) - a
-    # technical fault, NOT "the user asked something we can't classify" (that is
-    # UNKNOWN). Keeping the two distinct is the whole point: an outage must never
-    # masquerade as a benign UNKNOWN fallback.
-    #
-    # Critical rule: ONLY deterministic code may set ERROR. The model must never
-    # emit it - the intent prompt forbids it, and IntentResult's validator
-    # coerces any bare ERROR back to UNKNOWN as a backstop.
+    # Map system-level error states
     ERROR = "ERROR"
+
+    # Architectural Insight
+    # Keep ERROR and UNKNOWN distinct.
+    # Keeping each distinct as an outage must never
+    # masquerade as a benign UNKNOWN fallback.
+    # ERROR is a SYSTEM control state, a technical fault
+    # ONLY deterministic code may set ERROR, The model cannot emit it
+    # The intent prompt forbids it, and IntentResult's validator
+    # coerces any bare ERROR back to UNKNOWN as a backstop.
+   
