@@ -66,59 +66,28 @@ class LlmIntentClassifier:
         with self._tracer.start_as_current_span("intent.classify") as span:
 
             # Step 1: Render the per-call task prompt (current message + prior turns).
-            prompt = PromptLoader.render("intent_classifier_task.jinja2", user_prompt=user_prompt, history=history or [])
+         
+ 
 
             # Step 2: Call the model, requesting structured output (response_format=IntentResult).
-            try:
-                response = await self._agent.run(
-                    prompt,
-                    options=ChatOptions(response_format=IntentResult),
-                )
-            except Exception as ex:
-                # Step 2a (RELIABILITY): the call itself failed -> Intent.ERROR + detail,
-                # never UNKNOWN (see class docstring).
-                logging.exception("LlmIntentClassifier.classify: model call failed")
-                span.set_attribute("intent", Intent.ERROR.value)
-                span.set_attribute("success", False)
-                span.record_exception(ex)
-                return IntentResult(intent=Intent.ERROR, error=str(ex) or type(ex).__name__)
+         
+
 
             # Step 3: Pull the structured result off the response.
-            result = response.value
+         
 
-            if not isinstance(result, IntentResult):
-                # Step 3a (RELIABILITY): call succeeded but returned no valid structure -
-                # still a system fault, not a user-side UNKNOWN.
-                logging.warning("LlmIntentClassifier.classify: no structured IntentResult returned")
-                span.set_attribute("intent", Intent.ERROR.value)
-                span.set_attribute("success", False)
-                return IntentResult(
-                    intent=Intent.ERROR,
-                    error="classifier returned no structured result",
-                )
 
             # Step 4: Log the classification (span attributes + reasoning summary).
-            summary = self._extract_reasoning_summary(response)
 
-            # UNKNOWN counts as success here - it's a valid result, not a failure.
-            entities_set = {k: v for k, v in result.entities.model_dump().items() if v is not None}
-            span.set_attribute("intent", result.intent.value)
-            span.set_attribute("confidence", result.confidence)
-            span.set_attribute("success", result.intent != Intent.ERROR)
-            span.set_attribute("entities", str(entities_set))
 
-            if summary:
-                span.set_attribute("reasoning_summary", summary)
-            logging.info(
-                "LlmIntentClassifier.classify: intent=%s confidence=%.2f continues_previous=%s entities=%s",
-                result.intent.value,
-                result.confidence,
-                result.continues_previous,
-                entities_set,
-            )
 
             # Step 5: Return the validated result.
-            return result
+          
+            # remove the following return statement once the method is implemented
+            return IntentResult(
+                intent=Intent.ERROR,
+                error="classify() method not implemented in LlmIntentClassifier",
+            )
 
     def _extract_reasoning_summary(self, response: object) -> str:
         """Pull the model's reasoning-summary text out of the response, for logging only.
