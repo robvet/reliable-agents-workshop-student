@@ -42,6 +42,9 @@ document.addEventListener("DOMContentLoaded", () => {
     const navGeneratorLink = document.getElementById("nav-generator-link");
     const navOutagesLink   = document.getElementById("nav-outages-link");
     const navHomeLink      = document.getElementById("nav-home-link");
+    const navLabsToggle    = document.getElementById("nav-labs-toggle");
+    const navLabsMenu      = document.getElementById("nav-labs-menu");
+    const navLabLinks      = document.querySelectorAll(".nav-submenu-link");
     const homePanel        = document.getElementById("home-panel");
     const agenticPanel     = document.getElementById("agentic-panel");
     const mapPanel         = document.getElementById("map-panel");
@@ -265,6 +268,19 @@ document.addEventListener("DOMContentLoaded", () => {
             navReasoningLink.classList.toggle("active", !willHide);
         });
     }
+    if (navLabsToggle && navLabsMenu) {
+        navLabsToggle.addEventListener("click", () => {
+            const willOpen = navLabsToggle.getAttribute("aria-expanded") !== "true";
+            navLabsToggle.setAttribute("aria-expanded", String(willOpen));
+            navLabsMenu.hidden = !willOpen;
+        });
+    }
+    navLabLinks.forEach((link) => {
+        link.addEventListener("click", (event) => {
+            event.preventDefault();
+            openMarkdownPopup(link.href, link.dataset.labTitle || link.textContent.trim());
+        });
+    });
     showHomeView();
 
 
@@ -2172,6 +2188,83 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
         popup.focus();
+    }
+
+    async function openMarkdownPopup(url, title) {
+        const popup = window.open(
+            "",
+            "_blank",
+            "popup=yes,width=1280,height=820,left=120,top=90,menubar=no,toolbar=no,location=no,status=no,resizable=yes,scrollbars=yes"
+        );
+        if (!popup) {
+            showError("Popup blocked. Please allow popups for this site.");
+            return;
+        }
+
+        try {
+            const response = await fetch(url);
+            if (!response.ok) throw new Error(`Unable to load lab (${response.status})`);
+
+            const markdown = await response.text();
+            const content = DOMPurify.sanitize(marked.parse(markdown));
+            const safeTitle = escapeHtml(title);
+            const safeBaseUrl = escapeHtml(new URL(".", url).href);
+
+            const documentHtml = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <base href="${safeBaseUrl}" target="_blank" />
+  <title>${safeTitle}</title>
+  <style>
+    :root { color-scheme: dark; }
+    body { margin: 0; background: #0b1220; color: #dbe7f3; font: 16px/1.65 Georgia, 'Times New Roman', serif; }
+    article { width: min(900px, calc(100% - 3rem)); margin: 0 auto; padding: 3rem 0 5rem; }
+    h1, h2, h3, h4 { color: #f4f7fb; font-family: 'Trebuchet MS', sans-serif; line-height: 1.25; }
+    h1 { border-bottom: 1px solid #334155; padding-bottom: 0.75rem; }
+    h2 { margin-top: 2.5rem; }
+    a { color: #67e8c2; }
+    code { border-radius: 4px; background: #182337; padding: 0.15rem 0.35rem; }
+    pre { position: relative; overflow-x: auto; border: 1px solid #334155; border-radius: 6px; background: #111a2b; padding: 2.75rem 1rem 1rem; }
+    pre code { padding: 0; background: transparent; }
+    .copy-code { position: absolute; top: 0.6rem; right: 0.6rem; border: 1px solid #475569; border-radius: 4px; background: #182337; color: #dbe7f3; padding: 0.3rem 0.55rem; cursor: pointer; font: 12px/1.2 'Trebuchet MS', sans-serif; }
+    .copy-code:hover { border-color: #67e8c2; color: #67e8c2; }
+    blockquote { margin-left: 0; border-left: 4px solid #2dd4a8; padding: 0.25rem 1rem; color: #afc1d4; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border: 1px solid #334155; padding: 0.55rem 0.7rem; text-align: left; }
+    th { background: #182337; }
+    img { max-width: 100%; height: auto; }
+  </style>
+</head>
+<body>
+    <article>${content}</article>
+    <script>
+        document.querySelectorAll("pre").forEach((block) => {
+            const button = document.createElement("button");
+            button.type = "button";
+            button.className = "copy-code";
+            button.textContent = "Copy";
+            button.setAttribute("aria-label", "Copy code");
+            block.appendChild(button);
+        });
+        document.addEventListener("click", async (event) => {
+            const button = event.target.closest(".copy-code");
+            if (!button) return;
+            await navigator.clipboard.writeText(button.parentElement.querySelector("code").textContent);
+            button.textContent = "Copied";
+            window.setTimeout(() => { button.textContent = "Copy"; }, 1500);
+        });
+    <\/script>
+</body>
+</html>`;
+            const documentUrl = URL.createObjectURL(new Blob([documentHtml], { type: "text/html" }));
+            popup.location.href = documentUrl;
+            window.setTimeout(() => URL.revokeObjectURL(documentUrl), 60000);
+        } catch (error) {
+            const errorHtml = `<p style="font-family:sans-serif;padding:2rem">${escapeHtml(error.message)}</p>`;
+            popup.location.href = URL.createObjectURL(new Blob([errorHtml], { type: "text/html" }));
+        }
     }
 
 

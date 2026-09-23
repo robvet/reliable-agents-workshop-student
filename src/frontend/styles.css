@@ -106,6 +106,41 @@ body {
     font-weight: 500;
 }
 
+.nav-toggle {
+    width: 100%;
+    border: 0;
+    background: transparent;
+    font-family: inherit;
+    text-align: left;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.nav-toggle-icon {
+    transition: transform 0.15s;
+}
+
+.nav-toggle[aria-expanded="true"] .nav-toggle-icon {
+    transform: rotate(90deg);
+}
+
+.nav-submenu {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+}
+
+.nav-submenu[hidden] {
+    display: none;
+}
+
+.nav-submenu-link {
+    padding: 0.35rem 0.75rem 0.35rem 1.5rem;
+    font-size: 0.8125rem;
+}
+
 /* Model Selection */
 .model-section {
     margin-bottom: 1.5rem;

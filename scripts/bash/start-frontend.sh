@@ -26,10 +26,22 @@ echo -e "\033[36mFrontend -> http://localhost:5500\033[0m"
 # Serve with caching disabled so the browser can never show a stale index.html/app.js
 # in dev. Without this, http.server sends Last-Modified/304 and browsers reuse old files.
 exec python3 -c '
+import os
 import sys
+import urllib.parse
 from http.server import HTTPServer, SimpleHTTPRequestHandler
 
+labs_root = os.path.realpath(os.path.join(os.getcwd(), "../../labs"))
+
 class NoCacheHandler(SimpleHTTPRequestHandler):
+    def translate_path(self, path):
+        request_path = urllib.parse.urlsplit(path).path
+        if request_path.startswith("/labs/"):
+            candidate = os.path.realpath(os.path.join(labs_root, request_path.removeprefix("/labs/")))
+            if os.path.commonpath((labs_root, candidate)) == labs_root:
+                return candidate
+        return super().translate_path(path)
+
     def end_headers(self):
         self.send_header("Cache-Control", "no-store, must-revalidate")
         self.send_header("Expires", "0")

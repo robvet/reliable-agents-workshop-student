@@ -32,7 +32,7 @@ jobs:
           subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
 
       - name: Build & push image (server-side ACR build)
-        run: az acr build --registry "$ACR_NAME" --image "$IMAGE:${{ github.sha }}" --file src/frontend/Dockerfile src/frontend
+        run: az acr build --registry "$ACR_NAME" --image "$IMAGE:${{ github.sha }}" --file src/frontend/Dockerfile .
 
       - name: Update Container App to new image
         run: az containerapp update -n "$CONTAINER_APP" -g "$RESOURCE_GROUP" --image "$ACR_NAME.azurecr.io/$IMAGE:${{ github.sha }}"

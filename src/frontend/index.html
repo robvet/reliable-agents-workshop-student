@@ -6,7 +6,7 @@
     <title>Reliable Agents Workshop &amp; Accelerator</title>
     <link rel="icon" type="image/png" href="images/lens.png?v=20260824a">
     <link rel="apple-touch-icon" href="images/lens.png?v=20260824a">
-    <link rel="stylesheet" href="styles.css?v=20260919g-4-card-revert">
+    <link rel="stylesheet" href="styles.css?v=20260923a-labs-nav">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 </head>
 <body>
@@ -32,6 +32,20 @@
             <hr class="nav-separator">
             <a href="#" id="nav-generator-link" class="nav-link">Synthetic Data</a>
             <a href="#" id="nav-reasoning-link" class="nav-link">Reasoning</a>
+            <hr class="nav-separator">
+            <button id="nav-labs-toggle" class="nav-link nav-toggle" type="button" aria-expanded="false" aria-controls="nav-labs-menu">
+                <span>Labs</span>
+                <span class="nav-toggle-icon" aria-hidden="true">&#9656;</span>
+            </button>
+            <div id="nav-labs-menu" class="nav-submenu" hidden>
+                <a href="/labs/00-about/about-this-lab.md" class="nav-link nav-submenu-link" data-lab-title="About">About</a>
+                <a href="/labs/01-deployment/workshop-deployment.md" class="nav-link nav-submenu-link" data-lab-title="Deployment">Deployment</a>
+                <a href="/labs/02-hands-on-labs/01-application-overview/lab-1-guide.md" class="nav-link nav-submenu-link" data-lab-title="Lab 1">Lab 1</a>
+                <a href="/labs/02-hands-on-labs/02-intent-classification/lab-2-guide.md" class="nav-link nav-submenu-link" data-lab-title="Lab 2">Lab 2</a>
+                <a href="/labs/02-hands-on-labs/03-reliable-orchestration/lab-3-guide.md" class="nav-link nav-submenu-link" data-lab-title="Lab 3">Lab 3</a>
+                <a href="/labs/02-hands-on-labs/04-domain-agent/lab-4-guide.md" class="nav-link nav-submenu-link" data-lab-title="Lab 4">Lab 4</a>
+                <a href="/labs/03-cleanup/lab-cleanup.md" class="nav-link nav-submenu-link" data-lab-title="Cleanup">Cleanup</a>
+            </div>
         </nav>
 
         <!-- Model Selection — radio buttons styled as pills -->
@@ -288,6 +302,6 @@
     <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked@15.0.12/marked.min.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    <script src="app.js?v=20260920a-map-popup-outage-status"></script>
+    <script src="app.js?v=20260923c-labs-copy"></script>
 </body>
 </html>

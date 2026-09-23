@@ -3,8 +3,8 @@
 # proxies the API paths to the backend Container App so the
 # browser stays same-origin (no CORS). APIM can slot into the
 # proxy hop later.
-#   Build context: src/frontend
-#   docker build -t frontend -f src/frontend/Dockerfile src/frontend
+#   Build context: repository root
+#   docker build -t frontend -f src/frontend/Dockerfile .
 # ============================================================
 
 FROM nginx:alpine
@@ -15,9 +15,10 @@ FROM nginx:alpine
 # $uri/$scheme/etc. variables are left untouched) and writes the result to
 # /etc/nginx/conf.d/<name> — this is how APIM_SUBSCRIPTION_KEY gets injected
 # without ever being baked into the image or committed to source control.
-COPY nginx.conf /etc/nginx/templates/default.conf.template
+COPY src/frontend/nginx.conf /etc/nginx/templates/default.conf.template
 
-# Static site (index.html, app.js, styles.css, html/, images/).
-COPY . /usr/share/nginx/html/
+# Static site and workshop lab documents.
+COPY src/frontend/ /usr/share/nginx/html/
+COPY labs/ /usr/share/nginx/html/labs/
 
 EXPOSE 80
