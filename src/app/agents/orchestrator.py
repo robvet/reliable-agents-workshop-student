@@ -24,15 +24,9 @@ from ..config.config import Settings
 
 
 class Orchestrator:
-    """
-    Single responsibility: orchestrate the typed pipeline for one user message.
+    """Process one user request through the pipeline and stream progress events.
 
-    Architecture role:
-    - Similar to an application service in C#/Java.
-    - Every hop from IntentResult onward is a validated Pydantic object -
-      no free text passes between the model hop and the final rendered answer.
-    - Control flow is deterministic: the model proposes (intent only, this phase);
-      this class validates and routes.
+       Yields intent, reasoning, dispatch, agent-result, and final or error events.
     """
 
     # *********************************************
@@ -45,9 +39,9 @@ class Orchestrator:
     #   agent; this class validates the choice, enforces the allow-list, dispatches
     #   the agent, and observes the result.
 
-    # Maximum number of ReAct steps before giving up. The model must answer the
-    # request within this many agent dispatches.
+    # Prevent the ReAct loop from running indefinitely.
     MAX_STEPS = 8
+
 
     def __init__(
         self,
@@ -55,10 +49,7 @@ class Orchestrator:
         conversation_memory: IConversationMemory,
         domain_agent_factory: DomainAgentFactory,
     ) -> None:
-        """Create the intent classifier and receive the reasoning + conversation memory store.
-
-        conversation_memory = session-lived, distilled (feeds the classifier).
-        """
+        """Initialize the services and dependencies used by the pipeline."""
         self._intent_classifier = LlmIntentClassifier()
         self._assembler = ResponseAssemblerService()
         self._stream_events = StreamEventService()
@@ -74,19 +65,9 @@ class Orchestrator:
         self, 
         request: RequestModel
     ) -> AsyncIterator[StreamEvent]:
-        """Process a user request end-to-end, yielding events live as they happen.
+        """Run the orchestration pipeline and yield progress events as they occur.
 
-        THE production path. Every request the UI makes lands here.
-
-        Emits: one 'intent' event, one 'step' event per agent as it finishes, then a
-        single 'final' event carrying the composed ChatResult (or an 'error' event).
-
-        Args:
-            request: Typed inbound request (user prompt + forward-compatible context).
-        Yields:
-            StreamEvent envelopes in pipeline order.
-
-        DEBUGGING: This is the main entry point — set breakpoint here.
+           DEBUGGING: This is the main entry point — set breakpoint here.
         """
         print(f"\n[Orchestrator] (stream) Received: {request.user_prompt}")
 
@@ -95,9 +76,8 @@ class Orchestrator:
             ##############################################################################
             # Deterministic outer pipeline: classify -> reason -> compose.
             ##############################################################################
-
-            # Load prior turns for this conversation onto request.history (empty when there
-            # is no id or no history). Intent classifier consumes this in a later slice.
+        
+            # Load prior conversation turns for intent classification.
             if request.conversation_id:
                 request.history = self._conversation.load(request.conversation_id)
                 logging.info(
@@ -105,31 +85,36 @@ class Orchestrator:
                     len(request.history), request.conversation_id,
                 )
 
+            # ########################################################################
             # Step 1: Classify the intent of the user prompt, then announce it.
+            # ########################################################################
             try:
-                # This is call to the intent classifier, which involves a classification model call.
+                # Call the intent classifier to classify the request
                 intent_result = await self._intent_classifier.classify(request.user_prompt, request.history)
             except Exception as ex:
                 logging.exception("Orchestrator.process_request_stream: classify failed")
                 yield self._error_event(ex)
                 return
 
-            # Stamp which reasoning pattern this orchestrator is configured with.
+            # Record the reasoning pattern used by this pipeline.
             intent_result.reasoning_pattern = "ReACT Reasoning Pattern"
 
-            # Send the intent event message to the UI Execution Trace.
+            # Stream the classified intent to the Execution Trace display in the UI.   
             yield self._stream_events.build("intent", intent_result)
 
-            # UNKNOWN/ERROR short-circuit: both have an empty agent allow-list
-            # (RoutingMap), so there is nothing for the ReAct loop to reason about -
-            # skip it entirely and let the assembler render the right message
-            # (technical apology for ERROR, out-of-scope decline for UNKNOWN).
+            # UNKNOWN/ERROR short-circuit: both have no allowed agents, so skip the ReAct loop.
+            # The assembler returns an out-of-scope response for UNKNOWN or a technical
+            # error response for ERROR.
             if intent_result.intent in (Intent.UNKNOWN, Intent.ERROR):
                 chat_result = await self._assembler.assemble(intent_result, [], request.user_prompt)
                 yield self._stream_events.build("final", chat_result)
                 return
 
-            # Step 2: ReAct control loop. The reasoning component proposes one agent
+
+            # ########################################################################
+            # Step 2: ReAct control loop.
+            # ########################################################################            
+            # The reasoning component proposes one agent
             # at a time (the model proposes); this orchestrator validates that choice,
             # enforces the intent's allow-list, dispatches the agent, and observes the
             # result - looping until the model reports done or MAX_STEPS is reached.
@@ -137,70 +122,75 @@ class Orchestrator:
             results: list[AgentResult] = []
 
             try:
-                # Same allow-list the planner enforced - keeps ReAct from reaching
-                # agents this intent doesn't authorize (e.g. direct_query under
-                # CROSS_DOMAIN). The catalog the model chooses from is built from it.
+                # Get the agents authorized for the classified intent.
                 allowed = RoutingMap.allowed_agents(intent_result.intent)
+
+                # Build the authorized agent catalog presented to the reasoning model.
                 catalog = self._factory.catalog(allowed)
 
+                # Limit the ReAct loop to the configured maximum number of steps.
                 for _ in range(self.MAX_STEPS):
-                    # Confidence is meaningless before any agent has answered - only
-                    # show it once at least one AgentResult has come back.
+
+                    # An empty results list means no agent has answered yet, so there is no evidence
+                    # for a confidence score. Mark that first decision so the trace omits confidence.
                     is_first_decision = not results
+
+                    # Build the next prompt from the request and results collected so far.
                     enriched_prompt = self._context.build(request.user_prompt, results)
 
-                    # The model proposes the next agent (or stop); deterministic code
-                    # below validates and runs it. reason() returns every attempt it made
-                    # this step, including contradiction retries - trace all of them, not
-                    # just the last one, so a retry is visible instead of vanishing.
+
+                    # Ask the model to recommend the next agent or to stop.
                     decisions = await self._reasoning.reason(enriched_prompt, catalog)
+
+                    # Send every reasoning decision to the Execution Trace display in the UI.      
                     for step_decision in decisions:
                         yield self._stream_events.build(
                             "step", self._reasoning.to_trace_step(step_decision, is_first_decision)
                         )
+
+                    # Use the final decision to stop or select the next agent.
                     decision = decisions[-1]
 
+                    # Stop when the model recommends no next agent.
                     if decision.next_agent is None:
                         break
 
+                    # Reject agents outside the intent's allow-list.
                     if decision.next_agent not in allowed:
                         raise RuntimeError(
                             f"Agent is not allowed for this intent: {decision.next_agent}"
                         )
 
-                    # Creates an instance of the selected agent.
+                    # Get the selected agent; fail if it is not registered.
                     agent = self._factory.get(decision.next_agent)
                     if agent is None:
                         raise RuntimeError(f"Agent is not available: {decision.next_agent}")
 
+                    # Announce the agent dispatch in the Execution Trace display in the UI.
                     yield self._stream_events.build("step", TraceStep(
                         agent=decision.next_agent,
                         action="dispatch",
                         summary=f"Calling {decision.next_agent} agent to fetch data",
                     ))
 
-                    # Here is the invocation call to the selected agent.
-                    # It's called with the enriched prompt and the entities the intent classifier extracted.
+                    # Call the selected agent with the entities and enriched prompt.
                     result = await agent.handle(AgentRequest(
                         agent=decision.next_agent,
                         entities=intent_result.entities,
                         user_prompt=enriched_prompt,
                     ))
+
+                    # Save the result for the next reasoning step and final response.
                     results.append(result)
 
-                    # trace_step is the short, display-safe summary of what the agent
-                    # did - not the agent's full data payload. Send it now so progress
-                    # appears live in the browser.
+
+
+                    # Send the agent's result summary, not its full data, to the Execution 
+                    # Trace display in the UI.
                     yield self._stream_events.build("step", result.trace_step)
 
-                    # No-progress guard: if this agent already returned this exact data
-                    # earlier in the same run, calling it again will not produce anything
-                    # new. Stop here instead of burning the rest of MAX_STEPS re-asking
-                    # the same question and getting the same answer.
-                    # Compare only the actual entity payload, not "sql"/"question"/
-                    # "reasoning" - those are free-text NL2SQL output that differs on
-                    # almost every call (the question field alone grows every step),
-                    # which made this guard never fire.
+                    # Ignore generated NL2SQL text fields when comparing results. Their wording 
+                    # can change between calls even when the returned entity data is identical.
                     volatile_keys = ("sql", "question", "reasoning")
                     comparable = {k: v for k, v in result.data.items() if k not in volatile_keys}
                     if any(
@@ -209,6 +199,7 @@ class Orchestrator:
                         for r in results[:-1]
                     ):
                         break
+
             except Exception as ex:
                 # An agent blew up. We already sent HTTP 200, so we can't return a 500 -
                 # we tell the client in the stream and stop.
@@ -216,7 +207,10 @@ class Orchestrator:
                 yield self._error_event(ex)
                 return
 
+
+            # ########################################################################
             # Step 3: Hand the collected results to the assembler, which builds the
+            # ########################################################################
             # final ChatResult, and send it as the last event.
             try:
                 chat_result = await self._assembler.assemble(
@@ -241,41 +235,17 @@ class Orchestrator:
                     len(request.history) + 1, request.conversation_id,
                 )
 
-            # Send the final event as the terminal success message for this stream.
+            # Send the completed response as the stream's final success event.
             yield self._stream_events.build("final", chat_result)
-
-            # *********************************************
-            # *********  Architectural Insights *************
-            # *********************************************
-            # THE STATUS CODE CAN'T TELL YOU IF THIS WORKED. We send HTTP 200 before any
-            # of the work above runs, so by the time something breaks the status is
-            # already gone. (A normal request/response can still turn a late exception
-            # into a 500. We can't.)
-            #
-            # So the answer is in the messages, not the header. Every path out of this
-            # method sends a last message - 'final' if it worked, 'error' if it didn't -
-            # and the client has to read them to find out which. Checking for 200 tells
-            # it nothing.
-            #
-            # If the stream ends without either one, the connection dropped. That's a
-            # different problem from the pipeline failing, and worth telling apart.
-
+           
 
     def _error_event(self, error: Exception) -> StreamEvent:
-        """The last message we send when something breaks.
-
-        We can't just let the exception escape. The 200 has already gone out, so an
-        escaping exception just cuts the connection mid-stream - and the client can't
-        tell that apart from the network dying. Sending an 'error' message says so
-        plainly.
-
-        The message is deliberately vague unless local verbose errors are enabled.
-        The full exception is always retained in the server logs.
+        """
+        Build the final stream event when processing fails.
+        Show exception details only when verbose errors are enabled.
         """
         message = str(error) if self._show_verbose_errors else "The system encountered a technical issue."
         return StreamEvent(
             type="error",
             payload={"message": message},
         )
-
-
