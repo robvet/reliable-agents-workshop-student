@@ -104,7 +104,7 @@ class LlmIntentClassifier:
             entities_set = {k: v for k, v in result.entities.model_dump().items() if v is not None}
             span.set_attribute("intent", result.intent.value)
             span.set_attribute("confidence", result.confidence)
-            span.set_attribute("success", result.intent != Intent.UNKNOWN)
+            span.set_attribute("success", result.intent != Intent.ERROR)
             span.set_attribute("entities", str(entities_set))
 
             if summary:
