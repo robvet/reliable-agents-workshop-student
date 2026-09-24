@@ -2,9 +2,11 @@
 
 ## Introduction
 
-Users express the same operational need in many different ways. An agentic application must interpret that language without allowing every variation to create a new, uncontrolled execution path.
+Users express the same operational need in many different ways. "Who is working the Riverside outage," "send me the crew for FDR-204," and "what is the status of that job" can all arrive at the same answer. An agentic application has to interpret that language without letting every phrasing create a different execution path.
 
-In this lab, you will implement the application's intent-classification workflow. The classifier accepts the user's unstructured request and returns a validated `IntentResult` containing a known intent, extracted entities, confidence, and supporting context. This is the transition point after which the control pipeline uses typed data rather than passing the user's raw text between components.
+In this lab you will implement the application's intent-classification workflow. `LlmIntentClassifier` accepts the user's unstructured request and returns a validated `IntentResult` carrying a known intent, extracted entities, confidence, and supporting context. It is the first model call in the pipeline, and it runs exactly once per request.
+
+It is also the last unstructured moment on the control path. Free text enters here; a typed object leaves. The user's words still travel with the request as data, but they no longer decide anything - routing, authorization, and dispatch all read typed fields. The model interprets the sentence once, and that judgment becomes a value the rest of the system can check.
 
 ## Intent classification
 
@@ -23,13 +25,13 @@ In this application, classification includes more than assigning a label. The cl
 
 The result gives downstream code a stable description of the request without requiring that code to interpret the user's wording again. The classifier does not route the request or execute a domain agent. It only produces the structured classification that deterministic application code uses when deciding what may happen next.
 
-Two classification outcomes require special attention. `UNKNOWN` means the classifier processed the request but could not map it to a supported user intent. `ERROR` means the classification operation failed, such as when the model call fails or does not return a valid `IntentResult`. Keeping these outcomes separate prevents a technical failure from being treated as an ordinary unsupported request.
+Two classification outcomes require special attention. `UNKNOWN` means the classifier processed the request but could not map it to a supported user intent. `ERROR` means the classification operation failed, such as when the model call fails or does not return a valid `IntentResult`.
 
 ### Why intent classification matters
 
-Intent classification is foundational to reliable agentic systems. It places deterministic control around probabilistic model behavior, constraining what the model may decide and validating the result before the system acts.
+Without classification, every phrasing of a request is a new input to every component that handles it. Intent classification places deterministic control around probabilistic model behavior, constraining what the model may decide and validating the result before the system acts.
 
-> When an agentic application passes unstructured natural language directly from component to component, each component must interpret the request again. Raw text does not provide a stable contract that deterministic code can validate. Each time a model interprets unstructured text, it introduces another probabilistic decision point, increasing the likelihood of inconsistent downstream results. Intent classification creates that contract by converting the request into a known, typed result that the application can validate, route, authorize, and observe.
+When an agentic application passes unstructured natural language directly from component to component, each component must interpret the request again. Raw text does not provide a stable contract that deterministic code can validate. Each time a model interprets unstructured text, it introduces another probabilistic decision point, increasing the likelihood of inconsistent downstream results. Intent classification creates that contract by converting the request into a known, typed result that the application can validate, route, authorize, and observe.
 
 This creates a controlled boundary between probabilistic language understanding and deterministic application behavior.
 
@@ -44,11 +46,19 @@ This design adds deterministic behavior in four ways:
 
 The model is allowed to classify a request as `UNKNOWN`. Only deterministic application code sets `ERROR`, and it must include technical detail. The `IntentResult` validator enforces that invariant before the result enters the rest of the pipeline.
 
+> **Deterministic engineering: one interpretation, carried forward.**
+> Every component that re-reads the user's sentence adds another probabilistic decision point, and those points compound. Classify once and the system has a single interpretation it can validate, route on, and log. Interpret repeatedly and you have several interpretations that can disagree with each other - with no record of which one drove the outcome.
+
+> **Deterministic engineering: record the signal even when you do not gate on it.**
+> `IntentResult.confidence` is written to the trace span, the log line, and the final `ChatResult`, but no code branches on it. That is a deliberate position, not an oversight. A threshold you have not calibrated against real traffic rejects good classifications and admits bad ones with equal conviction. Recording the number first gives you the distribution you would need to set that threshold honestly. In Lab 3 you will meet the other half of this pattern, where `ReActReasoning` does gate on confidence - because a claim that the work is finished is something code can check.
+
 ## Architecture context
 
-Intent classification is the first model call in the request pipeline:
+Intent classification is the first model call in the request pipeline, and the only one that runs before the application decides anything. The three views below move from structure to behavior to contract: which components participate, what happens on each call, and what crosses the boundary in each direction.
 
 ### Component relationships
+
+`LlmIntentClassifier` is deliberately thin. It owns no classification logic of its own - it assembles constraints and enforces the result. The diagram separates the request path from the four components that supply those constraints.
 
 ```mermaid
 flowchart TB
@@ -80,7 +90,11 @@ flowchart TB
 	class Input,Output boundary;
 ```
 
+Notice what the four supporting components have in common. Two constrain what goes in: the persona supplies the fixed policy, and the task template supplies the per-request data in a known shape. Two constrain what comes out: the `Intent` enum limits the vocabulary the model may choose from, and `IntentResult` defines the contract the reply must satisfy. The classifier's job is to hold those four constraints together around a single model call.
+
 ### Classification sequence
+
+The following sequence traces one call to `classify()`, from the orchestrator's request through prompt rendering, the model call, validation, and the typed result returned on every path.
 
 ```mermaid
 sequenceDiagram
@@ -113,9 +127,20 @@ sequenceDiagram
 	end
 ```
 
+Two things are worth noticing.
+
+**Every path returns an `IntentResult`.** The diagram has three exits - a failed model call, a response that is not an `IntentResult`, and a valid classification - and all three return the same type. The `Orchestrator` never has to ask whether classification succeeded; it reads a field on an object it is guaranteed to receive.
+
+**The model appears exactly once.** Only the `AOAI` participant is probabilistic. Rendering the prompt, reading `response.value`, checking the type, and recording telemetry are all deterministic code running in your process.
+
 > **Important:** The classifier does not select or execute a domain agent. Its responsibility ends when it returns the validated classification contract. The orchestrator uses that contract to determine which agents the request is permitted to reach.
 
+> **Deterministic engineering: convert once, at the edge.**
+> Ambiguity is unavoidable - users type sentences. The question is how far into the system that ambiguity travels. Here it is converted to a typed contract at the first opportunity, so every downstream component reads fields instead of re-interpreting prose. A system that keeps re-reading the original sentence has to be right about it repeatedly; this one has to be right once.
+
 ### Intent classification components
+
+Five components participate in a classification, and only one of them calls a model. The other four are fixed assets - two templates, an enum, and a Pydantic model - that constrain the call and check its result.
 
 | Component                          | Responsibility                                                                                                                                                    |
 | ---------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------- |
@@ -127,6 +152,8 @@ sequenceDiagram
 
 ### Input and output contracts
 
+The table below is the lab in one line. Read the `Representation` column: unstructured text goes in, a validated Python object comes out. Everything you implement in the coding section serves that single transition.
+
 | Direction | Value                                | Representation                                                  |
 | --------- | ------------------------------------ | --------------------------------------------------------------- |
 | Input     | `user_prompt` and optional `history` | Unstructured user text plus prior structured conversation turns |
@@ -136,44 +163,26 @@ sequenceDiagram
 
 ### Learning objectives
 
-- Implement the intent-classification workflow from unstructured user input to a validated `IntentResult`.
-- Request schema-constrained output from the model by using `IntentResult` as the response format.
-- Validate the model response before returning it to the deterministic control pipeline.
-- Preserve the distinction between an unclassifiable request and a technical failure.
-- Verify successful and failed classifications with focused tests and the live Execution Trace.
+By the end of this lab you will be able to:
+
+- Convert an unstructured request into a validated `IntentResult`.
+- Request schema-constrained output by passing `IntentResult` as the response format.
+- Validate a model response before it reaches deterministic control code.
+- Distinguish an unclassifiable request from a technical failure.
+- Verify both outcomes with focused tests and the live Execution Trace.
 
 ### Build target
 
-Complete the `classify()` method in `LlmIntentClassifier`. The method must:
+Complete the `classify()` method in `LlmIntentClassifier`. It renders the per-request prompt, calls the model with schema-constrained output, validates the structured reply, records telemetry, and returns a validated `IntentResult` - converting any technical failure along the way into `Intent.ERROR` with detail, never into `Intent.UNKNOWN`.
 
-1. Render the per-request classification prompt from the current user message and optional conversation history.
-2. Call the model asynchronously and request schema-constrained output using `response_format=IntentResult`.
-3. Convert a model-call exception into an `IntentResult` containing `Intent.ERROR` and technical detail.
-4. Read the structured value returned by the model.
-5. Verify that the value is an `IntentResult`.
-6. Convert a malformed model response into an `IntentResult` containing `Intent.ERROR` and technical detail.
-7. Record classification telemetry and return the validated result.
+### What is already provided
 
-The following code is provided:
+- `__init__()`, including the Agent Framework client, identity, and prompt loading.
+- The `classify()` signature and the numbered comments marking each step.
+- `_extract_reasoning_summary()`, used only for logging.
+- A temporary `Intent.ERROR` return so the application runs before the lab is finished.
 
-- `__init__()` and its Agent Framework client construction, identity, and prompt loading.
-- The `classify()` signature and numbered comments describing each workflow step.
-- `_extract_reasoning_summary()`, which is used only for logging.
-- A temporary `Intent.ERROR` return so that the application reports an unfinished lab implementation without crashing.
-
-The goal is to replace the temporary return by implementing the workflow described by the comments.
-
-### Coding activities
-
-1. Review the fixed intent taxonomy and `IntentResult` contract.
-2. Examine the provided `classify()` skeleton and trace its numbered steps through the classification sequence.
-3. Render the per-request prompt from `user_prompt` and `history`.
-4. Call the Agent Framework asynchronously with `response_format=IntentResult`.
-5. Handle model-call exceptions as technical `Intent.ERROR` results.
-6. Extract and validate the structured value returned by the model.
-7. Handle malformed responses as technical `Intent.ERROR` results.
-8. Record the classification telemetry and return the validated `IntentResult`.
-9. Run the application and submit a supported request to confirm that classification succeeds.
+Open `src/app/intent/llm_intent_classifier.py`. Each step below begins with a comment that is already in the file. Find that comment and add the code beneath it, replacing the temporary return when you reach Step 5.
 
 #### Step 1: Build the per-request task prompt
 
@@ -331,9 +340,9 @@ return result
 
 The classifier returns the validated `IntentResult`. This typed object is ready for deterministic routing.
 
-#### Coding wrap-up
+### Coding wrap-up
 
-At this point, you have completed the intent-classification workflow in the `classify()` method.
+You have completed the intent-classification workflow in `classify()`. One unstructured string entered, one validated object left, and the model was consulted exactly once. Every decision the application makes from here reads typed fields - it never revisits the user's original wording to decide what to do.
 
 > **Note:**
 >
@@ -351,6 +360,8 @@ Lab 2 includes a predefined unit test class named `TestLab2LlmIntentClassifier`,
 2. A valid `UNKNOWN` result remains `UNKNOWN`.
 3. A model exception becomes an `ERROR` with diagnostic detail.
 4. A malformed response becomes an `ERROR` with diagnostic detail.
+
+The first two tests cover successful classification, including the case where the correct answer is "no supported intent." The last two cover technical failure. Read together, they prove the distinction this lab is built on: a request the classifier could not map is not the same outcome as a classifier that could not run.
 
 These tests replace the real model call with controlled responses, so they run consistently without making an Azure OpenAI request.
 
@@ -422,15 +433,5 @@ The expected summary is `4 passed`.
 
 After the focused tests pass, submit a supported request. Verify that the successful live classification appears in the Execution Trace with its intent, confidence, and extracted entities.
 
-### Success criteria
-
-You have completed Lab 2 when:
-
-- You have completed the `classify()` method in `src/app/intent/llm_intent_classifier.py`, which codifies the intent-classification workflow.
-- The method builds the classification prompt from the user request and conversation history, then calls the model asynchronously.
-- The model is asked to return a schema-constrained `IntentResult`.
-- Valid results pass through unchanged.
-- Unsupported requests remain `UNKNOWN`, rather than becoming technical errors.
-- Model exceptions and malformed responses become `ERROR` results with diagnostic detail.
-- Running `./test-lab2` reports `4 passed`.
-- A successful classification appears in the live Execution Trace with its intent, confidence, and extracted entities.
+> **Deterministic engineering: test the failure axis as hard as the success axis.**
+> Two of these four tests assert on failures, and both check the `error` detail rather than just the intent value. A system that only proves its happy path will still return `ERROR` when something breaks - it just will not be able to tell you why. The diagnostic detail is part of the contract, so it is part of the test.
