@@ -14,35 +14,31 @@ Ask a language model the same question twice and the data can be identical while
 
 ## Where the variability comes from
 
-A language model does not look up an answer or run a decision procedure. It predicts text, one token at a time.
+A language model does not look up an answer or run a decision procedure. It builds a response one word at a time.
 
 ```mermaid
 flowchart LR
-    Prompt["Your prompt"] --> Tokens["Tokens"]
-    Tokens --> Forward["Forward pass<br/>same input, same scores"]
-    Forward --> Dist["A score for every token<br/>in the vocabulary"]
-    Dist --> Sample["Sample one token"]
-    Sample --> Token["Next token"]
-    Token -->|"append, then repeat"| Forward
-    Token --> Output["Response"]
+    Prompt["Your prompt"] --> Rank["Rank the candidates<br/>for the next word"]
+    Rank --> Pick["Pick one"]
+    Pick --> Append["Add it to the<br/>response text"]
+    Append -->|"repeat"| Rank
+    Append --> Output["Response"]
 
     classDef deterministic fill:#8fc1e8,stroke:#1f2937,color:#111827;
     classDef probabilistic fill:#f8b4b4,stroke:#1f2937,color:#111827,stroke-width:2px;
     classDef plain fill:#ffffff,stroke:#1f2937,color:#111827;
-    class Tokens,Forward deterministic;
-    class Sample probabilistic;
-    class Prompt,Dist,Token,Output plain;
+    class Rank deterministic;
+    class Pick probabilistic;
+    class Prompt,Append,Output plain;
 ```
 
-Each pass scores every token in the model's vocabulary - tens of thousands of candidates. A sampling step then draws one. That token is appended to the input and the loop runs again for the next one. A paragraph is that loop, several hundred times.
+Each round ranks the possible next words - tens of thousands of them - and picks one. The picked word (or token) is added to the response text, and the loop runs again for the word after it. Producing a single paragraph means running that loop several hundred times.
 
-Three things follow.
+Two things follow.
 
-**The variability lives in the sampling step, not in the weights.** Given identical input, the forward pass produces the same scores every time. What differs is which token gets drawn from them.
+**The pick is where variability enters, and you cannot turn it off.** The ranking is stable for the same input; which candidate gets chosen from it is not. No setting makes a hosted model repeat itself exactly, and a model that reasons before answering varies even more, in steps you never see.
 
-**You cannot configure your way out of it.** Hosted models are not deterministic and offer no setting that makes them so. Floating-point arithmetic is order-sensitive, and the batching and hardware scheduling behind a hosted endpoint are outside your control. Reasoning models add a second source of variance on top: they generate an internal trace before answering, variable in length and content from run to run, conditioning the final answer, and never returned to you. The part of the computation that varies most is the part you cannot inspect.
-
-**The model is never choosing an agent, a tool, or a route.** It is emitting the tokens that spell one. There is no decision inside it to inspect or appeal to - only text that came out, which your code then has to interpret and check. That distinction is the reason this workshop exists.
+**The model is not choosing an agent, a tool, or a route.** It is producing the words that spell one. There is no decision inside it to inspect or appeal to - only text that came out, which your code then has to interpret and check. That distinction is the reason this workshop exists.
 
 ## Software is built on determinism
 
