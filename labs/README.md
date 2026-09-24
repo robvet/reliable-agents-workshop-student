@@ -21,7 +21,7 @@ By the end of the workshop, you will be able to:
    - [Lab 2: Intent Classification](02-hands-on-labs/02-intent-classification/lab-2-guide.md)
    - [Lab 3: Reliable Orchestration](02-hands-on-labs/03-reliable-orchestration/lab-3-guide.md)
    - [Lab 4: Domain Agent](02-hands-on-labs/04-domain-agent/lab-4-guide.md)
-4. [Clean up workshop resources](03-cleanup/README.md)
+4. [Clean up workshop resources](03-cleanup/lab-cleanup.md)
 
 ## Repository checkpoints
 
