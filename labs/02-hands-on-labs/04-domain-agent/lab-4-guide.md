@@ -145,89 +145,52 @@ You will complete `AssetAgent`'s model-generated read path, from prompt construc
 - The fixed downstream traversal branch and its hand-written SQL.
 - Logging, the result helper, and orchestration-level error handling.
 
-Open `src/app/agents/asset_agent.py`. You will complete the five steps below in `AssetAgent`.
+Open `src/app/agents/asset_agent.py`. Each step below begins with a comment that is already in the file. Find that comment and add the code directly beneath it. Work through `handle()` first, then the two helper methods it calls.
 
-#### Step 1: Build the domain-language question
+#### Step 1: Ask the MCP client for asset data
 
-Start in `_build_prompt()`. Read the typed entity slots from the request and convert the populated asset fields into domain terms.
-
-```python
-e = request.entities
-filters: list[str] = []
-
-if e.asset_id:
-    filters.append(f"asset {e.asset_id}")
-if e.feeder:
-    filters.append(f"feeder {e.feeder}")
-if e.substation:
-    filters.append(f"substation {e.substation}")
-if e.location:
-    filters.append(f"location {e.location}")
-```
-
-These are domain labels, not table names or column names. The agent says what it needs; the NL-2-SQL service owns how that request maps to the database.
-
-Now preserve the user's complete request and add the extracted scope when one exists:
+The first block in `handle()` builds the domain-language question, records it, and sends it across the MCP boundary.
 
 ```python
-question = f"Answer the asset portion of this request: {request.user_prompt}"
-if filters:
-    question += (
-        f" Scope the query starting from: {', '.join(filters)}. If the request asks "
-        "about assets affected, impacted, or downstream of that starting point (e.g. "
-        "due to an outage), that starting asset is the ROOT of the traversal, not an "
-        "exact-match filter - include it and everything downstream of it. Only treat "
-        "it as an exact-match filter (return just that one asset) when the request is "
-        "asking about the asset itself with no affected/impacted/downstream framing."
-    )
-```
-
-Leave the provided fixed-schema reference that follows this block in place, then return `question`. That reference describes allowed domain values; it does not inspect live rows or choose a query plan.
-
-The original user wording matters. Reducing the prompt to a generic request such as "return assets" would discard constraints such as time windows, counts, inspection state, or exclusions that were not promoted into entity slots.
-
-#### Step 2: Invoke the injected MCP client
-
-Return to `handle()`. Build the question, log it, and pass it to the injected interface:
-
-```python
+# Build a domain-language question from the typed request. AssetAgent
+# describes the data it needs; the MCP service decides how to query it.
 prompt = self._build_prompt(request)
+
+# Record the exact question crossing the MCP boundary for observability.
 logging.info("AssetAgent: reasoning (question)=%s", prompt)
 
+# Ask the injected MCP client to resolve the domain question. The client
+# calls the NL-2-SQL service and returns its structured payload.
 try:
     payload = await self._mcp.query(prompt)
 except Exception:
+    # Do not turn a tool failure into a successful empty result. Record
+    # the fault and re-raise it so the orchestrator stops this request.
     logging.exception("AssetAgent: MCP query failed; failing the step")
     raise
 ```
 
 The agent does not construct `McpClient` and does not open a database connection. It knows only the `IMcpClient` contract supplied to its constructor.
 
-The `raise` is equally important. An MCP failure is not an empty successful result. Re-raising lets the orchestrator emit an error event and stop instead of composing an answer from missing evidence.
+> **Deterministic engineering: one probabilistic hop, explicitly bounded.**
+> The model call lives inside the MCP service, not inside this agent. `AssetAgent` builds a question with ordinary code, hands it across a typed boundary, and everything it does after that is validation and normalization. When a request misbehaves, you know whether the fault was in the question the code assembled or the SQL the model generated, because those are separate steps in separate processes.
 
-#### Step 3: Normalize the MCP payload
+The `raise` is equally important. An MCP failure is not an empty successful result. Re-raising lets the orchestrator emit an error event and stop, instead of composing an answer from missing evidence.
 
-Complete `_parse()` so the rest of the application sees one stable asset shape even when the backend returns its rows directly or wraps them in a dictionary:
+> **Deterministic engineering: fail loudly, never silently.**
+> `raise` costs one word and buys the whole failure contract. A caught-and-swallowed exception would return `assets: [], count: 0` - indistinguishable from "no assets matched." Downstream code would compose a confident, wrong answer. Propagating the exception makes "we could not reach the data" a distinct outcome from "the data says none."
 
-```python
-if isinstance(payload, list):
-    assets = payload
-elif isinstance(payload, dict):
-    assets = payload.get("rows") or payload.get("assets") or []
-else:
-    assets = []
+#### Step 2: Normalize the payload and keep the evidence
 
-return {"assets": assets, "count": len(assets)}
-```
-
-This is normalization, not error recovery. Transport and tool failures were already raised in Step 2. `_parse()` handles only the successful payload shapes supported by the agent.
-
-#### Step 4: Preserve tool evidence
-
-After calling `_parse()`, attach the generated SQL, original MCP question, and server reasoning to the result data:
+Still in `handle()`, convert the successful payload into the agent's data shape and attach the evidence the tool returned.
 
 ```python
+# Normalize the successful MCP payload into the stable asset data shape
+# expected by the rest of the typed pipeline.
 data = self._parse(payload)
+
+# Preserve the question, generated SQL, and server reasoning as evidence.
+# These fields travel with the result and make the data leg inspectable.
 sql = payload.get("sql") if isinstance(payload, dict) else None
 reasoning = payload.get("reasoning") if isinstance(payload, dict) else None
 data["sql"] = sql
@@ -236,15 +199,23 @@ data["reasoning"] = reasoning
 logging.info("AssetAgent: rows=%d sql=%s", data["count"], sql)
 ```
 
-These values make the data leg inspectable without asking the model to explain itself again. The generated SQL remains evidence returned by the tool; the domain agent does not execute or rewrite it.
+These values make the data leg inspectable without asking the model to explain itself again. The generated SQL is evidence returned by the tool; the domain agent does not execute or rewrite it.
 
-Leave the provided downstream traversal block immediately after this code. It is a separate deterministic operation triggered by the typed `needs_downstream_assets` flag.
+> **Deterministic engineering: normalize at the boundary.**
+> Every backend shape is resolved here, once, at the edge. The rest of the pipeline reads `data["assets"]` and `data["count"]` and never asks which shape arrived. Swapping the backend changes this one method; nothing downstream notices.
 
-#### Step 5: Return a typed result and trace step
+> **Deterministic engineering: carry the evidence, not just the answer.**
+> The question, the SQL, and the server's reasoning travel with the result. When an answer is disputed, you replay exactly what was asked and exactly what ran - no re-prompting the model to explain itself, which would only produce a fresh guess about its own past behavior.
 
-Finish `handle()` by using the provided `_result()` helper:
+The downstream traversal block that follows is already provided. Leave it in place. It is a separate deterministic operation triggered by the typed `needs_downstream_assets` flag, and it is the subject of Tests 5 and 6.
+
+#### Step 3: Return a typed result
+
+Finish `handle()` with the provided `_result()` helper.
 
 ```python
+# Return a validated AgentResult rather than prose. The trace step carries
+# a concise summary and the evidence operators need to inspect this hop.
 return self._result(
     data=data,
     ok=True,
@@ -259,11 +230,83 @@ return self._result(
 )
 ```
 
-`_result()` constructs the `AgentResult` and its `TraceStep`. The return value is therefore validated at the agent boundary, and the orchestrator receives structured evidence rather than a prose answer.
+`_result()` constructs the `AgentResult` and its `TraceStep`. The return value is validated at the agent boundary, so the orchestrator receives structured evidence rather than a prose answer.
+
+> **Deterministic engineering: validate at every hop.**
+> `AgentResult` is a Pydantic model, so a malformed result fails here, at the agent that produced it, rather than surfacing as a confusing error in the assembler three steps later. Typed contracts turn "the output was wrong" into "this agent violated its contract."
+
+#### Step 4: Build the domain-language question
+
+Move to `_build_prompt()`, the helper Step 1 called. It turns the typed entity slots into domain terms and assembles the question.
+
+```python
+# Translate each populated entity into a domain label. These values scope
+# the question without asking AssetAgent to generate SQL.
+if e.asset_id:
+    filters.append(f"asset {e.asset_id}")
+if e.feeder:
+    filters.append(f"feeder {e.feeder}")
+if e.substation:
+    filters.append(f"substation {e.substation}")
+if e.location:
+    filters.append(f"location {e.location}")
+
+# Preserve the user's complete wording so constraints that are not entity
+# slots, such as time ranges, counts, and exclusions, are not discarded.
+question = f"Answer the asset portion of this request: {request.user_prompt}"
+
+# Add the typed starting scope when present. The traversal guidance keeps
+# an affected-assets request from becoming an incorrect exact-match query.
+if filters:
+    question += (
+        f" Scope the query starting from: {', '.join(filters)}. If the request asks "
+        "about assets affected, impacted, or downstream of that starting point (e.g. "
+        "due to an outage), that starting asset is the ROOT of the traversal, not an "
+        "exact-match filter - include it and everything downstream of it. Only treat "
+        "it as an exact-match filter (return just that one asset) when the request is "
+        "asking about the asset itself with no affected/impacted/downstream framing."
+    )
+```
+
+These are domain labels, not table or column names. The agent states what it needs; the NL-2-SQL service owns how that request maps to the database.
+
+> **Deterministic engineering: the model gets a narrower job.**
+> Entity extraction already happened, once, at classification. The agent reads typed slots instead of re-parsing the sentence, so `TX-17` cannot become `TX-71` on a retry. Each model judgment is made one time and then carried forward as data.
+
+The original user wording matters. Reducing the prompt to a generic request such as "return assets" would discard constraints such as time windows, counts, inspection state, or exclusions that were never promoted into entity slots.
+
+> **Deterministic engineering: preserve the input you did not model.**
+> Entity slots capture what you anticipated. The user's raw wording carries what you did not - time windows, exclusions, aggregations. Passing both means an unmodeled constraint degrades into a weaker query, not a silently wrong one.
+
+The fixed-schema reference below this block is already provided, along with `return question`. Leave both in place. That reference describes allowed domain values; it does not inspect live rows or choose a query plan.
+
+#### Step 5: Accept the supported payload shapes
+
+Finally, complete `_parse()`, the helper Step 2 called.
+
+```python
+# Accept the supported successful response shapes: rows returned directly
+# as a list, or rows nested under a known dictionary key.
+if isinstance(payload, list):
+    assets = payload
+elif isinstance(payload, dict):
+    assets = payload.get("rows") or payload.get("assets") or []
+else:
+    assets = []
+
+return {"assets": assets, "count": len(assets)}
+```
+
+This is normalization, not error recovery. Transport and tool failures were already raised in Step 1. `_parse()` handles only the successful payload shapes the agent supports.
+
+> **Deterministic engineering: handle the shapes you support, reject the rest.**
+> The `else: assets = []` branch is not a catch-all. Failures already raised in Step 1. This method maps _known successful_ shapes and treats anything else as empty rather than guessing at an unfamiliar structure.
 
 ### Coding wrap-up
 
 You have completed the domain-agent read path. The agent turns typed context into a domain question, calls one injected capability, normalizes successful output, preserves tool evidence, and returns a validated result. It does not select another agent, create a data connection, or render the final user response.
+
+Notice the shape of what you built: one model call, bounded by a typed request going in and a validated result coming out, with deterministic code on both sides. Add a second agent and the property holds - which is what makes a multi-agent system debuggable instead of merely impressive.
 
 > **Note:**
 >
