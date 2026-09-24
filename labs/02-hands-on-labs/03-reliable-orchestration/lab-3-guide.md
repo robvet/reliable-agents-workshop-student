@@ -240,6 +240,8 @@ Expect `3 passed`.
 
 #### Test 1: Permitted agent executes and the loop stops
 
+**What it does:** Verifies that an authorized recommendation is dispatched and that the loop ends when the model proposes no further agent.
+
 **How it works:** The first mocked `ReActDecision` recommends the permitted `asset` agent, which returns a typed `AgentResult`. The second decision recommends stopping.
 
 ```bash
@@ -250,6 +252,8 @@ Expect `3 passed`.
 
 #### Test 2: Stop decision causes no dispatch
 
+**What it does:** Verifies that a stop decision ends the request without running any agent, so the loop cannot dispatch on its way out.
+
 **How it works:** The mocked reasoning result returns a single `ReActDecision` whose `next_agent` is null.
 
 ```bash
@@ -259,6 +263,8 @@ Expect `3 passed`.
 **Expected result:** The factory is never asked to create an agent, the stream still ends with a final event, and the test reports `PASSED`.
 
 #### Test 3: Unauthorized agent is rejected
+
+**What it does:** Verifies that the allow-list blocks an agent the intent does not permit, and that it blocks it before the agent is ever created.
 
 **How it works:** The request is classified as `EVENT_RESPONSE`, but the mocked reasoning result recommends the unauthorized `customer` agent.
 

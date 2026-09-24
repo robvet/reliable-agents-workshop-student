@@ -338,6 +338,8 @@ Expect `6 passed`.
 
 #### Test 1: The user request and MCP evidence are preserved
 
+**What it does:** Verifies that the agent forwards the user's complete request and keeps every piece of evidence the tool returned.
+
 **How it works:** The mocked MCP client returns one aggregate row together with generated SQL and reasoning. The test confirms that the agent sends the user's complete request to MCP and preserves the returned rows, SQL, question, and reasoning in `AgentResult.data`.
 
 ```bash
@@ -347,6 +349,8 @@ Expect `6 passed`.
 **Expected result:** The complete user request appears in the MCP question, all returned evidence appears in `AgentResult.data`, and the test reports `PASSED`.
 
 #### Test 2: Typed entity scope is added to the question
+
+**What it does:** Verifies that entities extracted at classification time reach the MCP question as domain terms.
 
 **How it works:** The test constructs an `AgentRequest` containing asset, feeder, substation, and location entities, then calls `_build_prompt()` directly. This isolates deterministic prompt construction without invoking MCP.
 
@@ -358,6 +362,8 @@ Expect `6 passed`.
 
 #### Test 3: The agent returns a typed result and trace
 
+**What it does:** Verifies that the agent honors its contract - a validated `AgentResult` with a trace step, never a prose answer.
+
 **How it works:** The mocked MCP client returns one asset row. The test confirms that `handle()` normalizes the row and returns a successful `AgentResult` containing a `resolve_asset` trace step.
 
 ```bash
@@ -367,6 +373,8 @@ Expect `6 passed`.
 **Expected result:** The result identifies the `asset` agent, reports one normalized row, and includes a successful `resolve_asset` trace step. The test reports `PASSED`.
 
 #### Test 4: MCP failure propagates
+
+**What it does:** Verifies that a data-access failure fails the step rather than becoming an empty result that looks successful.
 
 **How it works:** The mocked MCP client's `query()` method raises `RuntimeError`. The test confirms that `AssetAgent` re-raises the exception rather than converting the failure into an empty successful result.
 
@@ -378,6 +386,8 @@ Expect `6 passed`.
 
 #### Test 5: Classified downstream scope uses fixed SQL
 
+**What it does:** Verifies that the traversal runs on the classifier's typed decision and uses hand-written SQL, not a generated query.
+
 **How it works:** The request contains an asset identifier and sets `needs_downstream_assets=True`. The normal MCP query returns the initial asset result, and the mocked `run_sql()` call returns the downstream rows. The test verifies that the fixed traversal query checks the named asset at the substation, feeder, and transformer levels.
 
 ```bash
@@ -387,6 +397,8 @@ Expect `6 passed`.
 **Expected result:** The agent calls `run_sql()` with the fixed traversal query and adds the returned rows to `AgentResult.data["downstream_assets"]`. The test reports `PASSED`.
 
 #### Test 6: Downstream traversal requires the classifier flag
+
+**What it does:** Verifies that the agent does not infer the traversal on its own - an asset identifier alone is not authorization to run it.
 
 **How it works:** The request contains an asset identifier but leaves `needs_downstream_assets=False`. The test confirms that an asset identifier alone does not authorize the additional traversal.
 
