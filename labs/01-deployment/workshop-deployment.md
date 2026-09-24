@@ -177,7 +177,21 @@ Fill in the four values that are environment-specific:
 | `DATABASE_URL`                          | The Postgres connection string                         |
 | `APPLICATIONINSIGHTS_CONNECTION_STRING` | From the Terraform output, or the Azure portal         |
 
-The remaining keys ship with working defaults: the two model deployment names, `MCP_SERVER_URL`, timeouts, and display flags.
+The remaining keys ship with working defaults: the two model deployment names, `MCP_SERVER_URL`, timeouts, and display flags. Set `SHOW_VERBOSE_ERRORS=True` while working through the labs if you want the real exception text in an error response instead of a generic message.
+
+### Configure the MCP server
+
+The MCP server runs as its own process and reads its own configuration. Copy its template too:
+
+```bash
+cp src/mcp_sql/.env.example src/mcp_sql/.env
+```
+
+Fill in `DATABASE_URL`, `MCP_OPENAI_ENDPOINT`, and `INFERENCE_LM_DEPLOYMENT`. The remaining keys have defaults, including the `MAX_ROWS` cap applied to every query the server runs.
+
+> Both files are gitignored. Neither should ever be committed - each holds a live database connection string.
+
+### Start the application
 
 Start all three processes from the repository root:
 
