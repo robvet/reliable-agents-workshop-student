@@ -4,6 +4,7 @@ import pytest
 
 from app.agents.asset_agent import AssetAgent
 from app.models.agent_request import AgentRequest
+from app.models.agent_result import AgentResult
 from app.models.entities import Entities
 
 
@@ -36,6 +37,82 @@ class TestAssetAgent:
             "question": question,
             "reasoning": "Counted recent non-retired transformers.",
         }
+
+    @pytest.mark.asyncio
+    async def test_returns_typed_result_with_trace(self) -> None:
+        mcp_client = MagicMock()
+        mcp_client.query = AsyncMock(return_value={
+            "rows": [{"asset_name": "TX-17"}],
+            "sql": "SELECT asset_name FROM grid_assets",
+        })
+
+        result = await AssetAgent(mcp_client).handle(AgentRequest(
+            agent="asset",
+            user_prompt="Find transformer TX-17",
+        ))
+
+        assert isinstance(result, AgentResult)
+        assert result.agent == "asset"
+        assert result.success is True
+        assert result.data["count"] == 1
+        assert result.trace_step.agent == "asset"
+        assert result.trace_step.action == "resolve_asset"
+        assert result.trace_step.success is True
+
+    @pytest.mark.asyncio
+    async def test_propagates_mcp_failure(self) -> None:
+        mcp_client = MagicMock()
+        mcp_client.query = AsyncMock(side_effect=RuntimeError("MCP unavailable"))
+
+        with pytest.raises(RuntimeError, match="MCP unavailable"):
+            await AssetAgent(mcp_client).handle(AgentRequest(
+                agent="asset",
+                user_prompt="Find transformer TX-17",
+            ))
+
+    @pytest.mark.asyncio
+    async def test_runs_fixed_downstream_query_when_classifier_requests_it(self) -> None:
+        downstream_assets = [
+            {
+                "substation_name": "Central",
+                "feeder_name": "FDR-204",
+                "transformer_name": "TX-17",
+                "meter_id": "M-1001",
+            },
+        ]
+        mcp_client = MagicMock()
+        mcp_client.query = AsyncMock(return_value={"rows": []})
+        mcp_client.run_sql = AsyncMock(return_value=downstream_assets)
+
+        result = await AssetAgent(mcp_client).handle(AgentRequest(
+            agent="asset",
+            user_prompt="What is affected by the outage at FDR-204?",
+            entities=Entities(
+                asset_id="FDR-204",
+                needs_downstream_assets=True,
+            ),
+        ))
+
+        downstream_sql = mcp_client.run_sql.await_args.args[0]
+        assert "WHERE sub.asset_name ILIKE 'FDR-204'" in downstream_sql
+        assert "OR feeder.asset_name ILIKE 'FDR-204'" in downstream_sql
+        assert "OR xfmr.asset_name ILIKE 'FDR-204'" in downstream_sql
+        assert result.data["downstream_assets"] == downstream_assets
+
+    @pytest.mark.asyncio
+    async def test_skips_downstream_query_without_classifier_flag(self) -> None:
+        mcp_client = MagicMock()
+        mcp_client.query = AsyncMock(return_value={"rows": []})
+        mcp_client.run_sql = AsyncMock()
+
+        result = await AssetAgent(mcp_client).handle(AgentRequest(
+            agent="asset",
+            user_prompt="Show feeder FDR-204",
+            entities=Entities(asset_id="FDR-204"),
+        ))
+
+        mcp_client.run_sql.assert_not_awaited()
+        assert "downstream_assets" not in result.data
 
     def test_appends_typed_asset_filters(self) -> None:
         agent = AssetAgent(MagicMock())

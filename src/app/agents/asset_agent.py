@@ -10,37 +10,44 @@ from .base_domain_agent import BaseDomainAgent
 class AssetAgent(BaseDomainAgent):
     """Resolves grid assets and their topology via the NL-2-SQL MCP endpoint.
 
-    Speaks in domain terms only (assets, transformers, feeders, substations,
-    topology, region). It does not know table or column names - the NL-2-SQL
-    layer behind the MCP boundary owns the schema and writes the SQL.
+    The model-generated read path speaks in domain terms (assets, transformers,
+    feeders, substations, topology, region). The NL-2-SQL layer behind the MCP
+    boundary maps that question to the database and writes the SQL. A separate
+    fixed-SQL branch handles deterministic downstream traversal.
     """
 
     name = "asset"
     description = "Resolves grid assets (transformers, feeders, substations) and their topology/paths."
 
     def __init__(self, mcp_client: IMcpClient):
-        # inject the MCP client so the agent stays testable and never news up a connection itself
+        # Depend on the interface supplied by the composition root. The agent
+        # never constructs a concrete client or opens its own data connection.
         self._mcp = mcp_client
 
     async def handle(self, request: AgentRequest) -> AgentResult:
-        # Constructs a domain-language question for the NL-2-SQL agent.
+        # Build a domain-language question from the typed request. AssetAgent
+        # describes the data it needs; the MCP service decides how to query it.
         prompt = self._build_prompt(request)
 
-        # Log the domain question sent to the NL-2-SQL MCP server.
+        # Record the exact question crossing the MCP boundary for observability.
         logging.info("AssetAgent: reasoning (question)=%s", prompt)
 
-        # Calls the MCP NL-2-SQL endpoint 
+        # Ask the injected MCP client to resolve the domain question. The client
+        # calls the NL-2-SQL service and returns its structured payload.
         try:
             payload = await self._mcp.query(prompt)
         except Exception:
-            # Cannot process a step with no data - record the fault and fail the
-            # request. The orchestrator turns this into an error event and stops.
+            # Do not turn a tool failure into a successful empty result. Record
+            # the fault and re-raise it so the orchestrator stops this request.
             logging.exception("AssetAgent: MCP query failed; failing the step")
             raise
 
+        # Normalize the successful MCP payload into the stable asset data shape
+        # expected by the rest of the typed pipeline.
         data = self._parse(payload)
-        # Surface the generated SQL and the question on the result so they travel
-        # back with the agent's output (and are visible to operators).
+
+        # Preserve the question, generated SQL, and server reasoning as evidence.
+        # These fields travel with the result and make the data leg inspectable.
         sql = payload.get("sql") if isinstance(payload, dict) else None
         reasoning = payload.get("reasoning") if isinstance(payload, dict) else None
         data["sql"] = sql
@@ -48,10 +55,10 @@ class AssetAgent(BaseDomainAgent):
         data["reasoning"] = reasoning
         logging.info("AssetAgent: rows=%d sql=%s", data["count"], sql)
 
-        # Deterministic second call - not NL2SQL. The classifier already decided
-        # (once, per turn) that this question needs downstream assets; the join
-        # itself is fixed, hand-written SQL, never model-generated, so it returns
-        # the same result every time for the same asset. See
+        # Run the provided deterministic traversal only when the classifier set
+        # the typed flag and supplied a starting asset. This second call does not
+        # use NL-2-SQL: the fixed join returns the same topology for the same data.
+        # See
         # docs/business-rules/fixed-graph-traversal-query-for-assets.md.
         if request.entities.needs_downstream_assets and request.entities.asset_id:
             try:
@@ -63,6 +70,8 @@ class AssetAgent(BaseDomainAgent):
             data["downstream_assets"] = downstream_rows
             logging.info("AssetAgent: downstream_assets rows=%d", len(downstream_rows))
 
+        # Return a validated AgentResult rather than prose. The trace step carries
+        # a concise summary and the evidence operators need to inspect this hop.
         return self._result(
             data=data,
             ok=True,
@@ -79,11 +88,13 @@ class AssetAgent(BaseDomainAgent):
     # --- helpers -----------------------------------------------------------
 
     def _build_prompt(self, request: AgentRequest) -> str:
-        """Domain-language question for the NL-2-SQL agent. No tables, no SQL."""
+        """Build the domain-language question sent to the NL-2-SQL service."""
+        # Read only the typed entity slots relevant to the asset domain.
         e = request.entities
         filters: list[str] = []
 
-        # Scope from the user's extracted entities (asset/feeder/substation/location).
+        # Translate each populated entity into a domain label. These values scope
+        # the question without asking AssetAgent to generate SQL.
         if e.asset_id:
             filters.append(f"asset {e.asset_id}")
         if e.feeder:
@@ -93,7 +104,12 @@ class AssetAgent(BaseDomainAgent):
         if e.location:
             filters.append(f"location {e.location}")
 
+        # Preserve the user's complete wording so constraints that are not entity
+        # slots, such as time ranges, counts, and exclusions, are not discarded.
         question = f"Answer the asset portion of this request: {request.user_prompt}"
+
+        # Add the typed starting scope when present. The traversal guidance keeps
+        # an affected-assets request from becoming an incorrect exact-match query.
         if filters:
             question += (
                 f" Scope the query starting from: {', '.join(filters)}. If the request asks "
@@ -104,9 +120,8 @@ class AssetAgent(BaseDomainAgent):
                 "asking about the asset itself with no affected/impacted/downstream framing."
             )
 
-        # Static schema reference: lets a question about the ALLOWED/POSSIBLE values of
-        # a column ("what status values CAN an asset show") be answered directly, instead
-        # of being misread as a request for what the live data currently contains.
+        # Append the fixed domain reference for questions about allowed values.
+        # This distinguishes schema possibilities from values in the current rows.
         question += (
             " Reference (fixed schema, not live data): grid_assets.asset_type allows "
             "SUBSTATION, FEEDER, TRANSFORMER; grid_assets.asset_condition (lifecycle - is the "
@@ -119,13 +134,14 @@ class AssetAgent(BaseDomainAgent):
         return question
 
     def _build_downstream_sql(self, asset_name: str) -> str:
-        """Fixed, hand-written SQL - never model-generated. Uses asset_meter_map
-        (substation -> feeder -> transformer -> service_location -> meter,
-        already defined in the DDL) joined back to grid_assets/service_locations/
-        meters for human-readable labels, since the view alone only carries IDs.
-        Matches asset_name at any level, since the named asset could itself be a
-        substation, feeder, or transformer.
+        """Build the fixed downstream traversal query.
+
+        This query is never model-generated. It walks the hierarchy from
+        substation to feeder, transformer, service location, and meter, and
+        matches the starting asset at every supported asset level.
         """
+        # Escape a quote in the classifier-provided asset name before placing it
+        # in the fixed query's string literals.
         safe_name = asset_name.replace("'", "''")
         return (
             "SELECT sub.asset_name AS substation_name, "
@@ -144,7 +160,9 @@ class AssetAgent(BaseDomainAgent):
         )
 
     def _parse(self, payload) -> dict:
-        """Normalize whatever the MCP endpoint returns into a typed shape."""
+        """Normalize a successful MCP payload into the agent's stable data shape."""
+        # Accept the supported successful response shapes: rows returned directly
+        # as a list, or rows nested under a known dictionary key.
         if isinstance(payload, list):
             assets = payload
         elif isinstance(payload, dict):
@@ -154,11 +172,14 @@ class AssetAgent(BaseDomainAgent):
         return {"assets": assets, "count": len(assets)}
 
     def _describe(self, request: AgentRequest) -> str:
+        # Summarize populated entity slots for the human-readable trace message.
         e = request.entities
         scope = {k: v for k, v in e.model_dump().items() if v is not None}
         return ", ".join(f"{k}={v}" for k, v in scope.items()) or "all"
 
     def _result(self, data: dict, ok: bool, summary: str, detail: dict | None = None) -> AgentResult:
+        # Construct the validated agent contract and its matching trace entry in
+        # one place so every AssetAgent result has the same observable shape.
         return AgentResult(
             agent=self.name,
             data=data,
