@@ -96,12 +96,12 @@ Connect each test to the application component and reliability principle it veri
 
 Before submitting each prompt, predict the intent and the agents that intent permits. Then submit it and compare your prediction against the Execution Trace.
 
-| Prompt                                                          | Your predicted intent | Your predicted agents |
-| --------------------------------------------------------------- | --------------------- | --------------------- |
-| `What is the status and provide information about XFMR-1000`      |                       |                       |
-| `What assets are affected by the outage for XFMR-1014?`           |                       |                       |
-| `How many transformers were inspected in the last 30 days?`       |                       |                       |
-| `Write a poem about the ocean`                                    |                       |                       |
+| Prompt                                                       | Your predicted intent | Your predicted agents |
+| ------------------------------------------------------------ | --------------------- | --------------------- |
+| `What is the status and provide information about XFMR-1000` |                       |                       |
+| `What assets are affected by the outage for XFMR-1014?`      |                       |                       |
+| `How many transformers were inspected in the last 30 days?`  |                       |                       |
+| `Write a poem about the ocean`                               |                       |                       |
 
 The last prompt is the most instructive. Watch what the Execution Trace shows - and what it does not.
 
