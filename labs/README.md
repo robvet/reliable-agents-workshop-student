@@ -14,13 +14,13 @@ By the end of the workshop, you will be able to:
 
 ## Workshop path
 
-1. [Set up your environment](00-environment-setup/README.md)
-2. [Deploy and verify the application](01-deployment/README.md)
+1. [About this workshop](00-about/about-this-lab.md)
+2. [Deploy and verify the application](01-deployment/workshop-deployment.md)
 3. Complete the hands-on labs:
-   - [Lab 1: Application Overview](02-hands-on-labs/01-application-overview/README.md)
-   - [Lab 2: Intent Classification](02-hands-on-labs/02-intent-classification/README.md)
-   - [Lab 3: Reliable Orchestration](02-hands-on-labs/03-reliable-orchestration/README.md)
-   - [Lab 4: Domain Agent](02-hands-on-labs/04-domain-agent/README.md)
+   - [Lab 1: Application Overview](02-hands-on-labs/01-application-overview/lab-1-guide.md)
+   - [Lab 2: Intent Classification](02-hands-on-labs/02-intent-classification/lab-2-guide.md)
+   - [Lab 3: Reliable Orchestration](02-hands-on-labs/03-reliable-orchestration/lab-3-guide.md)
+   - [Lab 4: Domain Agent](02-hands-on-labs/04-domain-agent/lab-4-guide.md)
 4. [Clean up workshop resources](03-cleanup/README.md)
 
 ## Repository checkpoints
