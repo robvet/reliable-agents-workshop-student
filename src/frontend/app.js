@@ -2249,11 +2249,27 @@ document.addEventListener("DOMContentLoaded", () => {
     th, td { border: 1px solid #334155; padding: 0.55rem 0.7rem; text-align: left; }
     th { background: #182337; }
     img { max-width: 100%; height: auto; }
+    .mermaid { margin: 1.75rem 0; text-align: center; }
+    .mermaid svg { max-width: 100%; height: auto; }
   </style>
 </head>
 <body>
     <article>${content}</article>
+    <script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"><\/script>
     <script>
+        // marked renders a mermaid fence as <pre><code class="language-mermaid">, but
+        // mermaid looks for .mermaid containers. Convert them before mermaid runs, and
+        // before the copy buttons below, which have no business on a diagram.
+        document.querySelectorAll("pre > code.language-mermaid").forEach((code) => {
+            const diagram = document.createElement("div");
+            diagram.className = "mermaid";
+            diagram.textContent = code.textContent;
+            code.parentElement.replaceWith(diagram);
+        });
+        if (window.mermaid) {
+            window.mermaid.initialize({ startOnLoad: false, theme: "dark", securityLevel: "strict" });
+            window.mermaid.run();
+        }
         document.querySelectorAll("pre").forEach((block) => {
             const button = document.createElement("button");
             button.type = "button";
