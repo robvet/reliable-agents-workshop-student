@@ -2,31 +2,42 @@
 
 ## Introduction
 
-An agentic application may need several specialized agents to answer one request. Based on its reasoning, a model can suggest which agent should run next. Because model output is probabilistic, deterministic application code acts as a control gate: it validates the model's proposal against application rules and invokes the agent only when that choice is permitted and available.
+Answering one operational question can take several specialized agents. A model is good at judging which one should run next, but its output is probabilistic. The same request can produce a different recommendation each time, and nothing in the model stops it from naming an agent the request was never authorized to use.
 
-In this lab, you will implement the application's deterministic orchestration workflow. `ReActReasoning` uses the model to propose the next domain agent or indicate that processing should stop. The `Orchestrator` validates that proposal against the intent's allow-list, resolves and runs the permitted agent, and collects its typed `AgentResult`. This creates a reliable boundary: the model proposes what might happen next, while deterministic code decides what is allowed to happen.
+In this lab you will build the control loop that makes those recommendations safe to act on. `ReActReasoning` proposes the next domain agent or signals that processing should stop. The `Orchestrator` validates that proposal against the intent's allow-list, resolves and runs the permitted agent, and collects its typed `AgentResult`. The model proposes what might happen next. Deterministic code decides what is allowed to happen.
 
 ## Reliable orchestration
 
 ### What is reliable orchestration?
 
-Reliable orchestration combines a language model's ability to reason about the next step with application code that validates and executes it. The `ReActReasoning` class asks a language model to recommend which domain agent should run next or whether no more agents are needed. It returns the proposed agent, confidence score, and explanation in a validated `ReActDecision` object.
+Reliable orchestration combines a language model's ability to reason about the next step with application code that validates and executes it. Two classes divide that work.
+
+The `ReActReasoning` class asks a language model to recommend which domain agent should run next, or whether no more agents are needed. It returns that recommendation as a validated `ReActDecision` carrying the proposed agent, a confidence score, and an explanation.
 
 > **Keep in mind:** A language model can understand and generate text, but it cannot execute code or take actions on its own.
 
-The `process_request_stream()` method in the `Orchestrator` class owns the deterministic control loop. The `Orchestrator` passes a list of permitted agent names to the `ReActReasoning` class. The class returns a `ReActDecision` that recommends one of those agents or indicates that processing should stop.
+The `process_request_stream()` method in the `Orchestrator` class owns the control loop. It hands `ReActReasoning` the list of agents the classified intent permits, and gets back a decision naming one of them or indicating that processing should stop.
 
-The loop ends when no additional agent is needed, an agent provides no new information, or the maximum number of steps is reached.
+The loop ends when no additional agent is needed, an agent provides no new information, or `MAX_STEPS` is reached.
 
 ### Why reliable orchestration matters
 
-A model's recommendation is probabilistic and should not be treated as permission to execute code. The `Orchestrator` acts as the deterministic control gate: it restricts which agents may be selected, validates the model's proposal, and controls when execution stops.
+Without a gate, every model recommendation becomes an execution. The same request can take a different path on each run, an agent can be invoked that the request was never authorized to use, and a failure surfaces far from its cause.
+
+Deterministic control is what turns a probabilistic recommendation into a dependable system:
+
+| Property    | What provides it                                                                               |
+| ----------- | ---------------------------------------------------------------------------------------------- |
+| Reliability | The allow-list rejects any agent the intent does not permit.                                   |
+| Accuracy    | Decisions arrive as validated typed objects, so code acts on checked fields rather than prose. |
+| Coherence   | One agent runs at a time, and each result becomes evidence for the next decision.              |
+| Consistency | An intent always permits the same agents, however the user phrased the request.                |
 
 > The model recommends the next step. The `Orchestrator` decides whether that step is allowed and executes it.
 
 ## Architecture context
 
-Reliable orchestration is the controlled sequence between intent classification and response composition. The `Orchestrator` controls each step while `ReActReasoning` recommends which permitted domain agent should run next:
+Reliable orchestration sits between intent classification and response composition.
 
 ### Component relationships
 
@@ -36,7 +47,7 @@ The highlighted components show where probabilistic reasoning meets deterministi
 
 ### Orchestration sequence
 
-The following sequence traces one pass through the control loop, from preparing the permitted agent catalog to reasoning, validation, dispatch, and observation.
+The following sequence traces one pass through the control loop, from preparing the permitted agent catalog to reasoning, validation, dispatch, and observation. Notice that `Validate permitted agent` is a call the `Orchestrator` makes to itself. No other component is consulted, because that decision is pure deterministic code.
 
 ```mermaid
 sequenceDiagram
@@ -70,13 +81,13 @@ sequenceDiagram
 
 ### Reliable orchestration components
 
-| Component            | Responsibility                                                                                    |
-| -------------------- | ------------------------------------------------------------------------------------------------- |
-| `Orchestrator`       | Owns the deterministic control loop, validates decisions, dispatches agents, and stops execution. |
-| `ReActReasoning`     | Recommends the next permitted agent or indicates that processing should stop.                     |
-| `RoutingMap`         | Returns the agent names permitted for the classified intent.                                      |
-| `DomainAgentFactory` | Builds the permitted agent catalog and creates the selected agent.                                |
-| `ContextBuilder`     | Adds completed `AgentResult` data to the next reasoning prompt.                                   |
+| Component            | Type          | Responsibility                                                                      |
+| -------------------- | ------------- | ----------------------------------------------------------------------------------- |
+| `Orchestrator`       | Deterministic | Owns the control loop, validates decisions, dispatches agents, and stops execution. |
+| `ReActReasoning`     | Model call    | Recommends the next permitted agent or indicates that processing should stop.       |
+| `RoutingMap`         | Deterministic | Returns the agent names permitted for the classified intent.                        |
+| `DomainAgentFactory` | Deterministic | Builds the permitted agent catalog and creates the selected agent.                  |
+| `ContextBuilder`     | Deterministic | Adds completed `AgentResult` data to the next reasoning prompt.                     |
 
 ## Lab exercise
 
@@ -183,9 +194,7 @@ Both directions are typed. `AgentRequest` is the input contract, and the agent r
 
 ### Coding wrap-up
 
-At this point, you have completed the recommendation, validation, and dispatch portion of the ReAct control loop.
-
-The surrounding provided code bounds the loop with `MAX_STEPS`, streams the agent result, stops when an agent returns duplicate meaningful data, handles failures, and assembles the final response.
+You have now completed the reason, validate, dispatch cycle. The model recommended an agent, deterministic code decided whether it was allowed to run, and typed objects carried every hop in between. That is the pattern this workshop is about: probabilistic reasoning wrapped in deterministic control.
 
 > **Note:**
 >
@@ -194,80 +203,52 @@ The surrounding provided code bounds the loop with `MAX_STEPS`, streams the agen
 
 ### Test activities
 
-Let's test the orchestration control loop in isolation and confirm that it executes only permitted model recommendations.
+Let's test the control loop in isolation and confirm it executes only permitted model recommendations.
 
-Lab 3 includes a predefined unit test class named `TestLab3ReliableOrchestration`, located in `tests/test_lab3_reliable_orchestration.py`. Its three tests follow the outcomes the deterministic control gate must handle:
+A set of predefined tests can be found in `tests/test_lab3_reliable_orchestration.py`, in the class `TestLab3ReliableOrchestration`. They cover the three outcomes a deterministic gate must handle:
 
 1. A permitted agent executes, and the next decision stops the loop.
 2. A stop decision completes without dispatching an agent.
 3. An agent outside the intent's allow-list is rejected.
 
-These tests replace model reasoning and domain agents with controlled responses, so they run consistently without making an Azure OpenAI request or calling a real domain agent.
+Model reasoning and the domain agents are replaced with controlled responses, so the tests run offline and produce the same result every time.
 
-To keep your focus on orchestration rather than a long pytest command, the repository includes the `test-lab3` script. You can use it to run all three tests together or select one test at a time.
-
-Run all three tests from the repository root:
+The repository includes a `test-lab3` script so you can skip the long pytest command. Run all three from the repository root:
 
 ```bash
 ./test-lab3
 ```
 
-The expected summary is `3 passed`.
+Expect `3 passed`.
 
 #### Test 1: Permitted agent executes and the loop stops
 
-**What it does:** Verifies that the `Orchestrator` executes a permitted agent and stops when the next reasoning decision indicates that the request is complete.
-
-**How it works:** The first mocked `ReActDecision` recommends the permitted `asset` agent. That agent returns a typed `AgentResult`. The second decision recommends stopping. The test verifies that the factory resolves `asset`, the agent receives the expected `AgentRequest`, and the stream ends with a final event.
-
-**Command:**
+**How it works:** The first mocked `ReActDecision` recommends the permitted `asset` agent, which returns a typed `AgentResult`. The second decision recommends stopping.
 
 ```bash
 ./test-lab3 -k selects_and_executes
 ```
 
-**Expected result:** The `asset` agent is created and called once with the original user prompt. The orchestration stream produces a final event, and the test reports `PASSED`.
+**Expected result:** The factory resolves `asset`, the agent is called once with the original user prompt, the stream ends with a final event, and the test reports `PASSED`.
 
 #### Test 2: Stop decision causes no dispatch
 
-**What it does:** Verifies that the `Orchestrator` does not execute an agent when `ReActReasoning` indicates that no additional work is needed.
-
-**How it works:** The mocked reasoning result returns a `ReActDecision` whose `next_agent` value is null. The test verifies that the factory is never asked to create an agent and that the stream still ends with a final event.
-
-**Command:**
+**How it works:** The mocked reasoning result returns a single `ReActDecision` whose `next_agent` is null.
 
 ```bash
 ./test-lab3 -k stops_without_dispatching
 ```
 
-**Expected result:** No domain agent is created or called. The orchestration stream produces a final event, and the test reports `PASSED`.
+**Expected result:** The factory is never asked to create an agent, the stream still ends with a final event, and the test reports `PASSED`.
 
 #### Test 3: Unauthorized agent is rejected
 
-**What it does:** Verifies that the `Orchestrator` rejects a model recommendation that falls outside the classified intent's allow-list.
-
-**How it works:** The request is classified as `EVENT_RESPONSE`, but the mocked reasoning result recommends the unauthorized `customer` agent. The test verifies that the factory is never asked to create that agent and that the stream reports an error containing `not allowed`.
-
-**Command:**
+**How it works:** The request is classified as `EVENT_RESPONSE`, but the mocked reasoning result recommends the unauthorized `customer` agent.
 
 ```bash
 ./test-lab3 -k rejects_agent_outside
 ```
 
-**Expected result:** The `customer` agent is not created or called. The orchestration stream produces an error explaining that the agent is not allowed, and the test reports `PASSED`.
+**Expected result:** The factory is never asked to create the `customer` agent, the stream reports an error containing `not allowed`, and the test reports `PASSED`.
 
-After the focused tests pass, submit a supported request. Verify in the Execution Trace that reasoning recommends an agent, the `Orchestrator` dispatches only a permitted agent, and processing ends with a final response.
-
-### Success criteria
-
-You have completed Lab 3 when:
-
-- You have completed the recommendation, validation, and dispatch block in `Orchestrator.process_request_stream()`.
-- The provided loop builds the available agent catalog from the classified intent's allow-list.
-- `ReActReasoning` recommends the next agent or indicates that processing should stop.
-- A stop decision ends the loop without dispatching another agent.
-- An agent outside the allow-list is rejected before it can be created or called.
-- A permitted agent receives a typed `AgentRequest`, and its `AgentResult` is added to the orchestration results.
-- The provided stopping controls still bound the loop with `MAX_STEPS` and stop duplicate meaningful results.
-- Running `./test-lab3` reports `3 passed`.
-- A supported request shows reasoning, permitted dispatch, and the final response in the Execution Trace.
+With the tests passing, start the application and submit a supported request. The Execution Trace should show the reasoning decision, the dispatch of a permitted agent, and the final response.
