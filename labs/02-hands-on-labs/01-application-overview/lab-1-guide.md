@@ -96,17 +96,17 @@ Connect each test to the application component and reliability principle it veri
 
 Before submitting each prompt, predict the intent and the agents that intent permits. Then submit it and compare your prediction against the Execution Trace.
 
-| Prompt                                                      | Your predicted intent | Your predicted agents |
-| ----------------------------------------------------------- | --------------------- | --------------------- |
-| `Report an outage at Central substation`                    |                       |                       |
-| `What is affected by the outage at FDR-204?`                |                       |                       |
-| `How many transformers were inspected in the last 30 days?` |                       |                       |
-| `Write a poem about the ocean`                              |                       |                       |
+| Prompt                                                          | Your predicted intent | Your predicted agents |
+| --------------------------------------------------------------- | --------------------- | --------------------- |
+| `What is the status and provide information about XFMR-1000`      |                       |                       |
+| `What assets are affected by the outage for XFMR-1014?`           |                       |                       |
+| `How many transformers were inspected in the last 30 days?`       |                       |                       |
+| `Write a poem about the ocean`                                    |                       |                       |
 
 The last prompt is the most instructive. Watch what the Execution Trace shows - and what it does not.
 
 > **Deterministic engineering: the allow-list is a lookup, not a request.**
-> `UNKNOWN` permits zero agents, so the last prompt dispatches nothing. That outcome does not depend on the model agreeing to decline it, and no phrasing of the request can widen the list. Compare it with the first prompt, where `EVENT_RESPONSE` permits five agents and the reasoning model may choose among those five and no others.
+> `UNKNOWN` permits zero agents, so the last prompt dispatches nothing. That outcome does not depend on the model agreeing to decline it, and no phrasing of the request can widen the list. Each of the other three resolves to an intent that permits a specific set of agents, and the reasoning model may choose among those and no others.
 
 ### 7. Walk through critical code
 
