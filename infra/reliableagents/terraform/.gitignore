@@ -1,6 +1,16 @@
 .terraform/
+.terraform.tfstate.lock.info
+
+# State and plan files hold real resource values, including the Postgres
+# connection string. Never commit them.
 *.tfstate
 *.tfstate.*
 *.tfplan
-crash.log
+tfplan*
+
+# Real values. Students copy terraform.tfvars.example instead.
 terraform.tfvars
+*.auto.tfvars
+
+crash.log
+crash.*.log

@@ -1,0 +1,38 @@
+# Copy this file to terraform.tfvars and fill in your own values.
+#
+#     cp terraform.tfvars.example terraform.tfvars
+#
+# terraform.tfvars is gitignored. Never commit it - it holds a live database
+# connection string.
+
+# Your Azure subscription. Find it with: az account show --query id -o tsv
+subscription_id = "00000000-0000-0000-0000-000000000000"
+
+# Azure Container Registry name. Must be GLOBALLY unique across all of Azure,
+# 5-50 characters, lowercase letters and numbers only. Add your initials or a
+# number so it does not collide with another attendee.
+acr_name = "acrreliableagents0000"
+
+# Postgres connection string for the workshop database.
+# Terraform does NOT create this server - see the deployment guide.
+database_url = "postgresql://USER:PASSWORD@HOST:5432/DATABASE?sslmode=require"
+
+# API Management publisher identity. The email receives service notifications.
+apim_publisher_name  = "Your Organization"
+apim_publisher_email = "you@example.com"
+
+# ---------------------------------------------------------------------------
+# Optional. These have defaults in variables.tf; uncomment only to override.
+# ---------------------------------------------------------------------------
+
+# Azure region for every resource.
+# location = "swedencentral"
+
+# Resource group name. Change this if you share a subscription with other
+# attendees, otherwise everyone deploys into the same group.
+# resource_group_name = "rg-reliableagents"
+
+# tags = {
+#   solution = "ReliableAgents"
+#   env      = "demo"
+# }
