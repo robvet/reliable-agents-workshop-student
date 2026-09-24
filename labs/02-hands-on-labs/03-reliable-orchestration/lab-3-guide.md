@@ -125,6 +125,9 @@ for step_decision in decisions:
 
 Notice what comes back. Each decision is a typed object carrying `next_agent`, `confidence`, and `reasoning`. That is structured output, not free text. Deterministic code can validate and act on typed fields. It cannot do that reliably with a sentence.
 
+> **Deterministic engineering: record the proposal before you judge it.**
+> The decision is streamed to the Execution Trace _before_ the allow-list check runs. Rejected recommendations are therefore visible too. An audit trail that only records what executed cannot tell you what the model tried to do - which is exactly what you need when diagnosing a bad run.
+
 #### Step 2: Select the final decision or stop
 
 The agent can return more than one decision, so you will act on the last one. If it names no next agent, the loop stops.
@@ -140,6 +143,9 @@ if decision.next_agent is None:
 
 A null `next_agent` means no additional domain agent is needed. Note that the model cannot stop the loop. Deterministic code decides which decision counts, and deterministic code performs the `break`.
 
+> **Deterministic engineering: termination cannot depend on the model cooperating.**
+> Three independent conditions end this loop: the model proposes no next agent, `MAX_STEPS` is reached, or an agent returns a result already seen. The model influences one. A model that never says "stop" still terminates, because the other two are enforced by code the model cannot reach.
+
 #### Step 3: Enforce the intent allow-list
 
 Before anything runs, you will check the recommended agent against the allow-list for the classified intent.
@@ -153,6 +159,9 @@ if decision.next_agent not in allowed:
 ```
 
 This is a deterministic gate. The model proposes an agent, but deterministic code decides whether it may run, and no recommendation can expand the agents permitted for this intent. Because the check happens before the agent is created, an unauthorized agent never executes and the request ends here.
+
+> **Deterministic engineering: authorization lives outside the prompt.**
+> `allowed` is a dictionary lookup, not an instruction the model is asked to respect. Restrictions written into a prompt are advisory - persuasive phrasing can talk a model past them. A membership test has no such surface. However the request is worded, `EVENT_RESPONSE` permits exactly five agents.
 
 #### Step 4: Resolve and announce the permitted agent
 
@@ -174,6 +183,9 @@ yield self._stream_events.build("step", TraceStep(
 
 This is the second gate. Passing the allow-list means the agent is authorized, not that it exists, so the factory lookup confirms it is registered. Note also that the model returned only a name. Deterministic code turns that string into the agent instance, so the model never hands the application something executable. The dispatch event then records the approved action before the agent runs.
 
+> **Deterministic engineering: the model names, code resolves.**
+> `decision.next_agent` is a string, and a string is inert. Only the factory can turn it into something that runs, and it only knows registered agents. Two independent gates now stand between a recommendation and execution - if the allow-list were ever wrong, the factory still bounds what can exist.
+
 #### Step 5: Invoke the agent and collect its result
 
 At this point, the reasoning model suggested an agent based on the intent, deterministic code validated the selection, and the agent factory created the instance. Now you will call that agent with a typed request and keep its typed result.
@@ -192,9 +204,14 @@ results.append(result)
 
 Both directions are typed. `AgentRequest` is the input contract, and the agent returns an `AgentResult`, which is structured output rather than free text. Deterministic code can read and act on its fields. Note also that the entities come from the validated `IntentResult`, not from the reasoning model, so the agent receives data that was already checked. Each result is appended to `results`, where it becomes evidence for the next reasoning step and input to the final response.
 
+> **Deterministic engineering: separate who runs from what they receive.**
+> The reasoning model chose the agent. It did not supply the entities - those come from the validated `IntentResult`. A poor routing decision can therefore send the wrong agent, but it cannot corrupt that agent's input. Keeping those two concerns apart limits how far any single bad judgment can propagate.
+
 ### Coding wrap-up
 
 You have now completed the reason, validate, dispatch cycle. The model recommended an agent, deterministic code decided whether it was allowed to run, and typed objects carried every hop in between. That is the pattern this workshop is about: probabilistic reasoning wrapped in deterministic control.
+
+Count the gates you just built: an allow-list check, a registry lookup, a typed request, and a typed result. None of them ask the model to behave. Each one makes misbehavior impossible, or at minimum visible in the trace.
 
 > **Note:**
 >
