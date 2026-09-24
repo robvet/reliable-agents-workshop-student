@@ -234,6 +234,9 @@ prompt = PromptLoader.render(
 
 `history or []` gives the template an empty list when no conversation history was supplied. The template can therefore use one predictable loop and condition instead of handling `None`. The rendered task prompt is stored in `prompt`; the next step sends it to the agent alongside the system instructions already loaded during initialization.
 
+> **Deterministic engineering: separate stable policy from volatile input.**
+> The persona is loaded once when the classifier is constructed; only the task template is rendered per request. Classification policy therefore cannot drift from one call to the next - only the data changes. Assembling one prompt by concatenating strings would let both vary, and you would have no way to tell which one moved.
+
 #### Step 2: Call the model and request structured output
 
 `LlmIntentClassifier` uses an internal Agent Framework `Agent` stored in `self._agent`. This is a local application object constructed once in the `__init__()` constructor. It combines the rendered system instructions, default model options, and an Agent Framework `OpenAIChatClient` configured for the intent model deployment. The agent object runs inside the application; the model inference occurs remotely in Azure OpenAI through its configured client.
@@ -251,6 +254,9 @@ The call also supplies `ChatOptions(response_format=IntentResult)`. This constru
 - technical error detail.
 
 Schema-constrained output is critical to agentic reliability because it turns a probabilistic model response into a predictable contract that deterministic code can validate and process. Once validated, downstream components can apply explicit routing, authorization, and error-handling rules without reinterpreting natural language.
+
+> **Deterministic engineering: constrain the output at the call site, do not parse it afterward.**
+> `response_format=IntentResult` makes the schema part of the request, so the constraint is enforced during decoding. The alternative - asking for JSON in prose and parsing the reply - moves the failure out of the model's decoder and into your string handling, where it surfaces later and reads as a bug in your code.
 
 Add the model call and its failure handling after Step 1:
 
@@ -274,6 +280,9 @@ except Exception as ex:
 The `try` block catches failures from the remote model service before they can escape into the rest of the application. If that call raises an exception, Step 2a converts the exception into the same typed contract used by the successful path. It returns `Intent.ERROR`, not `Intent.UNKNOWN`, because the system failed to complete classification; it did not successfully determine that the user's request was unsupported.
 
 The failure path also preserves evidence in two places. `logging.exception(...)` records the message and stack trace in the application log. The active trace span records the failed intent, `success=False`, and the exception for distributed tracing. The returned `IntentResult` carries `str(ex)` as technical detail. If the exception message is empty, `type(ex).__name__` uses the exception's class name instead. This guarantees that `error` contains diagnostic information. The application can then report the failure through logs, traces, and the returned `IntentResult` without allowing the exception to stop the request pipeline.
+
+> **Deterministic engineering: a failed call is not an answer.**
+> `ERROR` means the system could not classify. `UNKNOWN` means it classified successfully and found no supported intent. Collapsing those into one value would let an outage look like an unsupported question - and the request would be declined politely instead of retried or alerted on.
 
 #### Step 3: Validate the structured result
 
@@ -300,6 +309,9 @@ Step 3 reads the parsed value from the `response` object returned from the model
 If the call completed but did not return an `IntentResult`, Step 3a logs the failure and returns a typed `Intent.ERROR`.
 
 > **Note:** `Intent.ERROR` is returned because the classifier failed to produce a valid result. `Intent.UNKNOWN` is reserved for a successful classification that finds no supported intent.
+
+> **Deterministic engineering: trust the boundary, verify anyway.**
+> `response_format` is a strong guarantee, not a proof. The `isinstance` check costs one comparison and converts a whole class of "impossible" failures into a typed `ERROR` at the boundary that produced it. Guarantees you did not implement yourself are worth re-checking at the seam.
 
 #### Step 4: Record classification telemetry
 
@@ -330,6 +342,9 @@ logging.info(
 Step 4 is a pure observability step. It does not change the validated `IntentResult` or affect routing. It removes empty entity values, then records the intent, confidence, success state, and remaining entities on the active trace span. `Intent.UNKNOWN` counts as a successful classification because it is a valid result; only `Intent.ERROR` records failure.
 
 When available, the classifier adds the model's reasoning summary to the trace. It also writes a concise classification summary to the application log for testing and diagnosis.
+
+> **Deterministic engineering: observability is not error handling.**
+> Step 4 changes no control flow and alters no result. It records what happened and returns. Mixing the two is how a `catch` block that was only supposed to log ends up swallowing a failure - which is precisely the bug Step 2a exists to prevent.
 
 #### Step 5: Return the validated result
 
