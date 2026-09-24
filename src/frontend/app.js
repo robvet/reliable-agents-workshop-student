@@ -281,6 +281,13 @@ document.addEventListener("DOMContentLoaded", () => {
             openMarkdownPopup(link.href, link.dataset.labTitle || link.textContent.trim());
         });
     });
+
+    // A lab popup is a blank window holding rendered HTML, so a markdown link inside
+    // one has no renderer of its own - the browser would just download the .md file.
+    // Expose the renderer so those links can call back and open their target the same
+    // way the nav menu does.
+    window.openLabMarkdown = renderMarkdownIntoWindow;
+
     showHomeView();
 
 
@@ -2200,7 +2207,14 @@ document.addEventListener("DOMContentLoaded", () => {
             showError("Popup blocked. Please allow popups for this site.");
             return;
         }
+        await renderMarkdownIntoWindow(popup, url, title);
+    }
 
+    // Split from openMarkdownPopup so a caller that already holds a window can reuse
+    // the renderer. A lab popup needs that: window.open() is only granted to the window
+    // the user actually clicked in, so the popup opens its own target window and passes
+    // it here to be filled.
+    async function renderMarkdownIntoWindow(popup, url, title) {
         try {
             const response = await fetch(url);
             if (!response.ok) throw new Error(`Unable to load lab (${response.status})`);
@@ -2254,6 +2268,26 @@ document.addEventListener("DOMContentLoaded", () => {
             await navigator.clipboard.writeText(button.parentElement.querySelector("code").textContent);
             button.textContent = "Copied";
             window.setTimeout(() => { button.textContent = "Copy"; }, 1500);
+        });
+        // Render a markdown link in its own window instead of letting the browser
+        // download the raw .md. The window is opened here, from the document the user
+        // clicked in, because that is the only window the browser grants popups to.
+        document.addEventListener("click", (event) => {
+            const link = event.target.closest('a[href$=".md"]');
+            if (!link) return;
+            const parent = window.opener;
+            if (!parent || parent.closed || typeof parent.openLabMarkdown !== "function") return;
+            event.preventDefault();
+            const target = window.open(
+                "",
+                "_blank",
+                "popup=yes,width=1280,height=820,left=150,top=120,menubar=no,toolbar=no,location=no,status=no,resizable=yes,scrollbars=yes"
+            );
+            if (!target) {
+                window.alert("Popup blocked. Please allow popups for this site.");
+                return;
+            }
+            parent.openLabMarkdown(target, link.href, link.textContent.trim() || "Lab");
         });
     <\/script>
 </body>
