@@ -106,6 +106,43 @@ body {
     font-weight: 500;
 }
 
+.nav-tooltip {
+    position: relative;
+}
+
+.nav-tooltip::after {
+    content: attr(data-tooltip);
+    position: absolute;
+    top: calc(100% + 0.25rem);
+    left: 0.75rem;
+    width: calc(100% - 1.5rem);
+    padding: 0.5rem 0.625rem;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg-card);
+    color: var(--text-primary);
+    box-shadow: 0 0.4rem 1rem rgba(0, 0, 0, 0.4);
+    font-size: 1rem;
+    line-height: 1.35;
+    text-align: left;
+    white-space: normal;
+    z-index: 20;
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.nav-tooltip:hover,
+.nav-tooltip:focus-visible {
+    z-index: 20;
+}
+
+.nav-tooltip:hover::after,
+.nav-tooltip:focus-visible::after {
+    opacity: 1;
+    visibility: visible;
+}
+
 .nav-toggle {
     width: 100%;
     border: 0;

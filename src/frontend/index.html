@@ -6,7 +6,7 @@
     <title>Reliable Agents Workshop &amp; Accelerator</title>
     <link rel="icon" type="image/png" href="images/lens.png?v=20260824a">
     <link rel="apple-touch-icon" href="images/lens.png?v=20260824a">
-    <link rel="stylesheet" href="styles.css?v=20260923a-labs-nav">
+    <link rel="stylesheet" href="styles.css?v=20260923b-nav-tooltips">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 </head>
 <body>
@@ -22,18 +22,18 @@
         <!-- Navigation Links (placeholders for future features) -->
         <nav class="sidebar-nav">
             <a href="#" id="nav-home-link" class="nav-link active">Home</a>
-            <a href="#" id="nav-outages-link" class="nav-link">Outages</a>
-            <a href="#" id="nav-agentic-link" class="nav-link">Command Center</a>
-            <a href="#" id="nav-map-link" class="nav-link">Asset Map</a>
+            <a href="#" id="nav-outages-link" class="nav-link nav-tooltip" data-tooltip="Create and manage outages">Outages</a>
+            <a href="#" id="nav-agentic-link" class="nav-link nav-tooltip" data-tooltip="Submit requests and invoke agent actions">Command Center</a>
+            <a href="#" id="nav-map-link" class="nav-link nav-tooltip" data-tooltip="View asset locations, status, and outages">Asset Map</a>
             <hr class="nav-separator">
-            <a href="images/architecture-09-20.svg" id="nav-architecture-link" class="nav-link">Architecture</a>
-            <a href="html/data-dictionary.html" id="nav-datamodel-link" class="nav-link">Data Dictionary</a>
-            <a href="html/business-case.html" id="nav-businesscase-link" class="nav-link">Business Case</a>
+            <a href="images/architecture-09-20.svg" id="nav-architecture-link" class="nav-link nav-tooltip" data-tooltip="View the system architecture">Architecture</a>
+            <a href="html/data-dictionary.html" id="nav-datamodel-link" class="nav-link nav-tooltip" data-tooltip="Explore application data structures and definitions">Data Dictionary</a>
+            <a href="html/business-case.html" id="nav-businesscase-link" class="nav-link nav-tooltip" data-tooltip="Explore the business problem and solution">Business Case</a>
             <hr class="nav-separator">
-            <a href="#" id="nav-generator-link" class="nav-link">Synthetic Data</a>
-            <a href="#" id="nav-reasoning-link" class="nav-link">Reasoning</a>
+            <a href="#" id="nav-generator-link" class="nav-link nav-tooltip" data-tooltip="Generate or clear synthetic application data">Synthetic Data</a>
+            <a href="#" id="nav-reasoning-link" class="nav-link nav-tooltip" data-tooltip="Show or hide the ReAct Execution Trace">Reasoning</a>
             <hr class="nav-separator">
-            <button id="nav-labs-toggle" class="nav-link nav-toggle" type="button" aria-expanded="false" aria-controls="nav-labs-menu">
+            <button id="nav-labs-toggle" class="nav-link nav-toggle nav-tooltip" type="button" aria-expanded="false" aria-controls="nav-labs-menu" data-tooltip="Browse workshop lab documents">
                 <span>Labs</span>
                 <span class="nav-toggle-icon" aria-hidden="true">&#9656;</span>
             </button>

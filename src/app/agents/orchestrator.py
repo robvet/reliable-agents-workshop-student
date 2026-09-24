@@ -102,37 +102,36 @@ class Orchestrator:
             # Stream the classified intent to the Execution Trace display in the UI.   
             yield self._stream_events.build("intent", intent_result)
 
-            # UNKNOWN/ERROR short-circuit: both have no allowed agents, so skip the ReAct loop.
-            # The assembler returns an out-of-scope response for UNKNOWN or a technical
-            # error response for ERROR.
+            # Short-circuit:UNKNOWN/ERROR both have no allowed agents, so we skip the ReAct loop.
             if intent_result.intent in (Intent.UNKNOWN, Intent.ERROR):
+                # Call ReponseAssembler class to immediately return the appropriate final response
+                # for unsupported requests or classification failures and return control.
                 chat_result = await self._assembler.assemble(intent_result, [], request.user_prompt)
                 yield self._stream_events.build("final", chat_result)
                 return
 
 
             # ########################################################################
-            # Step 2: ReAct control loop.
+            # Step 2: ReAct control loop -- select agent to handle the request
             # ########################################################################            
-            # The reasoning component proposes one agent
-            # at a time (the model proposes); this orchestrator validates that choice,
-            # enforces the intent's allow-list, dispatches the agent, and observes the
-            # result - looping until the model reports done or MAX_STEPS is reached.
-            # Each finished agent contributes one AgentResult to `results`.
+            # Invoke ReAct loop where model will select the next agent to handle the request.
+            # This orchestrator validates that choice, enforces the intent's allow-list, 
+            # dispatches the agent, and observes the result. 
+            # The ReAct will iterate until the response is answered or until MAX_STEPS is reached.
+            # Each iteration contributes one AgentResult to `results`.
             results: list[AgentResult] = []
 
             try:
-                # Get the agents authorized for the classified intent.
+                # Important deterministic step: Fetch list of agents authorized for this intent.
                 allowed = RoutingMap.allowed_agents(intent_result.intent)
 
-                # Build the authorized agent catalog presented to the reasoning model.
+                # Populate the authorized agent catalog presented to the reasoning model.
                 catalog = self._factory.catalog(allowed)
 
                 # Limit the ReAct loop to the configured maximum number of steps.
                 for _ in range(self.MAX_STEPS):
 
-                    # An empty results list means no agent has answered yet, so there is no evidence
-                    # for a confidence score. Mark that first decision so the trace omits confidence.
+                    # An empty results list means this is the first call to the ReAct loop for this request
                     is_first_decision = not results
 
                     # Build the next prompt from the request and results collected so far.
@@ -140,6 +139,7 @@ class Orchestrator:
 
 
                     # Ask the model to recommend the next agent or to stop.
+                    # Decisions: List next_agent, confidence, reasoning
                     decisions = await self._reasoning.reason(enriched_prompt, catalog)
 
                     # Send every reasoning decision to the Execution Trace display in the UI.      

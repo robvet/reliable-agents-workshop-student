@@ -6,39 +6,42 @@ This workshop focuses on the programmatic patterns and engineering best practice
 
 ## The workshop approach
 
-You will explore and complete a multi-agent application that combines probabilistic model reasoning with deterministic application control. Models interpret language and recommend actions. Programmatic controls validate those recommendations, restrict what may execute, and preserve typed data throughout the workflow.
+You will explore and complete a multi-agent application that combines probabilistic model reasoning with deterministic application control. Models interpret language, reason, and recommend actions. Programmatic controls validate those recommendations, restrict what may execute, and preserve typed data throughout the workflow.
 
-The goal is not to make model output deterministic. The goal is to build a reliable system around probabilistic models.
+The goal is not to make model output deterministic. Models built with transformer architectures are probabilistic by design. Instead, the goal is to wrap reliable controls around probabilistic model behavior.
 
 ## Learning objectives
 
-- Build a multi-agent application with specialized domain agents.
-- Separate probabilistic model reasoning from deterministic application control.
-- Convert unstructured requests into known intents and typed data.
-- Apply validation and authorization before executing model recommendations.
-- Use bounded orchestration, explicit stopping conditions, and structured results.
-- Test and observe the complete agentic workflow.
+In this lab, you will:
+
+- Explore a multi-agent application with specialized domain agents.
+- Isolate probabilistic model reasoning from deterministic application control.
+- Transform unstructured user text into refined intents and typed data objects.
+- Apply control gates before executing model recommendations.
+- Implement bounded orchestration and explicit stopping conditions.
 
 ## Guiding principles
 
-- **Classify unstructured requests.** Convert user language into a known intent before routing or execution.
-- **Use typed inputs and outputs.** Pass validated objects between components instead of free-form text.
-- **Template prompts explicitly.** Define the model's task, available context, and expected result.
-- **Validate model and tool boundaries.** Check schemas, types, ranges, and permitted values before execution.
-- **Restrict available actions.** Allow models to recommend only agents and operations permitted for the request.
-- **Keep control flow deterministic.** Application code owns authorization, dispatch, stopping conditions, and failure handling.
-- **Make execution observable.** Record the decisions and steps required to test behavior and diagnose failures.
+You will learn patterns and best practices for building reliable agents and agentic applications:
+
+- **Classify unstructured user requests.** Convert user language into a clearly defined intent before routing or execution.
+- **Consume typed inputs and outputs.** Pass validated objects between components instead of error-prone free-form text.
+- **Require prompt templating.** Reuse prompt patterns with fixed instructions and defined variables.
+- **Validate model and tool boundaries.** Enforce schemas, types, ranges, and permitted values before execution.
+- **Restrict available actions.** Limit models to agents and operations permitted for the request.
+- **Implement deterministic control flow.** Application code controls dispatch, stopping conditions, and failure handling.
+- **Make execution observable.** Record decisions and steps throughout each operation.
 
 ## What you will build
 
 Across the hands-on labs, you will work with the application's core reliability boundaries:
 
-- typed intent classification;
-- deterministic routing and agent allow-lists;
-- bounded multi-agent orchestration;
-- typed requests and results;
+- Typed intent classification;
+- Deterministic routing and agent allow-lists;
+- Bounded multi-agent orchestration;
+- Typed requests and results;
 - MCP-backed domain data access; and
-- deterministic response assembly.
+- Structured final response assembly.
 
 Each pattern places an explicit programmatic boundary around model behavior. Together, these boundaries make the complete system easier to understand, test, operate, and improve.
 

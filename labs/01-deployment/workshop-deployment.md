@@ -1,110 +1,88 @@
-# Workshop Deployment: Azure Infrastructure and CI/CD
+# Workshop Deployment
 
 ## Introduction
 
-The workshop application uses two deployment paths. Terraform provisions the Azure infrastructure, identities, permissions, and service configuration. GitHub Actions builds and deploys the frontend, backend, and MCP application code.
+Workshop participants clone the main workshop repository and the student repository, provision the required Azure infrastructure with Terraform, and run the application locally.
 
-In this section, you will review both paths, deploy the workshop environment, and verify that the application works end to end before beginning the hands-on labs.
+Terraform provisions the Azure infrastructure, identities, permissions, and service configuration required by the workshop application. Configuring CI/CD is not required to complete the labs.
+
+In this section, you will prepare the workshop environment and verify that the application works end to end before beginning the hands-on labs.
 
 ## Learning objectives
 
 By the end of this section, you will be able to:
 
-- Describe the application's deployed Azure architecture.
+- Describe the application's Azure architecture.
 - Explain which resources Terraform creates and manages.
-- Explain how GitHub Actions authenticates to Azure with OpenID Connect (OIDC).
-- Describe how application images move from source code to Azure Container Apps.
-- Verify the health and connectivity of the deployed application.
+- Clone the workshop repositories.
+- Run the application locally.
+- Verify the health and connectivity of the application.
 
-## Deployment architecture
+## Deployment approach
 
-Terraform defines the Azure foundation used by the workshop application. The deployment includes:
+The workshop uses Terraform to provision the Azure resources required by the application. The frontend, backend, and MCP server run locally during the hands-on labs and connect to those Azure resources.
 
-- an Azure resource group;
-- an Azure Container Registry;
-- an Azure Container Apps environment;
-- separate Container Apps for the frontend, backend, and MCP server;
-- managed identities and role assignments;
-- Application Insights and Log Analytics; and
-- connections to the workshop's model deployments and PostgreSQL database.
+Terraform provisions and configures:
 
-GitHub Actions deploys application changes after the infrastructure is available:
-
-```mermaid
-flowchart LR
-	Repository[GitHub repository] --> Workflows[GitHub Actions]
-	Workflows -->|OIDC authentication| Azure[Azure]
-	Workflows -->|Build and push| ACR[Azure Container Registry]
-	ACR --> Frontend[Frontend Container App]
-	ACR --> Backend[Backend Container App]
-	ACR --> MCP[MCP Container App]
-```
+- An Azure resource group;
+- Managed identities and role assignments;
+- Application Insights and Log Analytics;
+- Connections to the workshop's model deployments; and
+- The PostgreSQL database used by the application.
 
 ## Prerequisites
 
 Before beginning deployment, confirm that you have:
 
-- access to the target Azure subscription;
-- permission to provision resources and role assignments;
-- Azure CLI and Terraform installed;
-- access to the workshop GitHub repository;
-- the required model deployments; and
-- a PostgreSQL connection string for the workshop data.
+- Access to the target Azure subscription;
+- Permission to provision resources and role assignments;
+- Git installed;
+- Azure CLI installed;
+- Terraform installed; and
+- Access to the main workshop and student repositories.
 
-_Exact version requirements and environment checks will be added during the deployment walkthrough._
+_Installation links, version requirements, and environment checks will be added during the deployment walkthrough._
 
-## Part 1: Review the Terraform configuration
+## Part 1: Clone the workshop repositories
+
+Clone the main workshop repository and the student repository to your computer. The main repository provides the completed reference application and supporting workshop resources. The student repository provides the starting point for the hands-on labs.
+
+_Repository links, clone commands, and the expected local folder structure will be added during the deployment walkthrough._
+
+## Part 2: Review the Terraform configuration
 
 The Terraform configuration is located in `infra/reliableagents/terraform`.
 
 Review how the configuration defines:
 
 1. Resource naming, region, tags, and input variables.
-2. Azure Container Registry and the Container Apps environment.
-3. Frontend, backend, and MCP Container Apps.
-4. Runtime and CI/CD managed identities.
-5. Role assignments for image pulls, model access, and deployment operations.
-6. Application Insights and Log Analytics.
-7. Outputs used to locate and configure the deployed services.
+2. Azure resources used by the workshop application.
+3. Managed identities and role assignments.
+4. Application Insights and Log Analytics.
+5. Connections to the model deployments and PostgreSQL database.
+6. Outputs used to configure the local application.
 
-## Part 2: Provision the Azure infrastructure
+## Part 3: Provision the Azure infrastructure
 
 Use Terraform to initialize the working directory, validate the configuration, review the deployment plan, and provision the Azure resources.
 
 _The exact Terraform commands, required variable values, and expected outputs will be added after the deployment configuration is finalized._
 
-## Part 3: Configure GitHub Actions
+## Part 4: Configure and run the application locally
 
-The CI/CD identity uses a federated credential so GitHub Actions can authenticate to Azure through OIDC. No Azure client secret is stored in the repository.
+Use the Terraform outputs to configure the local application. Start the frontend, backend, and MCP server from the student repository.
 
-Configure the repository with the Azure client, tenant, and subscription identifiers produced by the Terraform deployment. Then review the permissions granted to the deployment identity and the branch restriction applied by the federated credential.
+_The exact configuration values, startup commands, and expected terminal output will be added during the deployment walkthrough._
 
-## Part 4: Deploy the application
+## Part 5: Verify the workshop environment
 
-The repository contains three deployment workflows:
+After the Azure resources are provisioned and the local services are running:
 
-- `deploy-frontend.yml` deploys the web frontend.
-- `deploy-backend.yml` deploys the FastAPI backend.
-- `deploy-mcp.yml` deploys the MCP server.
-
-Each workflow:
-
-1. Runs when relevant files change on the `main` branch or when manually started.
-2. Authenticates to Azure through OIDC.
-3. Builds a container image in Azure Container Registry.
-4. Tags the image with the Git commit SHA.
-5. Updates the corresponding Azure Container App to use the new image.
-
-## Part 5: Verify the deployment
-
-After all three application components are deployed:
-
-1. Confirm that each Container App has a healthy active revision.
-2. Open the frontend URL.
-3. Verify connectivity between the frontend, backend, MCP server, models, and database.
-4. Submit a known-good request.
-5. Confirm that the response includes an intent, execution steps, and a final answer.
-6. Review the application telemetry for the request.
+1. Open the local frontend.
+2. Verify connectivity between the frontend, backend, MCP server, models, and database.
+3. Submit a known-good request.
+4. Confirm that the response includes an intent, execution steps, and a final answer.
+5. Review the application telemetry for the request.
 
 _Exact verification commands and expected results will be added during the deployment walkthrough._
 
@@ -113,11 +91,10 @@ _Exact verification commands and expected results will be added during the deplo
 The workshop environment is ready when:
 
 - Terraform has provisioned the required Azure infrastructure.
-- GitHub Actions can authenticate to Azure through OIDC.
-- The frontend, backend, and MCP images are deployed to their Container Apps.
+- The frontend, backend, and MCP server run locally.
 - All application services report healthy status.
-- A known-good request completes successfully from the frontend through the full application pipeline.
-- You can explain the difference between infrastructure provisioning and application deployment.
+- A known-good request completes successfully through the full application pipeline.
+- You can explain the difference between Azure infrastructure and the locally running application.
 
 ## Next step
 

@@ -82,68 +82,41 @@ sequenceDiagram
 
 ### Learning objectives
 
-- Implement the recommendation and dispatch portion of the ReAct control loop.
-- Keep model recommendations separate from application-controlled execution.
-- Stop processing when the model recommends no additional agent.
-- Reject an agent that is outside the classified intent's allow-list.
-- Dispatch a permitted agent with a typed `AgentRequest` and collect its typed `AgentResult`.
-- Verify permitted, stopped, and rejected decisions with focused tests and the live Execution Trace.
+By the end of this exercise you will be able to keep model recommendations separate from application-controlled execution, enforce an intent allow-list before dispatch, and pass typed objects between the `Orchestrator` and its agents.
 
-### Build target
+### What is already provided
 
-Complete the student coding block inside `Orchestrator.process_request_stream()`. The block must:
-
-1. Ask `ReActReasoning` to recommend the next agent or to stop.
-2. Stream each reasoning decision to the Execution Trace.
-3. Use the final decision to select the next action.
-4. Stop the loop when no next agent is recommended.
-5. Reject a recommended agent that is outside the intent's allow-list.
-6. Resolve the selected agent and fail when it is unavailable.
-7. Stream the dispatch step.
-8. Call the selected agent with a typed `AgentRequest`.
-9. Add the returned `AgentResult` to the collected results.
-
-The following code is provided:
-
-- Intent classification and the `UNKNOWN` and `ERROR` short-circuit.
+- Intent classification, with the `UNKNOWN` and `ERROR` short-circuit.
 - The authorized agent allow-list and catalog.
-- The `MAX_STEPS` loop and enriched prompt construction.
-- Agent-result trace streaming and duplicate-result stopping.
-- Error streaming, response assembly, telemetry, and conversation storage.
+- The `MAX_STEPS` loop and the enriched prompt.
+- Agent-result streaming and duplicate-result stopping.
+- Error handling, response assembly, telemetry, and conversation storage.
 
-The goal is to complete the recommendation, validation, and dispatch sequence between the enriched prompt and the provided result-processing code.
-
-### Coding activities
-
-1. Examine the provided ReAct loop and identify which operations belong to the model and which belong to the `Orchestrator`.
-2. Request the next-agent recommendation and stream its reasoning decisions.
-3. Select the final decision and stop when it contains no next agent.
-4. Validate the recommended agent against the intent's allow-list.
-5. Resolve the permitted agent and emit its dispatch event.
-6. Invoke the agent with a typed `AgentRequest` and collect its `AgentResult`.
-7. Run the focused orchestration tests.
-8. Submit a supported request and inspect the Execution Trace.
+Open the `Orchestrator` class in `src/app/agents/orchestrator.py`. You will complete the five steps below inside `Orchestrator.process_request_stream()`, between the enriched prompt and the provided result-processing code.
 
 #### Step 1: Request and stream the model recommendation
 
-The provided loop builds `enriched_prompt` from the original request and any agent results collected during earlier iterations. Pass that prompt and the authorized agent catalog to `ReActReasoning`:
+At this point, you will invoke the `ReActReasoning` agent, passing it the enriched prompt and the catalog of authorized agents for the specific intent. The agent will return its decision.
 
 ```python
 # Ask the model to recommend the next agent or to stop.
+# Each decision carries: next_agent, confidence, reasoning.
 decisions = await self._reasoning.reason(enriched_prompt, catalog)
 
 # Send every reasoning decision to the Execution Trace display in the UI.
 for step_decision in decisions:
-	yield self._stream_events.build(
-		"step", self._reasoning.to_trace_step(step_decision, is_first_decision)
-	)
+    yield self._stream_events.build(
+        "step", self._reasoning.to_trace_step(step_decision, is_first_decision)
+    )
 ```
 
-`ReActReasoning` proposes what should happen next but does not invoke an agent. The `Orchestrator` also streams each reasoning decision so the recommendation is visible before any action is taken.
+`ReActReasoning` only proposes the next agent - it cannot run it. That is the job of the `Orchestrator`.
+
+Notice what comes back. Each decision is a typed object carrying `next_agent`, `confidence`, and `reasoning`. That is structured output, not free text. Deterministic code can validate and act on typed fields. It cannot do that reliably with a sentence.
 
 #### Step 2: Select the final decision or stop
 
-Use the last reasoning decision as the proposed next action:
+The agent can return more than one decision, so you will act on the last one. If it names no next agent, the loop stops.
 
 ```python
 # Use the final decision to stop or select the next agent.
@@ -151,62 +124,62 @@ decision = decisions[-1]
 
 # Stop when the model recommends no next agent.
 if decision.next_agent is None:
-	break
+    break
 ```
 
-A null `next_agent` means the model recommends that no additional domain agent is needed. The `Orchestrator`, not the model, performs the `break` that stops execution.
+A null `next_agent` means no additional domain agent is needed. Note that the model cannot stop the loop. Deterministic code decides which decision counts, and deterministic code performs the `break`.
 
 #### Step 3: Enforce the intent allow-list
 
-Validate the recommendation before resolving or invoking an agent:
+Before anything runs, you will check the recommended agent against the allow-list for the classified intent.
 
 ```python
 # Reject agents outside the intent's allow-list.
 if decision.next_agent not in allowed:
-	raise RuntimeError(
-		f"Agent is not allowed for this intent: {decision.next_agent}"
-	)
+    raise RuntimeError(
+        f"Agent is not allowed for this intent: {decision.next_agent}"
+    )
 ```
 
-The allow-list is the deterministic authorization boundary. A model recommendation cannot expand the set of agents permitted for the classified intent. Raising the error before calling the factory ensures that an unauthorized agent is never created or executed.
+This is a deterministic gate. The model proposes an agent, but deterministic code decides whether it may run, and no recommendation can expand the agents permitted for this intent. Because the check happens before the agent is created, an unauthorized agent never executes and the request ends here.
 
 #### Step 4: Resolve and announce the permitted agent
 
-Resolve the selected agent and verify that it is registered:
+Next you will resolve the approved name into a real agent instance and announce the dispatch. `self._factory` is the `DomainAgentFactory`, which knows every domain agent the application supports and builds a fresh one, already wired with its dependencies.
 
 ```python
 # Get the selected agent; fail if it is not registered.
 agent = self._factory.get(decision.next_agent)
 if agent is None:
-	raise RuntimeError(f"Agent is not available: {decision.next_agent}")
+    raise RuntimeError(f"Agent is not available: {decision.next_agent}")
 
 # Announce the agent dispatch in the Execution Trace display in the UI.
 yield self._stream_events.build("step", TraceStep(
-	agent=decision.next_agent,
-	action="dispatch",
-	summary=f"Calling {decision.next_agent} agent to fetch data",
+    agent=decision.next_agent,
+    action="dispatch",
+    summary=f"Calling {decision.next_agent} agent to fetch data",
 ))
 ```
 
-Passing the allow-list does not guarantee that the selected agent is available. The factory lookup verifies registration, and the dispatch event makes the approved action visible before the agent runs.
+This is the second gate. Passing the allow-list means the agent is authorized, not that it exists, so the factory lookup confirms it is registered. Note also that the model returned only a name. Deterministic code turns that string into the agent instance, so the model never hands the application something executable. The dispatch event then records the approved action before the agent runs.
 
 #### Step 5: Invoke the agent and collect its result
 
-Call the selected agent with the current entities and enriched prompt:
+At this point, the reasoning model suggested an agent based on the intent, deterministic code validated the selection, and the agent factory created the instance. Now you will call that agent with a typed request and keep its typed result.
 
 ```python
 # Call the selected agent with the entities and enriched prompt.
 result = await agent.handle(AgentRequest(
-	agent=decision.next_agent,
-	entities=intent_result.entities,
-	user_prompt=enriched_prompt,
+    agent=decision.next_agent,
+    entities=intent_result.entities,
+    user_prompt=enriched_prompt,
 ))
 
 # Save the result for the next reasoning step and final response.
 results.append(result)
 ```
 
-`AgentRequest` is the typed input contract for the domain agent. The returned `AgentResult` is added to `results`, where it becomes evidence for the next reasoning iteration and input to the final response.
+Both directions are typed. `AgentRequest` is the input contract, and the agent returns an `AgentResult`, which is structured output rather than free text. Deterministic code can read and act on its fields. Note also that the entities come from the validated `IntentResult`, not from the reasoning model, so the agent receives data that was already checked. Each result is appended to `results`, where it becomes evidence for the next reasoning step and input to the final response.
 
 ### Coding wrap-up
 
