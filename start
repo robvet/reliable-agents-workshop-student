@@ -1,4 +1,45 @@
 #!/bin/bash
-# Start both frontend and backend
+# Start the MCP server, backend, and frontend.
+#
+# By default every component runs its complete implementation, so a fresh clone
+# runs end to end and the Lab 1 tour works.
+#
+# Pass a lab flag to run that lab's exercise copy instead. Only the named
+# component is swapped; the others stay complete, which keeps a failure during a
+# lab attributable to the one file you are working in.
+#
+#   ./start            complete implementations
+#   ./start --lab2     your intent classifier
+#   ./start --lab3     your orchestrator
+#   ./start --lab4     your asset agent
+#   ./start --all-labs all three are yours
+#
+# See docs/lab-mechanics/how-lab-files-work.md.
+
+set -e
+
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+case "${1:-}" in
+    "")         LAB_MODE="" ;;
+    --lab2)     LAB_MODE="intent" ;;
+    --lab3)     LAB_MODE="orchestrator" ;;
+    --lab4)     LAB_MODE="asset" ;;
+    --all-labs) LAB_MODE="intent,orchestrator,asset" ;;
+    -h|--help)
+        sed -n '2,17p' "${BASH_SOURCE[0]}" | sed 's/^# \{0,1\}//'
+        exit 0
+        ;;
+    *)
+        echo "Unknown option: $1" >&2
+        echo "Use --lab2, --lab3, --lab4, --all-labs, or no option. See --help." >&2
+        exit 1
+        ;;
+esac
+
+if [[ -n "$LAB_MODE" ]]; then
+    echo -e "\033[33mLab mode: $LAB_MODE (exercise copy). Run ./start with no option for the complete app.\033[0m"
+fi
+
+export LAB_MODE
 bash "$SCRIPT_DIR/scripts/bash/start-app.sh"

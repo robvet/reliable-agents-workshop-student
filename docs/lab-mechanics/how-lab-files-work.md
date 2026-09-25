@@ -112,21 +112,21 @@ load-bearing.
 Each test script must force its own component into lab mode. Without this, the tests
 import the solution and pass on a fresh clone, verifying nothing:
 
+> **Note:** Lab 3's tests always run against `orchestrator_lab.py`. Without pinning
+> `LAB_MODE`, the tests would import the complete implementation and pass before the
+> student has written anything.
+
 ```bash
 # test-lab3
-LAB_MODE=orchestrator ... pytest tests/test_lab3_reliable_orchestration.py
+LAB_MODE=orchestrator PYTHONPATH="$REPO_ROOT/src" exec ... pytest tests/test_lab3_reliable_orchestration.py
 ```
 
-### The orchestrator tests need care
+### The other orchestrator tests
 
-Two other test files import `Orchestrator` and are **not** Lab 3 exercises:
-
-- `tests/test_orchestrator_errors.py`
-- `tests/test_react_reasoning.py`
-
-With `LAB_MODE=orchestrator` set, both would run against the blanked file and fail. They
-must pin themselves to the solution, either by clearing `LAB_MODE` in their runner or by
-importing `orchestrator_complete` directly.
+`tests/test_orchestrator_errors.py` and `tests/test_react_reasoning.py` also import
+`Orchestrator`. Verified: all 9 pass under `LAB_MODE=orchestrator`, because neither
+exercises the blanked control loop. No pinning is required today, but a future test that
+drives the loop would need it.
 
 ## Rules
 

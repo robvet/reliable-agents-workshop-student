@@ -1,3 +1,12 @@
+"""Lab 3 exercise copy of the Orchestrator.
+
+Fill in the five steps inside process_request_stream(). Each begins with a comment
+that is already here; add the code beneath it. Everything else is provided.
+
+Run ./start --lab3 to use this file, and ./test-lab3 to check your work.
+The complete implementation is in orchestrator.py if you need to compare.
+"""
+
 """Orchestrator: deterministic Phase 0 pipeline - classify -> plan -> dispatch -> compose."""
 import logging
 from collections.abc import AsyncIterator
@@ -140,48 +149,33 @@ class Orchestrator:
 
                     # Ask the model to recommend the next agent or to stop.
                     # Decisions: List next_agent, confidence, reasoning
-                    decisions = await self._reasoning.reason(enriched_prompt, catalog)
 
-                    # Send every reasoning decision to the Execution Trace display in the UI.      
-                    for step_decision in decisions:
-                        yield self._stream_events.build(
-                            "step", self._reasoning.to_trace_step(step_decision, is_first_decision)
-                        )
+
+                    # Send every reasoning decision to the Execution Trace display in the UI.
+
 
                     # Use the final decision to stop or select the next agent.
-                    decision = decisions[-1]
+
 
                     # Stop when the model recommends no next agent.
-                    if decision.next_agent is None:
-                        break
+
 
                     # Reject agents outside the intent's allow-list.
-                    if decision.next_agent not in allowed:
-                        raise RuntimeError(
-                            f"Agent is not allowed for this intent: {decision.next_agent}"
-                        )
+
 
                     # Get the selected agent; fail if it is not registered.
-                    agent = self._factory.get(decision.next_agent)
-                    if agent is None:
-                        raise RuntimeError(f"Agent is not available: {decision.next_agent}")
+
 
                     # Announce the agent dispatch in the Execution Trace display in the UI.
-                    yield self._stream_events.build("step", TraceStep(
-                        agent=decision.next_agent,
-                        action="dispatch",
-                        summary=f"Calling {decision.next_agent} agent to fetch data",
-                    ))
+
 
                     # Call the selected agent with the entities and enriched prompt.
-                    result = await agent.handle(AgentRequest(
-                        agent=decision.next_agent,
-                        entities=intent_result.entities,
-                        user_prompt=enriched_prompt,
-                    ))
+
 
                     # Save the result for the next reasoning step and final response.
-                    results.append(result)
+                    raise NotImplementedError(
+                        "Lab 3: implement the reason, validate, dispatch cycle above."
+                    )
 
 
 
@@ -250,21 +244,3 @@ class Orchestrator:
             payload={"message": message},
         )
 
-
-# ---------------------------------------------------------------------------
-# Lab 3 toggle. Everything above is the canonical implementation and is what
-# runs by default. When LAB_MODE names "orchestrator", importers receive the
-# exercise copy instead - Python binds names in order, so the last binding wins.
-#
-# This lets every existing import stay unchanged:
-#     from .agents.orchestrator import Orchestrator
-#
-# LAB_MODE may name one component or several, comma separated, so ./start
-# --all-labs can swap all three at once.
-#
-# See docs/lab-mechanics/how-lab-files-work.md.
-# ---------------------------------------------------------------------------
-import os as _os  # noqa: E402
-
-if "orchestrator" in _os.getenv("LAB_MODE", "").split(","):
-    from .orchestrator_lab import Orchestrator  # noqa: F811,E402
