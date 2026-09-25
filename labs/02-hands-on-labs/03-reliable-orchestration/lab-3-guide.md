@@ -295,3 +295,7 @@ Expect `3 passed`.
 **Expected result:** The factory is never asked to create the `customer` agent, the stream reports an error containing `not allowed`, and the test reports `PASSED`.
 
 With the tests passing, start the application with `./start --lab3` and submit a supported request. The Execution Trace should show the reasoning decision, the dispatch of a permitted agent, and the final response - all produced by the loop you wrote.
+
+## Next step
+
+Continue to [Lab 4: Domain Agent](../04-domain-agent/lab-4-guide.md).

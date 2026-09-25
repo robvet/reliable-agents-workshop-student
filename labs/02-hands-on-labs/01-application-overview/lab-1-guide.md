@@ -138,3 +138,7 @@ Before moving on, make sure you can answer these without looking:
 ## Code changes
 
 None. This is an instructor-led application and architecture tour.
+
+## Next step
+
+Continue to [Lab 2: Intent Classification](../02-intent-classification/lab-2-guide.md).

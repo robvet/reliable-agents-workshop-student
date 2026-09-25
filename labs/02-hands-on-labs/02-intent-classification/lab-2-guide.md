@@ -470,3 +470,7 @@ After the focused tests pass, submit a supported request. Verify that the succes
 
 > **Deterministic engineering: test the failure axis as hard as the success axis.**
 > Two of these four tests assert on failures, and both check the `error` detail rather than just the intent value. A system that only proves its happy path will still return `ERROR` when something breaks - it just will not be able to tell you why. The diagnostic detail is part of the contract, so it is part of the test.
+
+## Next step
+
+Continue to [Lab 3: Reliable Orchestration](../03-reliable-orchestration/lab-3-guide.md).

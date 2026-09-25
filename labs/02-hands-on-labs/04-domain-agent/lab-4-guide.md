@@ -437,3 +437,7 @@ How many transformers were inspected in the last 30 days, excluding retired asse
 ```
 
 In the Execution Trace, confirm that the orchestrator dispatches `asset`, the agent records the MCP question and generated SQL, and the final response uses the returned evidence.
+
+## Next step
+
+That completes the hands-on labs. When you are finished with the workshop, see [Clean up workshop resources](../../03-cleanup/lab-cleanup.md).
