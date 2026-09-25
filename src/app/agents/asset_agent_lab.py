@@ -1,3 +1,13 @@
+"""Lab 4 exercise copy of AssetAgent.
+
+Fill in the five steps below. Each begins with a comment that is already here;
+add the code beneath it. Everything else is provided, including the deterministic
+downstream traversal and the _result() helper.
+
+Run ./start --lab4 to use this file, and ./test-lab4 to check your work.
+The complete implementation is in asset_agent.py if you need to compare.
+"""
+
 import logging
 
 from ..models.agent_request import AgentRequest
@@ -27,33 +37,24 @@ class AssetAgent(BaseDomainAgent):
     async def handle(self, request: AgentRequest) -> AgentResult:
         # Build a domain-language question from the typed request. AssetAgent
         # describes the data it needs; the MCP service decides how to query it.
-        prompt = self._build_prompt(request)
+
 
         # Record the exact question crossing the MCP boundary for observability.
-        logging.info("AssetAgent: reasoning (question)=%s", prompt)
+
 
         # Ask the injected MCP client to resolve the domain question. The client
         # calls the NL-2-SQL service and returns its structured payload.
-        try:
-            payload = await self._mcp.query(prompt)
-        except Exception:
+
             # Do not turn a tool failure into a successful empty result. Record
             # the fault and re-raise it so the orchestrator stops this request.
-            logging.exception("AssetAgent: MCP query failed; failing the step")
-            raise
 
         # Normalize the successful MCP payload into the stable asset data shape
         # expected by the rest of the typed pipeline.
-        data = self._parse(payload)
+
 
         # Preserve the question, generated SQL, and server reasoning as evidence.
         # These fields travel with the result and make the data leg inspectable.
-        sql = payload.get("sql") if isinstance(payload, dict) else None
-        reasoning = payload.get("reasoning") if isinstance(payload, dict) else None
-        data["sql"] = sql
-        data["question"] = prompt
-        data["reasoning"] = reasoning
-        logging.info("AssetAgent: rows=%d sql=%s", data["count"], sql)
+
 
         # Run the provided deterministic traversal only when the classifier set
         # the typed flag and supplied a starting asset. This second call does not
@@ -72,17 +73,8 @@ class AssetAgent(BaseDomainAgent):
 
         # Return a validated AgentResult rather than prose. The trace step carries
         # a concise summary and the evidence operators need to inspect this hop.
-        return self._result(
-            data=data,
-            ok=True,
-            summary=f"resolved assets ({self._describe(request)}); {data['count']} found",
-            detail={
-                "question": prompt,
-                "tool": "ask",
-                "sql": sql or "",
-                "reasoning": reasoning or "",
-                "rows": str(data["count"]),
-            },
+        raise NotImplementedError(
+            "Lab 4: build the question, call MCP, normalize, and return an AgentResult."
         )
 
     # --- helpers -----------------------------------------------------------
@@ -95,30 +87,14 @@ class AssetAgent(BaseDomainAgent):
 
         # Translate each populated entity into a domain label. These values scope
         # the question without asking AssetAgent to generate SQL.
-        if e.asset_id:
-            filters.append(f"asset {e.asset_id}")
-        if e.feeder:
-            filters.append(f"feeder {e.feeder}")
-        if e.substation:
-            filters.append(f"substation {e.substation}")
-        if e.location:
-            filters.append(f"location {e.location}")
+
 
         # Preserve the user's complete wording so constraints that are not entity
         # slots, such as time ranges, counts, and exclusions, are not discarded.
-        question = f"Answer the asset portion of this request: {request.user_prompt}"
+        question = ""
 
         # Add the typed starting scope when present. The traversal guidance keeps
         # an affected-assets request from becoming an incorrect exact-match query.
-        if filters:
-            question += (
-                f" Scope the query starting from: {', '.join(filters)}. If the request asks "
-                "about assets affected, impacted, or downstream of that starting point (e.g. "
-                "due to an outage), that starting asset is the ROOT of the traversal, not an "
-                "exact-match filter - include it and everything downstream of it. Only treat "
-                "it as an exact-match filter (return just that one asset) when the request is "
-                "asking about the asset itself with no affected/impacted/downstream framing."
-            )
 
         # Append the fixed domain reference for questions about allowed values.
         # This distinguishes schema possibilities from values in the current rows.
@@ -163,12 +139,8 @@ class AssetAgent(BaseDomainAgent):
         """Normalize a successful MCP payload into the agent's stable data shape."""
         # Accept the supported successful response shapes: rows returned directly
         # as a list, or rows nested under a known dictionary key.
-        if isinstance(payload, list):
-            assets = payload
-        elif isinstance(payload, dict):
-            assets = payload.get("rows") or payload.get("assets") or []
-        else:
-            assets = []
+        assets = []
+
         return {"assets": assets, "count": len(assets)}
 
     def _describe(self, request: AgentRequest) -> str:
@@ -193,21 +165,3 @@ class AssetAgent(BaseDomainAgent):
             ),
         )
 
-
-# ---------------------------------------------------------------------------
-# Lab 4 toggle. Everything above is the canonical implementation and is what
-# runs by default. When LAB_MODE names "asset", importers receive the exercise
-# copy instead - Python binds names in order, so the last binding wins.
-#
-# This lets the existing import stay unchanged:
-#     from .asset_agent import AssetAgent
-#
-# LAB_MODE may name one component or several, comma separated, so ./start
-# --all-labs can swap all three at once.
-#
-# See docs/lab-mechanics/how-lab-files-work.md.
-# ---------------------------------------------------------------------------
-import os as _os  # noqa: E402
-
-if "asset" in _os.getenv("LAB_MODE", "").split(","):
-    from .asset_agent_lab import AssetAgent  # noqa: F811,E402

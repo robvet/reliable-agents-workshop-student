@@ -8,4 +8,4 @@ if [[ "${1:-}" == ::* ]]; then
     shift
 fi
 
-PYTHONPATH="$REPO_ROOT/src" exec "$REPO_ROOT/.venv/bin/python" -m pytest "$TEST_TARGET" -v -s -p no:warnings "$@"
+PYTHONPATH="$REPO_ROOT/src" LAB_MODE=intent exec "$REPO_ROOT/.venv/bin/python" -m pytest "$TEST_TARGET" -v -s -p no:warnings "$@"

@@ -182,7 +182,9 @@ Complete the `classify()` method in `LlmIntentClassifier`. It renders the per-re
 - `_extract_reasoning_summary()`, used only for logging.
 - A temporary `Intent.ERROR` return so the application runs before the lab is finished.
 
-Open `src/app/intent/llm_intent_classifier.py`. Each step below begins with a comment that is already in the file. Find that comment and add the code beneath it, replacing the temporary return when you reach Step 5.
+Open `src/app/intent/llm_intent_classifier_lab.py`. Each step below begins with a comment that is already in the file. Find that comment and add the code beneath it, replacing the `NotImplementedError` when you reach Step 5.
+
+Start the application with `./start --lab2` so it runs your file rather than the complete implementation. The complete version remains in `llm_intent_classifier.py` if you want to compare after finishing.
 
 #### Step 1: Build the per-request task prompt
 

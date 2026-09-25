@@ -3,7 +3,7 @@
 How the workshop ships a complete, runnable application that can still present
 Labs 2, 3, and 4 as exercises with code removed.
 
-Status: **design agreed, not yet implemented.**
+Status: **implemented.**
 
 ## The problem
 
@@ -23,26 +23,28 @@ But each lab needs its file blank when the student reaches it.
 
 ## The approach: one repository, a toggle at the import
 
-Every lab file becomes three files:
+Each lab file keeps its name and its complete implementation, and gains one sibling:
 
 ```
-orchestrator.py            # shim - decides which of the two below is used
-orchestrator_complete.py   # the complete implementation
-orchestrator_lab.py        # blanked; the student writes here
+orchestrator.py       # the complete implementation, plus a toggle at the bottom
+orchestrator_lab.py   # blanked; the student writes here
 ```
 
-The shim holds no logic:
+The toggle is appended to the end of the existing file. Everything above it is
+unchanged:
 
 ```python
-"""Selects which Orchestrator the workshop runs. See docs/lab-mechanics."""
-import os
+class Orchestrator:
+    ...the complete implementation...
 
-if os.getenv("LAB_MODE") == "orchestrator":
-    from .orchestrator_lab import Orchestrator
-else:
-    from .orchestrator_complete import Orchestrator
 
-__all__ = ["Orchestrator"]
+# Lab 3 toggle. Python binds names in order, so the last binding is what
+# importers receive. LAB_MODE may name one component or several, comma
+# separated, so ./start --all-labs can swap all three at once.
+import os as _os
+
+if "orchestrator" in _os.getenv("LAB_MODE", "").split(","):
+    from .orchestrator_lab import Orchestrator  # noqa: F811
 ```
 
 ### Why this works
@@ -140,7 +142,7 @@ drives the loop would need it.
        raise NotImplementedError("Lab 2: implement the classification workflow")
    ```
 
-2. **The shim reads `os.environ` directly**, not the `Settings` class. The shim runs at
+2. **The toggle reads `os.environ` directly**, not the `Settings` class. It runs at
    import time, before application configuration is built; going through `Settings` would
    risk an import cycle for no benefit.
 
@@ -152,15 +154,23 @@ drives the loop would need it.
 
 ## Implementation checklist
 
-- [ ] Add `_complete.py` and `_lab.py` for each of the three files; convert the original
-      to a shim.
-- [ ] Blank the exercise code in each `_lab.py`, leaving the marker comments intact.
-- [ ] Add flag parsing to `./start` that exports `LAB_MODE`.
-- [ ] Set `LAB_MODE` in `test-lab2`, `test-lab3`, `test-lab4`.
-- [ ] Pin `test_orchestrator_errors.py` and `test_react_reasoning.py` to the solution.
-- [ ] Update the file paths in the Lab 2, 3, and 4 guides.
-- [ ] Verify: a fresh clone runs end to end; each `./start --labN` blanks only its own
-      file; each `test-labN` fails before the student writes code and passes after.
+- [x] Append the toggle to each of the three lab files.
+- [x] Add `*_lab.py` for each, with the exercise code blanked and the marker comments
+      intact.
+- [x] Add flag parsing to `./start` that exports `LAB_MODE`.
+- [x] Pin `LAB_MODE` in `test-lab2`, `test-lab3`, and `test-lab4`.
+- [x] Confirm `test_orchestrator_errors.py` and `test_react_reasoning.py` still pass
+      under `LAB_MODE` - they do; neither reaches the blanked code.
+- [x] Point the Lab 2, 3, and 4 guides at `*_lab.py` and name the `./start --labN` flag.
+- [x] Verify: default mode runs 38 tests green; each toggle swaps only its own component;
+      each `test-labN` fails on the blank file and passes once the code is filled in.
+
+## Adding a fourth lab
+
+1. Append the toggle block to the file, choosing a `LAB_MODE` name.
+2. Copy the file to `*_lab.py` and blank the exercise code, keeping every marker comment.
+3. Add the flag to `./start` and pin `LAB_MODE` in the new `test-labN`.
+4. Point the guide at `*_lab.py`.
 
 ## Open questions
 

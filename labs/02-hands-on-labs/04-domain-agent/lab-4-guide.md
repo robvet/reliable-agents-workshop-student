@@ -145,7 +145,9 @@ You will complete `AssetAgent`'s model-generated read path, from prompt construc
 - The fixed downstream traversal branch and its hand-written SQL.
 - Logging, the result helper, and orchestration-level error handling.
 
-Open `src/app/agents/asset_agent.py`. Each step below begins with a comment that is already in the file. Find that comment and add the code directly beneath it. Work through `handle()` first, then the two helper methods it calls.
+Open `src/app/agents/asset_agent_lab.py`. Each step below begins with a comment that is already in the file. Find that comment and add the code directly beneath it. Work through `handle()` first, then the two helper methods it calls.
+
+Start the application with `./start --lab4` so it runs your file rather than the complete implementation. The complete version remains in `asset_agent.py` if you want to compare after finishing.
 
 #### Step 1: Ask the MCP client for asset data
 

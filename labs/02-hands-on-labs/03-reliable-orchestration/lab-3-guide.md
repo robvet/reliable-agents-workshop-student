@@ -103,7 +103,9 @@ By the end of this exercise you will be able to keep model recommendations separ
 - Agent-result streaming and duplicate-result stopping.
 - Error handling, response assembly, telemetry, and conversation storage.
 
-Open the `Orchestrator` class in `src/app/agents/orchestrator.py`. You will complete the five steps below inside `Orchestrator.process_request_stream()`, between the enriched prompt and the provided result-processing code.
+Open the `Orchestrator` class in `src/app/agents/orchestrator_lab.py`. You will complete the five steps below inside `Orchestrator.process_request_stream()`, between the enriched prompt and the provided result-processing code.
+
+Start the application with `./start --lab3` so it runs your file rather than the complete implementation. The complete version remains in `orchestrator.py` if you want to compare after finishing.
 
 #### Step 1: Request and stream the model recommendation
 
