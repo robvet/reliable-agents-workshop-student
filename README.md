@@ -6,9 +6,9 @@
   <img src="https://img.shields.io/badge/Data-PostgreSQL-336791?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL" />
 </p>
 
-Reliable Agents is a multi-agent system for operational asset-event response. A user asks a domain question in plain language; the application identifies the intent, creates and validates an execution plan, dispatches the request to authorized specialist agents, and assembles their structured results into one answer.
+Reliable Agents is a multi-agent system for operational asset-event response. A user asks a domain question in plain language; the application identifies the intent, creates and validates an execution plan, dispatches the request to an authorized specialist agent, sends the request to a Natural Language-2-SQL agent, queries the data store, and assembles their structured results into one answer.
 
-The current utility-focused implementation supports asset, event, crew, reliability, and customer questions. It is designed to demonstrate how models can propose intent and plans while deterministic code validates every step before execution. Operational data is accessed through a dedicated MCP service backed by PostgreSQL, and the browser receives live progress events as the workflow runs.
+The current utility-focused implementation supports asset, event, crew, reliability, and customer questions. It is designed to demonstrate how probabilistic models can propose intent and an execution plan while a deterministically-coded harness validates every step before and after execution. Operational data is accessed through a dedicated MCP service backed by PostgreSQL, and the browser receives live progress events as the workflow runs.
 
 ## UI Preview
 
