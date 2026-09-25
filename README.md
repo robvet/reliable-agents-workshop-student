@@ -1,4 +1,4 @@
-# Reliable Agents - Multi-Agent Operational Response
+# Reliable Agents - Multi-Agent Workshop & Accelerator
 
 <p align="center">
   <img src="https://img.shields.io/badge/Microsoft-Agent_Framework-0078D4?style=for-the-badge&logo=microsoft&logoColor=white" alt="Microsoft Agent Framework" />
