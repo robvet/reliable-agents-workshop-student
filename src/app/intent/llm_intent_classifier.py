@@ -1,4 +1,7 @@
-"""LlmIntentClassifier — intent recognition via Agent Framework + Azure OpenAI Responses API."""
+"""LlmIntentClassifier — intent recognition via Agent Framework + Azure OpenAI Responses API.
+
+This is the complete implementation. Lab 2 students edit llm_intent_classifier_lab.py.
+"""
 import logging
 
 from agent_framework import Agent, ChatOptions

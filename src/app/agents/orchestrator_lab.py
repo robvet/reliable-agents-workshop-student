@@ -6,8 +6,6 @@ that is already here; add the code beneath it. Everything else is provided.
 Run ./start --lab3 to use this file, and ./test-lab3 to check your work.
 The complete implementation is in orchestrator.py if you need to compare.
 """
-
-"""Orchestrator: deterministic Phase 0 pipeline - classify -> plan -> dispatch -> compose."""
 import logging
 from collections.abc import AsyncIterator
 

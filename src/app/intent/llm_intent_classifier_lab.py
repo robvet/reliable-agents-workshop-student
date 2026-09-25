@@ -7,8 +7,6 @@ the constructor and _extract_reasoning_summary().
 Run ./start --lab2 to use this file, and ./test-lab2 to check your work.
 The complete implementation is in llm_intent_classifier.py if you need to compare.
 """
-
-"""LlmIntentClassifier — intent recognition via Agent Framework + Azure OpenAI Responses API."""
 import logging
 
 from agent_framework import Agent, ChatOptions

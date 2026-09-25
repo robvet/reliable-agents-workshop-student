@@ -1,3 +1,8 @@
+"""AssetAgent: resolves grid assets and their topology via the NL-2-SQL MCP endpoint.
+
+This is the complete implementation. Lab 4 students edit asset_agent_lab.py.
+"""
+
 import logging
 
 from ..models.agent_request import AgentRequest

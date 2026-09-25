@@ -1,4 +1,7 @@
-"""Orchestrator: deterministic Phase 0 pipeline - classify -> plan -> dispatch -> compose."""
+"""Orchestrator: deterministic Phase 0 pipeline - classify -> plan -> dispatch -> compose.
+
+This is the complete implementation. Lab 3 students edit orchestrator_lab.py.
+"""
 import logging
 from collections.abc import AsyncIterator
 
