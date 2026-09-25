@@ -2288,11 +2288,27 @@ document.addEventListener("DOMContentLoaded", () => {
         // Render a markdown link in its own window instead of letting the browser
         // download the raw .md. The window is opened here, from the document the user
         // clicked in, because that is the only window the browser grants popups to.
+        //
+        // The renderer lives in the main application window. A lab opened from another
+        // lab has that lab as its opener, not the app, so walk the chain until we find
+        // the window that owns it.
+        function findLabHost() {
+            let w = window.opener;
+            for (let hop = 0; hop < 10 && w; hop++) {
+                try {
+                    if (!w.closed && typeof w.openLabMarkdown === "function") return w;
+                    w = w.opener;
+                } catch (_) {
+                    return null;
+                }
+            }
+            return null;
+        }
         document.addEventListener("click", (event) => {
             const link = event.target.closest('a[href$=".md"]');
             if (!link) return;
-            const parent = window.opener;
-            if (!parent || parent.closed || typeof parent.openLabMarkdown !== "function") return;
+            const host = findLabHost();
+            if (!host) return;
             event.preventDefault();
             const target = window.open(
                 "",
@@ -2303,7 +2319,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 window.alert("Popup blocked. Please allow popups for this site.");
                 return;
             }
-            parent.openLabMarkdown(target, link.href, link.textContent.trim() || "Lab");
+            host.openLabMarkdown(target, link.href, link.textContent.trim() || "Lab");
         });
     <\/script>
 </body>
