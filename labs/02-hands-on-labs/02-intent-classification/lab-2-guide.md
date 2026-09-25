@@ -184,7 +184,25 @@ Complete the `classify()` method in `LlmIntentClassifier`. It renders the per-re
 
 Open `src/app/intent/llm_intent_classifier_lab.py`. Each step below begins with a comment that is already in the file. Find that comment and add the code beneath it, replacing the `NotImplementedError` when you reach Step 5.
 
-Start the application with `./start --lab2` so it runs your file rather than the complete implementation. The complete version remains in `llm_intent_classifier.py` if you want to compare after finishing.
+### Running your code
+
+You are editing `llm_intent_classifier_lab.py`. The application runs the complete implementation by default, so tell it to use your file instead:
+
+```bash
+./start --lab2
+```
+
+The startup banner confirms which file is active. `./start` with no flag returns to the complete implementation at any time, which is useful if you want to see the working behavior before writing your own.
+
+To check your work:
+
+```bash
+./test-lab2
+```
+
+That script always grades `llm_intent_classifier_lab.py`, whether or not the application is running.
+
+> Changing the flag requires a restart. Python loads the file once at startup.
 
 #### Step 1: Build the per-request task prompt
 
@@ -364,7 +382,7 @@ You have completed the intent-classification workflow in `classify()`. One unstr
 > **Note:**
 >
 > 1. Save your changes.
-> 2. Start the application by typing `./start` in the VS Code terminal.
+> 2. Start the application by typing `./start --lab2` in the VS Code terminal.
 > 3. Move to the **Test activities** section.
 
 ### Test activities

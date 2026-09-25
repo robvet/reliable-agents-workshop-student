@@ -147,7 +147,25 @@ You will complete `AssetAgent`'s model-generated read path, from prompt construc
 
 Open `src/app/agents/asset_agent_lab.py`. Each step below begins with a comment that is already in the file. Find that comment and add the code directly beneath it. Work through `handle()` first, then the two helper methods it calls.
 
-Start the application with `./start --lab4` so it runs your file rather than the complete implementation. The complete version remains in `asset_agent.py` if you want to compare after finishing.
+### Running your code
+
+You are editing `asset_agent_lab.py`. The application runs the complete implementation by default, so tell it to use your file instead:
+
+```bash
+./start --lab4
+```
+
+The startup banner confirms which file is active. `./start` with no flag returns to the complete implementation at any time, which is useful if you want to see the working behavior before writing your own.
+
+To check your work:
+
+```bash
+./test-lab4
+```
+
+That script always grades `asset_agent_lab.py`, whether or not the application is running.
+
+> Changing the flag requires a restart. Python loads the file once at startup.
 
 #### Step 1: Ask the MCP client for asset data
 
@@ -412,7 +430,7 @@ Expect `6 passed`.
 
 Together, these last two tests capture the deterministic boundary: the classifier makes the traversal judgment once, and fixed code either executes or skips the traversal from that typed decision.
 
-With all six tests passing, start the application and submit an asset question such as:
+With all six tests passing, start the application with `./start --lab4` and submit an asset question such as:
 
 ```text
 How many transformers were inspected in the last 30 days, excluding retired assets?

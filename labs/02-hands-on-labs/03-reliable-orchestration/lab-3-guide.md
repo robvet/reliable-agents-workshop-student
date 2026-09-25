@@ -105,7 +105,25 @@ By the end of this exercise you will be able to keep model recommendations separ
 
 Open the `Orchestrator` class in `src/app/agents/orchestrator_lab.py`. You will complete the five steps below inside `Orchestrator.process_request_stream()`, between the enriched prompt and the provided result-processing code.
 
-Start the application with `./start --lab3` so it runs your file rather than the complete implementation. The complete version remains in `orchestrator.py` if you want to compare after finishing.
+### Running your code
+
+You are editing `orchestrator_lab.py`. The application runs the complete implementation by default, so tell it to use your file instead:
+
+```bash
+./start --lab3
+```
+
+The startup banner confirms which file is active. `./start` with no flag returns to the complete implementation at any time, which is useful if you want to see the working behavior before writing your own.
+
+To check your work:
+
+```bash
+./test-lab3
+```
+
+That script always grades `orchestrator_lab.py`, whether or not the application is running.
+
+> Changing the flag requires a restart. Python loads the file once at startup.
 
 #### Step 1: Request and stream the model recommendation
 
@@ -276,4 +294,4 @@ Expect `3 passed`.
 
 **Expected result:** The factory is never asked to create the `customer` agent, the stream reports an error containing `not allowed`, and the test reports `PASSED`.
 
-With the tests passing, start the application and submit a supported request. The Execution Trace should show the reasoning decision, the dispatch of a permitted agent, and the final response.
+With the tests passing, start the application with `./start --lab3` and submit a supported request. The Execution Trace should show the reasoning decision, the dispatch of a permitted agent, and the final response - all produced by the loop you wrote.
