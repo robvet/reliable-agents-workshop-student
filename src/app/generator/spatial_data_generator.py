@@ -373,13 +373,20 @@ class SpatialDataGenerator:
             event_id: Optional[str],
             status: str,
             asset_pool: Optional[list[GridAsset]] = None,
+            asset_name: Optional[str] = None,
         ) -> None:
             """Create one outage plus its detection log entry and restoration work order.
 
             event_id=None means a standalone incident - a fresh one-row event is
             created for it here, since every outage needs exactly one event.
+
+            asset_name pins the outage to a specific transformer so the lab guides
+            can reference it by name. Falls back to a random pick from asset_pool
+            when the name is not found.
             """
-            xfmr = random.choice(asset_pool if asset_pool else transformers)  # with replacement
+            xfmr = next((t for t in transformers if t.asset_name == asset_name), None) if asset_name else None
+            if xfmr is None:
+                xfmr = random.choice(asset_pool if asset_pool else transformers)  # with replacement
             start_dt = self._now() - timedelta(hours=random.randint(1, 48))
 
             resolved_event_id = event_id
@@ -452,27 +459,47 @@ class SpatialDataGenerator:
                     assigned_crew.status = "AVAILABLE"
 
         # Three outages total, one per severity/status pair - LOW/REPORTED,
-        # MEDIUM/CONFIRMED, HIGH/CREW_ASSIGNED. Each outage's asset is pinned to
-        # its event's own region (North for LOW/storm, South for MEDIUM), so an
-        # outage's asset region and its event's region always agree.
+        # MEDIUM/CONFIRMED, HIGH/CREW_ASSIGNED. Each outage is pinned to a named
+        # transformer so the lab guides can reference a specific asset and get the
+        # same answer on every generated dataset. A transformer's region follows
+        # whichever feeder it was randomly attached to, so the event's region is
+        # realigned below to match its pinned asset rather than the reverse.
         north_transformers = [t for t in transformers if t.region == "North"] or transformers
         south_transformers = [t for t in transformers if t.region == "South"] or transformers
         other_events = [e for e in events if e is not storm_event]
         baseline_severity_by_event = {e.event_id: e.severity for e in other_events}
+        events_by_id = {e.event_id: e for e in events}
         baseline_plan = [
-            ("LOW", "REPORTED", north_transformers),
-            ("MEDIUM", "CONFIRMED", south_transformers),
-            ("HIGH", "CREW_ASSIGNED", north_transformers),
+            ("LOW", "REPORTED", north_transformers, "XFMR-1001"),
+            ("MEDIUM", "CONFIRMED", south_transformers, "XFMR-1000"),
+            ("HIGH", "CREW_ASSIGNED", north_transformers, "XFMR-1003"),
         ]
-        for severity, status, asset_pool in baseline_plan:
+        for severity, status, asset_pool, asset_name in baseline_plan:
+            pinned = next((t for t in transformers if t.asset_name == asset_name), None)
             if severity == "HIGH":
-                _make_outage(event_id=storm_event.event_id, status=status, asset_pool=asset_pool)
+                # The storm event is shared, so leave its region alone; realigning
+                # it would contradict the storm's own North framing.
+                _make_outage(
+                    event_id=storm_event.event_id,
+                    status=status,
+                    asset_pool=asset_pool,
+                    asset_name=asset_name,
+                )
                 continue
             matching_events = [
                 event_id for event_id, sev in baseline_severity_by_event.items() if sev == severity
             ]
             event_id = random.choice(matching_events) if matching_events else None
-            _make_outage(event_id=event_id, status=status, asset_pool=asset_pool)
+            # Keep the asset and its event in the same region. The asset is fixed,
+            # so the event moves.
+            if event_id and pinned:
+                events_by_id[event_id].region = pinned.region
+            _make_outage(
+                event_id=event_id,
+                status=status,
+                asset_pool=asset_pool,
+                asset_name=asset_name,
+            )
 
         session.flush()
 

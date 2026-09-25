@@ -55,17 +55,17 @@ rather than defining one is therefore indistinguishable to everyone downstream.
 
 That means **every existing import stays exactly as written**. All nine of them:
 
-| File                                       | Line | Import                                             |
-| ------------------------------------------ | ---- | -------------------------------------------------- |
-| `src/app/main.py`                          | 25   | `from .agents.orchestrator import Orchestrator`    |
-| `src/app/api/routes.py`                    | 15   | `from ..agents.orchestrator import Orchestrator`   |
-| `src/app/agents/orchestrator.py`           | 14   | `from ..intent.llm_intent_classifier import ...`   |
-| `src/app/agents/domain_agent_factory.py`   | 2    | `from .asset_agent import AssetAgent`              |
-| `tests/test_lab2_llm_intent_classifier.py` | 5    | `from app.intent.llm_intent_classifier import ...` |
-| `tests/test_lab3_reliable_orchestration.py`| 6    | `from app.agents.orchestrator import Orchestrator` |
-| `tests/test_asset_agent.py`                | 5    | `from app.agents.asset_agent import AssetAgent`    |
-| `tests/test_orchestrator_errors.py`        | 1    | `from app.agents.orchestrator import Orchestrator` |
-| `tests/test_react_reasoning.py`            | 6    | `from app.agents.orchestrator import Orchestrator` |
+| File                                        | Line | Import                                             |
+| ------------------------------------------- | ---- | -------------------------------------------------- |
+| `src/app/main.py`                           | 25   | `from .agents.orchestrator import Orchestrator`    |
+| `src/app/api/routes.py`                     | 15   | `from ..agents.orchestrator import Orchestrator`   |
+| `src/app/agents/orchestrator.py`            | 14   | `from ..intent.llm_intent_classifier import ...`   |
+| `src/app/agents/domain_agent_factory.py`    | 2    | `from .asset_agent import AssetAgent`              |
+| `tests/test_lab2_llm_intent_classifier.py`  | 5    | `from app.intent.llm_intent_classifier import ...` |
+| `tests/test_lab3_reliable_orchestration.py` | 6    | `from app.agents.orchestrator import Orchestrator` |
+| `tests/test_asset_agent.py`                 | 5    | `from app.agents.asset_agent import AssetAgent`    |
+| `tests/test_orchestrator_errors.py`         | 1    | `from app.agents.orchestrator import Orchestrator` |
+| `tests/test_react_reasoning.py`             | 6    | `from app.agents.orchestrator import Orchestrator` |
 
 No composition root changes. `main.py`, `routes.py`, and `domain_agent_factory.py` are
 untouched.

@@ -1081,15 +1081,32 @@ document.addEventListener("DOMContentLoaded", () => {
                 outageAssetTypes.set(asset.id, asset.asset_type);
                 outageAssetRegions.set(asset.id, asset.region);
             });
-            if (assets.length === 0) {
-                outageAssetSelect.innerHTML = `<option value="">No assets - generate synthetic data first</option>`;
+
+            // An asset already in an open outage cannot take another one, so keep it
+            // out of the picker rather than letting the create call fail. in_outage is
+            // set by MapAssetService from a join restricted to REPORTED/CONFIRMED/
+            // CREW_ASSIGNED, which is exactly "has an open outage right now".
+            // Group by type, then alphabetical within each type.
+            const selectable = assets
+                .filter((asset) => !asset.in_outage)
+                .sort((a, b) =>
+                    (a.asset_type || "").localeCompare(b.asset_type || "") ||
+                    (a.name || "").localeCompare(b.name || "")
+                );
+
+            // Check the filtered list, not the raw one - every asset being in an
+            // outage is a different situation from having no assets at all.
+            if (selectable.length === 0) {
+                outageAssetSelect.innerHTML = assets.length === 0
+                    ? `<option value="">No assets - generate synthetic data first</option>`
+                    : `<option value="">No available assets - all are already in an outage</option>`;
                 outageAssetSelect.disabled = true;
                 if (btnOutageCreate) btnOutageCreate.disabled = true;
                 return;
             }
             outageAssetSelect.disabled = false;
             if (btnOutageCreate) btnOutageCreate.disabled = false;
-            outageAssetSelect.innerHTML = assets
+            outageAssetSelect.innerHTML = selectable
                 .map((asset) => `<option value="${asset.id}">${asset.name} (${asset.asset_type})</option>`)
                 .join("");
         } catch (err) {
