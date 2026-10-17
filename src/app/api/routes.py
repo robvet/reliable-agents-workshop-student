@@ -29,7 +29,6 @@ from ..models.transition_outage_request import TransitionOutageRequest
 from ..models.outage_response import OutageResponse
 from ..models.stream_event import StreamEvent
 from ..models.map_descendants_response import MapDescendantsResponse
-from ..models.map_snapshot_response import MapSnapshotResponse
 
 ##########################################################################
 # ApiRoutes - HTTP Endpoint Definitions
@@ -133,13 +132,6 @@ class ApiRoutes:
                 ) from ex
 
             return {"assets": assets, "count": len(assets)}
-
-        @self.router.get("/map/snapshot")
-        async def map_snapshot() -> MapSnapshotResponse:
-            try:
-                return await self._map_asset_service.get_snapshot()
-            except RuntimeError as ex:
-                raise HTTPException(status_code=502, detail=str(ex)) from ex
 
         @self.router.get("/map/assets/{asset_id}/descendants")
         async def map_descendants(asset_id: str) -> MapDescendantsResponse:

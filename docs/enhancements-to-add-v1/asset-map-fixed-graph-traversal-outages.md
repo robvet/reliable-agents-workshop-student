@@ -56,19 +56,6 @@ footprint. A healthy starting asset does not imply a downstream outage.
 
 ## Implementation
 
-### Snapshot redesign: backend slice
-
-`GET /map/snapshot` now returns all grid assets and meters in a typed
-`MapSnapshotResponse`, using one fixed SQL statement through MCP. Records
-include parent IDs, coordinates, recorded statuses, outage flags, and crew
-names where applicable. Missing coordinates do not remove records from the
-hierarchy. No server-side cache is retained.
-
-The existing `/map/assets` response remains unchanged for its other
-consumers. The frontend still uses the downstream endpoint described below;
-that endpoint and its contract will be removed when the frontend switches
-to local downstream selection.
-
 ### Deterministic API
 
 `GET /map/assets/{asset_id}/descendants` returns a validated
