@@ -647,8 +647,17 @@ body {
 .asset-icon.sym-substation { background: #fee2e2; color: #991b1b; border-color: #dc2626; }
 .asset-icon.sym-feeder { background: #dbeafe; color: #1e3a8a; border-color: #2563eb; }
 .asset-icon.sym-transformer { background: #fef3c7; color: #78350f; border-color: #d97706; }
+.asset-icon.sym-meter { background: #ede9fe; color: #5b21b6; border-color: #7c3aed; }
 .asset-icon.sym-default { background: #dcfce7; color: #14532d; border-color: #166534; }
 .asset-icon.sym-outage { background: #dc2626; color: #ffffff; border-color: #7f1d1d; }
+
+.map-chip-meter { background: #ede9fe; color: #5b21b6; border-color: #7c3aed; }
+.map-chip-outage { background: #dc2626; color: #ffffff; border-color: #7f1d1d; }
+.map-downstream-status { padding: 0.5rem 0.9rem; font-size: 0.85rem; }
+.map-downstream-status:empty { display: none; }
+.map-downstream-status.is-error { color: #fca5a5; }
+.map-asset-details { white-space: pre-line; }
+.map-downstream-link { display: inline-block; margin-top: 0.25rem; }
 
 /* Header */
 .top-header {

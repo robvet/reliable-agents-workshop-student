@@ -28,6 +28,7 @@ from ..models.create_outage_request import CreateOutageRequest
 from ..models.transition_outage_request import TransitionOutageRequest
 from ..models.outage_response import OutageResponse
 from ..models.stream_event import StreamEvent
+from ..models.map_descendants_response import MapDescendantsResponse
 
 ##########################################################################
 # ApiRoutes - HTTP Endpoint Definitions
@@ -131,6 +132,17 @@ class ApiRoutes:
                 ) from ex
 
             return {"assets": assets, "count": len(assets)}
+
+        @self.router.get("/map/assets/{asset_id}/descendants")
+        async def map_descendants(asset_id: str) -> MapDescendantsResponse:
+            try:
+                return await self._map_asset_service.get_descendants(asset_id)
+            except ValueError as ex:
+                raise HTTPException(status_code=422, detail=str(ex)) from ex
+            except LookupError as ex:
+                raise HTTPException(status_code=404, detail=str(ex)) from ex
+            except RuntimeError as ex:
+                raise HTTPException(status_code=502, detail=str(ex)) from ex
 
         # GET /map/weather - backend-owned NWS alerts for the frontend map, with
         # asset ids that fall inside each alert's polygon so the frontend does not

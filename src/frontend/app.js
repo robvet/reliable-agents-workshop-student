@@ -151,6 +151,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // filter needs its own lookup to restyle a marker after the fact without
     // rebuilding the whole map.
     let markersByAssetId = new Map();
+    let mapDownstreamController = null;
     let showOutagesOnly = false;
     // Frontend-only: no backend state is changed. Toggling just adds/removes
     // ?demo=true on the /map/weather fetch. Resets to false on page reload.
@@ -183,13 +184,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // ON:  outage assets -> red icon, full opacity. Healthy assets -> normal icon, dimmed.
     // OFF: every asset -> normal icon, full opacity (original render state).
     function applyOutageDimming() {
-        for (const asset of mapAssets) {
-            const marker = markersByAssetId.get(asset.id);
-            if (!marker) continue;
-            const isOutage = showOutagesOnly && asset.in_outage;
-            marker.setIcon(iconForMapAsset(asset, isOutage));
-            marker.setOpacity(showOutagesOnly && !asset.in_outage ? 0.25 : 1);
-        }
+        if (mapDownstreamController) mapDownstreamController.setOutageMode(showOutagesOnly);
     }
 
     if (navAgenticLink) {
@@ -1634,6 +1629,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (t.includes("substation")) return { symbol: "S", className: "sym-substation" };
         if (t.includes("feeder")) return { symbol: "F", className: "sym-feeder" };
         if (t.includes("transformer")) return { symbol: "T", className: "sym-transformer" };
+        if (t.includes("meter")) return { symbol: "M", className: "sym-meter" };
         return { symbol: "•", className: "sym-default" };
     }
 
@@ -1688,6 +1684,10 @@ document.addEventListener("DOMContentLoaded", () => {
     // with a Retry button that re-runs the (bounded) load.
     function showMapError() {
         if (!mapContainer) return;
+        if (mapDownstreamController) {
+            mapDownstreamController.collapse();
+            mapDownstreamController = null;
+        }
         if (assetMap) { assetMap.remove(); assetMap = null; }
         mapContainer.innerHTML =
             '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;' +
@@ -1793,6 +1793,12 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
                 bounds.extend([asset.lat, asset.lng]);
             }
+            mapDownstreamController = new MapDownstreamController({
+                map: assetMap, assets: mapAssets, markers: markersByAssetId,
+                iconForAsset: iconForMapAsset, statusLabel: mapAssetStatusLabel,
+                apiBaseUrl: API_BASE_URL,
+                statusElement: document.getElementById("map-downstream-status"),
+            });
 
             if (bounds.isValid()) {
                 setTimeout(() => {
@@ -1841,8 +1847,8 @@ document.addEventListener("DOMContentLoaded", () => {
         // map was fixed, that copy was missed and kept the original bug: it awaited
         // the weather overlay first, so a slow api.weather.gov call meant /map/assets
         // was never requested, and it reported the failure with console.error into
-        // the popup's own console where nobody looks. The popup now receives finished
-        // data and does no fetching at all, so there is only one loader left to break.
+        // the popup's own console where nobody looks. The popup receives finished
+        // base-map data; downstream lookups happen only on an explicit user action.
         let assets = [];
         try {
             assets = await loadMapAssets();
@@ -1860,6 +1866,7 @@ document.addEventListener("DOMContentLoaded", () => {
             .replace(/</g, "\\u003c")
             .replace(/\u2028/g, "\\u2028")
             .replace(/\u2029/g, "\\u2029");
+        const downstreamScriptUrl = new URL("map_downstream_controller.js?v=20261017-downstream", window.location.href).href;
 
         const popupHtml = `<!DOCTYPE html>
 <html lang="en">
@@ -1876,6 +1883,10 @@ document.addEventListener("DOMContentLoaded", () => {
     .chip-substation { color: #7f1d1d; background: #fee2e2; border-color: #fecaca; }
     .chip-feeder { color: #1e3a8a; background: #dbeafe; border-color: #bfdbfe; }
     .chip-transformer { color: #78350f; background: #fef3c7; border-color: #fde68a; }
+    .chip-meter { color: #5b21b6; background: #ede9fe; border-color: #7c3aed; }
+    .chip-outage { color: #ffffff; background: #dc2626; border-color: #7f1d1d; }
+    .chip-toggle { cursor: pointer; color: #e2e8f0; background: #1e293b; border-color: #64748b; }
+    .chip-toggle.is-active { background: #7f1d1d; border-color: #dc2626; }
     .chip-default { color: #14532d; background: #dcfce7; border-color: #bbf7d0; }
     .chip-weather { color: #075985; background: #e0f2fe; border-color: #bae6fd; }
     #fatal { display: none; padding: .6rem .9rem; background: #7f1d1d; color: #fee2e2; font-size: .84rem; font-weight: 600; border-bottom: 1px solid #dc2626; white-space: pre-wrap; }
@@ -1899,7 +1910,14 @@ document.addEventListener("DOMContentLoaded", () => {
     .asset-icon.sym-substation { background: #fee2e2; color: #991b1b; border-color: #dc2626; }
     .asset-icon.sym-feeder { background: #dbeafe; color: #1e3a8a; border-color: #2563eb; }
     .asset-icon.sym-transformer { background: #fef3c7; color: #78350f; border-color: #d97706; }
+    .asset-icon.sym-meter { background: #ede9fe; color: #5b21b6; border-color: #7c3aed; }
+    .asset-icon.sym-outage { background: #dc2626; color: #ffffff; border-color: #7f1d1d; }
     .asset-icon.sym-default { background: #dcfce7; color: #14532d; border-color: #166534; }
+    .map-downstream-status { padding: .5rem .9rem; font-size: .85rem; }
+    .map-downstream-status:empty { display: none; }
+    .map-downstream-status.is-error { color: #fca5a5; }
+    .map-asset-details { white-space: pre-line; }
+    .map-downstream-link { display: inline-block; margin-top: .25rem; }
   </style>
 </head>
 <body>
@@ -1908,10 +1926,14 @@ document.addEventListener("DOMContentLoaded", () => {
       <span class="chip chip-substation">S = Substation</span>
       <span class="chip chip-feeder">F = Feeder</span>
       <span class="chip chip-transformer">T = Transformer</span>
+      <span class="chip chip-meter">M = Meter</span>
       <span class="chip chip-default">• = Other/Unknown</span>
+      <span class="chip chip-outage">Red = recorded outage or assumed downstream impact</span>
       <span id="weather-chip" class="chip chip-weather">Weather: loading...</span>
+      <button id="popup-outage-toggle" class="chip chip-toggle" type="button">Show Outages</button>
     </div>
     <div id="fatal"></div>
+    <div id="map-downstream-status" class="map-downstream-status" role="status" aria-live="polite"></div>
     <div id="map"></div>
   </div>
 
@@ -1968,8 +1990,14 @@ document.addEventListener("DOMContentLoaded", () => {
   <\/script>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""><\/script>
+  <script src="${downstreamScriptUrl}"><\/script>
   <script>
     const ASSETS = ${assetsJson};
+    const API_BASE_URL = ${JSON.stringify(API_BASE_URL)};
+    let showOutagesOnly = ${JSON.stringify(showOutagesOnly)};
+    let downstreamController = null;
+    const markersByAssetId = new Map();
+    const normalizedAssets = [];
     const texasBounds = L.latLngBounds(
       [25.8, -106.8],  // SW
       [36.7, -93.5]    // NE
@@ -2064,19 +2092,19 @@ document.addEventListener("DOMContentLoaded", () => {
       if (t.includes("substation")) return { symbol: "S", className: "sym-substation" };
       if (t.includes("feeder")) return { symbol: "F", className: "sym-feeder" };
       if (t.includes("transformer")) return { symbol: "T", className: "sym-transformer" };
+      if (t.includes("meter")) return { symbol: "M", className: "sym-meter" };
       return { symbol: "•", className: "sym-default" };
     }
 
-    function markerForAsset(asset) {
+    function iconForPopupAsset(asset, outageStyled) {
       const typeSymbol = symbolForAssetType(asset.asset_type);
-      const icon = L.divIcon({
+      return L.divIcon({
         className: "asset-icon-wrap",
-        html: '<div class="asset-icon ' + typeSymbol.className + '">' + typeSymbol.symbol + '</div>',
+        html: '<div class="asset-icon ' + (outageStyled ? "sym-outage" : typeSymbol.className) + '">' + typeSymbol.symbol + '</div>',
         iconSize: [30, 30],
         iconAnchor: [15, 15],
         popupAnchor: [0, -14],
       });
-      return L.marker([asset.lat, asset.lng], { icon });
     }
 
     function esc(value) {
@@ -2092,6 +2120,7 @@ document.addEventListener("DOMContentLoaded", () => {
         name: String(row.name ?? row.asset_name ?? row.id ?? "Asset"),
         asset_type: String(row.asset_type ?? ""),
         status: String(row.status ?? "NORMAL"),
+        in_outage: Boolean(row.in_outage),
         crew_name: row.crew_name || null,
         lat,
         lng
@@ -2108,15 +2137,16 @@ document.addEventListener("DOMContentLoaded", () => {
       return MAP_ASSET_STATUS_LABELS[status] || status || "unknown";
     }
 
-    // No fetching here, on purpose. ASSETS was loaded by the opener and injected as
-    // data. Rendering is synchronous, so nothing external can stop the map drawing.
+    // Base assets are injected by the opener; downstream data loads on demand.
     function renderAssets() {
       const bounds = L.latLngBounds();
       let plotted = 0;
       for (const row of ASSETS) {
         const asset = normalizeAsset(row);
         if (!asset) continue;
-        const marker = markerForAsset(asset).addTo(map);
+        const marker = L.marker([asset.lat, asset.lng], { icon: iconForPopupAsset(asset, false) }).addTo(map);
+        markersByAssetId.set(asset.id, marker);
+        normalizedAssets.push(asset);
         marker.bindPopup(
           "<strong>" + esc(asset.name || asset.id || "Asset") + "</strong><br>" +
           "ID: " + esc(asset.id || "-") + "<br>" +
@@ -2128,6 +2158,13 @@ document.addEventListener("DOMContentLoaded", () => {
         bounds.extend([asset.lat, asset.lng]);
         plotted++;
       }
+      downstreamController = new MapDownstreamController({
+        map, assets: normalizedAssets, markers: markersByAssetId,
+        iconForAsset: iconForPopupAsset, statusLabel: mapAssetStatusLabel,
+        apiBaseUrl: API_BASE_URL,
+        statusElement: document.getElementById("map-downstream-status"),
+      });
+      applyPopupOutageMode();
    if (plotted && bounds.isValid()) {
     setTimeout(function () {
      map.invalidateSize();
@@ -2138,6 +2175,17 @@ document.addEventListener("DOMContentLoaded", () => {
         window.showMapError("No assets to plot. The map is empty - open the main window's Execution Trace or console for the reason.");
       }
     }
+
+    function applyPopupOutageMode() {
+      const toggle = document.getElementById("popup-outage-toggle");
+      toggle.textContent = showOutagesOnly ? "Show All" : "Show Outages";
+      toggle.classList.toggle("is-active", showOutagesOnly);
+      if (downstreamController) downstreamController.setOutageMode(showOutagesOnly);
+    }
+    document.getElementById("popup-outage-toggle").addEventListener("click", () => {
+      showOutagesOnly = !showOutagesOnly;
+      applyPopupOutageMode();
+    });
 
     try {
       renderAssets();
