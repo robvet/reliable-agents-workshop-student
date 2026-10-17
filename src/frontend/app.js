@@ -1928,7 +1928,6 @@ document.addEventListener("DOMContentLoaded", () => {
       <span class="chip chip-transformer">T = Transformer</span>
       <span class="chip chip-meter">M = Meter</span>
       <span class="chip chip-default">• = Other/Unknown</span>
-      <span class="chip chip-outage">Red = recorded outage or assumed downstream impact</span>
       <span id="weather-chip" class="chip chip-weather">Weather: loading...</span>
       <button id="popup-outage-toggle" class="chip chip-toggle" type="button">Show Outages</button>
     </div>
