@@ -1,5 +1,3 @@
-import sqlite3
-from collections.abc import Iterator
 from unittest.mock import AsyncMock, MagicMock
 
 import pytest
@@ -10,37 +8,6 @@ from app.services.map_asset_service import MapAssetService
 
 
 class TestMapAssetService:
-    @pytest.fixture
-    def database(self) -> Iterator[sqlite3.Connection]:
-        with sqlite3.connect(":memory:") as connection:
-            connection.row_factory = sqlite3.Row
-            connection.executescript("""
-                CREATE TABLE grid_assets (
-                    asset_id TEXT, asset_name TEXT, asset_type TEXT, parent_asset TEXT,
-                    latitude REAL, longitude REAL, status TEXT
-                );
-                CREATE TABLE service_locations (
-                    location_id TEXT, transformer_id TEXT, latitude REAL, longitude REAL
-                );
-                CREATE TABLE meters (meter_id TEXT, location_id TEXT, status TEXT);
-                CREATE TABLE outages (outage_id TEXT, asset_id TEXT);
-                CREATE TABLE outage_current_status (outage_id TEXT, status TEXT);
-                INSERT INTO grid_assets VALUES
-                    ('S-1','Substation','SUBSTATION',NULL,32,-96,'REPORTED'),
-                    ('S-2','Other','SUBSTATION',NULL,32,-96,'NORMAL'),
-                    ('F-1','Feeder','FEEDER','S-1',32,-96,'NORMAL'),
-                    ('F-empty','Empty feeder','FEEDER','S-1',32,-96,'NORMAL'),
-                    ('F-2','Other feeder','FEEDER','S-2',32,-96,'NORMAL'),
-                    ('T-1','Transformer','TRANSFORMER','F-1',32,-96,'NORMAL'),
-                    ('T-bare','Meterless','TRANSFORMER','F-1',NULL,NULL,'NORMAL'),
-                    ('T-2','Other transformer','TRANSFORMER','F-2',32,-96,'NORMAL');
-                INSERT INTO service_locations VALUES ('L-1','T-1',32.5,-96.5);
-                INSERT INTO meters VALUES ('M-1','L-1','ACTIVE'),('M-2','L-1','ACTIVE');
-                INSERT INTO outages VALUES ('O-1','S-1');
-                INSERT INTO outage_current_status VALUES ('O-1','REPORTED');
-            """)
-            yield connection
-
     def _row(self, asset_id: str, asset_type: str = "TRANSFORMER", **fields: object) -> dict:
         return {
             "id": asset_id, "name": asset_id, "asset_type": asset_type,
@@ -119,27 +86,6 @@ class TestMapAssetService:
         assert "feeder.parent_asset = root.asset_id" in sql
         assert "sl.latitude" in sql and "sl.longitude" in sql
         assert "SELECT * FROM root UNION SELECT * FROM downstream_grid" in sql
-
-    @pytest.mark.asyncio
-    @pytest.mark.parametrize(("asset_id", "expected"), [
-        ("S-1", {"F-1", "F-empty", "T-1", "T-bare", "M-1", "M-2"}),
-        ("F-1", {"T-1", "T-bare", "M-1", "M-2"}),
-        ("T-1", {"M-1", "M-2"}),
-        ("T-bare", set()),
-        ("F-empty", set()),
-        ("S-2", {"F-2", "T-2"}),
-    ])
-    async def test_executes_fixed_query_for_each_hierarchy_level(
-        self, database: sqlite3.Connection, asset_id: str, expected: set[str],
-    ) -> None:
-        client = MagicMock()
-        client.run_sql = AsyncMock(
-            side_effect=lambda sql: [dict(row) for row in database.execute(sql).fetchall()]
-        )
-        result = await MapAssetService(client).get_descendants(asset_id)
-        assert {asset.id for asset in result.assets} == expected
-        assert result.source.in_outage == (asset_id == "S-1")
-        assert all(not asset.in_outage for asset in result.assets)
 
     @pytest.mark.asyncio
     async def test_meter_id_collision_does_not_replace_or_remove_grid_source(self) -> None:

@@ -101,14 +101,15 @@ PYTHONPATH=src .venv/bin/python -m pytest tests/test_map_asset_service.py tests/
 node --test tests/TestMapDownstreamController.cjs
 ```
 
-Coverage includes all three starting levels, unrelated branches, assets
-without meters, empty results, malformed responses, API errors, co-located
+Coverage includes typed responses, deduplication, empty results, identifier
+validation, SQL construction, malformed responses, API errors, co-located
 meters, missing coordinates, root switching, cancellation, and outage-view
 color restoration.
 
-The hierarchy tests execute the fixed SQL against an in-memory SQLite
-topology fixture; API tests use mocked services. These do not replace a
-live MCP/PostgreSQL integration check in the target environment.
+Service tests mock MCP responses; API tests mock the service. These unit
+tests do not execute SQL against a database. Query correctness across all
+three starting levels, unrelated branches, and assets without meters still
+requires a live MCP/PostgreSQL integration check in the target environment.
 
 For a browser check, open **Asset Map**, choose **Show Outages**, expand an
 outage asset, and verify that its downstream footprint is red. Collapse it
