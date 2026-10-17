@@ -1,4 +1,4 @@
-"""A grid asset or meter returned by the downstream map lookup."""
+"""A grid asset or meter returned by a map lookup."""
 
 from typing import Literal
 
@@ -15,4 +15,4 @@ class MapAsset(BaseModel):
     lng: float | None = Field(default=None, ge=-180, le=180, allow_inf_nan=False)
     status: str
     in_outage: bool = False
-
+    crew_name: str | None = None

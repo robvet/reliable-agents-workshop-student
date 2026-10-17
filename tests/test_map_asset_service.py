@@ -4,6 +4,7 @@ import pytest
 from httpx import ConnectError
 
 from app.models.map_descendants_response import MapDescendantsResponse
+from app.models.map_snapshot_response import MapSnapshotResponse
 from app.services.map_asset_service import MapAssetService
 
 
@@ -13,6 +14,96 @@ class TestMapAssetService:
             "id": asset_id, "name": asset_id, "asset_type": asset_type,
             "lat": 32.4, "lng": -96.5, "status": "NORMAL", **fields,
         }
+
+    @pytest.mark.asyncio
+    async def test_snapshot_returns_grid_and_meters_with_parent_links_and_recorded_status(self) -> None:
+        rows = [
+            self._row("S-1", "SUBSTATION", parent_id=None, in_outage=True),
+            self._row("F-1", "FEEDER", parent_id="S-1"),
+            self._row("T-1", parent_id="F-1", crew_name="Crew One"),
+            self._row("M-1", "METER", parent_id="T-1", location_id="L-1", status="ACTIVE"),
+        ]
+        client = MagicMock()
+        client.run_sql = AsyncMock(return_value=rows)
+        result = await MapAssetService(client).get_snapshot()
+        assert isinstance(result, MapSnapshotResponse)
+        assert [asset.id for asset in result.assets] == ["S-1", "F-1", "T-1", "M-1"]
+        assert result.assets[0].in_outage is True
+        assert result.assets[1].in_outage is False
+        assert result.assets[2].crew_name == "Crew One"
+        assert result.assets[3].parent_id == "T-1"
+        assert result.assets[3].location_id == "L-1"
+        assert result.assets[3].status == "ACTIVE"
+        client.run_sql.assert_awaited_once()
+        client.query.assert_not_called()
+
+    @pytest.mark.asyncio
+    async def test_snapshot_retains_missing_coordinates_and_empty_branches(self) -> None:
+        client = MagicMock()
+        client.run_sql = AsyncMock(return_value=[
+            self._row("F-empty", "FEEDER", lat=None, lng=None),
+            self._row("T-bare", parent_id="F-empty"),
+            self._row("M-unlocated", "METER", parent_id=None, lat=None, lng=None),
+        ])
+        result = await MapAssetService(client).get_snapshot()
+        assert len(result.assets) == 3
+        assert result.assets[0].lat is None
+        assert result.assets[1].parent_id == "F-empty"
+
+    @pytest.mark.asyncio
+    async def test_empty_snapshot_is_valid_and_each_call_queries_mcp(self) -> None:
+        client = MagicMock()
+        client.run_sql = AsyncMock(return_value=[])
+        service = MapAssetService(client)
+        assert (await service.get_snapshot()).assets == []
+        assert (await service.get_snapshot()).assets == []
+        assert client.run_sql.await_count == 2
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("rows", [
+        ["not an object"],
+        [{"id": "broken"}],
+        [{"id": "T-1", "name": "T-1", "asset_type": "TRANSFORMER", "status": "NORMAL", "lat": 100}],
+    ])
+    async def test_snapshot_surfaces_malformed_rows(self, rows: list) -> None:
+        client = MagicMock()
+        client.run_sql = AsyncMock(return_value=rows)
+        with pytest.raises(RuntimeError, match="Map snapshot lookup failed"):
+            await MapAssetService(client).get_snapshot()
+
+    @pytest.mark.asyncio
+    @pytest.mark.parametrize("error", [RuntimeError("offline"), ConnectError("offline")])
+    async def test_snapshot_surfaces_mcp_errors(self, error: Exception) -> None:
+        client = MagicMock()
+        client.run_sql = AsyncMock(side_effect=error)
+        with pytest.raises(RuntimeError, match="Map snapshot lookup failed"):
+            await MapAssetService(client).get_snapshot()
+
+    def test_snapshot_query_is_fixed_and_grid_portion_does_not_require_meters(self) -> None:
+        sql = MapAssetService(MagicMock())._snapshot_sql
+        assert "ga.parent_asset" in sql
+        assert "parent_asset AS parent_id" in sql
+        assert "outage_id IS NOT NULL AS in_outage" in sql
+        assert "WHERE ga.latitude IS NOT NULL" not in sql
+        assert "UNION ALL" in sql
+        assert "LEFT JOIN service_locations sl ON sl.location_id = m.location_id" in sql
+        assert "asset_meter_map" not in sql
+
+    @pytest.mark.asyncio
+    async def test_legacy_asset_list_keeps_its_existing_shape_and_coordinate_filter(self) -> None:
+        client = MagicMock()
+        client.run_sql = AsyncMock(return_value=[{
+            "asset_id": "T-1", "asset_name": "Transformer", "asset_type": "TRANSFORMER",
+            "parent_asset": "F-1", "region": "North", "latitude": 32.4, "longitude": -96.5,
+            "status": "REPORTED", "outage_id": "O-1", "crew_name": "Crew One",
+        }])
+        result = await MapAssetService(client).get_assets()
+        assert result == [{
+            "id": "T-1", "name": "Transformer", "asset_type": "TRANSFORMER",
+            "region": "North", "lat": 32.4, "lng": -96.5,
+            "status": "REPORTED", "in_outage": True, "crew_name": "Crew One",
+        }]
+        assert "WHERE ga.latitude IS NOT NULL AND ga.longitude IS NOT NULL" in client.run_sql.await_args.args[0]
 
     @pytest.mark.asyncio
     async def test_returns_typed_distinct_descendants_and_keeps_missing_coordinates(self) -> None:

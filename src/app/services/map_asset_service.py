@@ -8,6 +8,7 @@ from pydantic import ValidationError
 
 from ..models.map_asset import MapAsset
 from ..models.map_descendants_response import MapDescendantsResponse
+from ..models.map_snapshot_response import MapSnapshotResponse
 from ..tools.i_mcp_client import IMcpClient
 
 
@@ -17,11 +18,12 @@ class MapAssetService:
     def __init__(self, mcp_client: IMcpClient) -> None:
         self._mcp_client = mcp_client
         self._tracer = trace.get_tracer(__name__)
-        self._map_assets_sql = (
+        grid_assets_sql = (
             "SELECT "
             "ga.asset_id, "
             "ga.asset_name, "
             "ga.asset_type, "
+            "ga.parent_asset, "
             "ga.region, "
             "ga.latitude, "
             "ga.longitude, "
@@ -42,9 +44,28 @@ class MapAssetService:
             "ORDER BY wo.created_date DESC LIMIT 1"
             ") wo ON TRUE "
             "LEFT JOIN crews c ON c.crew_id = wo.crew_id "
+        )
+        self._map_assets_sql = (
+            grid_assets_sql +
             "WHERE ga.latitude IS NOT NULL "
             "AND ga.longitude IS NOT NULL"
         )
+        self._snapshot_sql = f"""
+            WITH grid AS ({grid_assets_sql})
+            SELECT asset_id AS id, COALESCE(asset_name, asset_id) AS name,
+                   asset_type, parent_asset AS parent_id,
+                   NULL AS location_id, latitude AS lat, longitude AS lng,
+                   COALESCE(status, 'NORMAL') AS status,
+                   outage_id IS NOT NULL AS in_outage, crew_name
+            FROM grid
+            UNION ALL
+            SELECT m.meter_id, m.meter_id, 'METER', sl.transformer_id,
+                   sl.location_id, sl.latitude, sl.longitude,
+                   COALESCE(m.status, 'INACTIVE'), FALSE, NULL
+            FROM meters m
+            LEFT JOIN service_locations sl ON sl.location_id = m.location_id
+            ORDER BY asset_type, id
+        """
 
     async def get_assets(self) -> list[dict]:
         # This is the one hop where a failure is invisible: the browser just draws an
@@ -86,6 +107,25 @@ class MapAssetService:
             span.set_attribute("map_assets.row_count", len(assets))
             logging.info("MapAssetService.get_assets: returned %d assets", len(assets))
             return assets
+
+    async def get_snapshot(self) -> MapSnapshotResponse:
+        """Load grid assets and meters together; retain no server-side cache."""
+        with self._tracer.start_as_current_span("map_assets.snapshot") as span:
+            logging.info("MapAssetService.get_snapshot: querying MCP for map snapshot")
+            try:
+                rows = await self._mcp_client.run_sql(self._snapshot_sql)
+                snapshot = MapSnapshotResponse(
+                    assets=[MapAsset.model_validate(row) for row in rows],
+                )
+            except (RuntimeError, ValidationError, TypeError, HTTPError, OSError) as ex:
+                span.set_attribute("success", False)
+                logging.exception("MapAssetService.get_snapshot: lookup failed")
+                raise RuntimeError("Map snapshot lookup failed") from ex
+
+            span.set_attribute("success", True)
+            span.set_attribute("map_assets.row_count", len(snapshot.assets))
+            logging.info("MapAssetService.get_snapshot: returned %d assets", len(snapshot.assets))
+            return snapshot
 
     async def get_descendants(self, asset_id: str) -> MapDescendantsResponse:
         """Read the fixed-depth topology without routing through an agent."""
