@@ -604,8 +604,8 @@ document.addEventListener("DOMContentLoaded", () => {
         }
 
         const confirmed = await confirmDialog({
-            title: "Analyze Conversation?",
-            confirmLabel: "Analyze",
+            title: "Send question?",
+            confirmLabel: "Send",
         });
         if (!confirmed) {
             return;
