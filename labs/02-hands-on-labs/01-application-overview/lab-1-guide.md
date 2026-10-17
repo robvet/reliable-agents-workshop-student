@@ -2,26 +2,28 @@
 
 ## Introduction
 
-This instructor-led lab is a hands-on tour of the application and its code. The instructor will guide the class through each activity while students run the same steps on their own computers.
+Welcome to Lab 1 of our workshop.
 
-Together, you will explore the user experience, operational use case, architecture, data, tests, and key application scenarios. You will also examine the critical code paths that combine model-driven reasoning with deterministic engineering controls to improve agent and agentic-system reliability.
+This instructor-led lab takes you on a hands-on tour of the application and its code. Your instructor will guide the class through each activity as you follow along on your own computer.
+
+You will explore the operational use case, user experience, architecture, data, tests, and key application scenarios. Along the way, you will trace the critical code paths that combine model-driven reasoning with deterministic engineering controls to make individual agents and the overall system more reliable.
 
 ## Lab format
 
-This lab is completed as a team:
+You will work through this lab together as a class:
 
-1. The instructor introduces each area of the application.
-2. The instructor demonstrates an activity or code path.
-3. Students mirror the activity in their local environment.
-4. The class discusses what happened and where reliability controls are applied.
+1. The instructor introduces an area of the application.
+2. The instructor demonstrates an activity or walks through a code path.
+3. You follow the same steps in your local environment.
+4. The class discusses the results and identifies where reliability controls apply.
 
 No code changes are required in this lab.
 
-### Predict before you look
+### Predict, run, explain
 
-One instruction applies to every activity below: **say what you expect before you run it.**
+For each activity, the instructor will pose a specific question, such as “Which agents do you expect to handle this request?”
 
-This is not a study habit. It is the test. A system built on deterministic controls should be predictable, so if you can read the routing rules and correctly call which agents a request is permitted to use, the design is doing its job. When a prediction is wrong, you have found either a gap in your understanding or a place where the system is less constrained than it appears. Both are worth the minute it takes to guess out loud.
+Share your answer, run the activity, and compare the result with your prediction. Then walk through the relevant code together to explain what happened.
 
 ## Learning objectives
 
