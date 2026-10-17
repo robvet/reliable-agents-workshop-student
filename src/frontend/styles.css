@@ -1060,6 +1060,11 @@ body {
     color: var(--text-muted);
 }
 
+#prompt-textarea::placeholder {
+    color: #fde68a;
+    opacity: 0.55;
+}
+
 /* Action buttons */
 .action-buttons {
     display: flex;
