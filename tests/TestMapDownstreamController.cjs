@@ -24,10 +24,12 @@ class TestMapDownstreamController {
         const result = { source, assets: [feeder, meter] };
         const requests = [];
         const errors = [];
+        const loading = [];
         const Controller = vm.runInNewContext(
             fs.readFileSync(path.join(__dirname, "../src/frontend/map_downstream_controller.js"), "utf8") + "\nMapDownstreamController",
             {
                 document: { createElement: element }, AbortController, setTimeout, clearTimeout,
+                requestAnimationFrame: callback => callback(),
                 console: { error: (...args) => errors.push(args) },
                 L: {
                     layerGroup: () => ({ layers: [], addTo() { return this; }, clearLayers() { this.layers = []; } }),
@@ -46,8 +48,13 @@ class TestMapDownstreamController {
             map: {}, assets, markers, statusElement: status, apiBaseUrl: "",
             iconForAsset: (asset, red) => ({ id: asset.id, red }),
             statusLabel: status => status,
+            setLoading: (visible, message) => loading.push({ visible, message }),
         });
-        return { controller, source, feeder, other, meter, result, markers, status, requests, errors };
+        return { controller, source, feeder, other, meter, result, markers, status, requests, errors, loading };
+    }
+
+    static async waitForPaint() {
+        await new Promise(resolve => setTimeout(resolve, 0));
     }
 
     static async outageToggle() {
@@ -120,11 +127,15 @@ class TestMapDownstreamController {
         const pending = [];
         const f = this.fixture(() => new Promise(resolve => pending.push(resolve)));
         const first = f.controller.toggle(f.source);
+        await this.waitForPaint();
         const second = f.controller.toggle(f.other);
-        pending[1]({ ok: true, json: async () => ({ source: f.other, assets: [] }) });
-        await second;
+        await this.waitForPaint();
         pending[0]({ ok: true, json: async () => f.result });
         await first;
+        assert.equal(f.loading.reduce((count, item) => count + (item.visible ? 1 : -1), 0), 1);
+        pending[1]({ ok: true, json: async () => ({ source: f.other, assets: [] }) });
+        await second;
+        assert.equal(f.loading.reduce((count, item) => count + (item.visible ? 1 : -1), 0), 0);
         assert.equal(f.controller.root.id, "S-2");
         assert.equal(f.controller.overlay.layers.length, 0);
         assert.match(f.status.textContent, /No downstream assets found for Other/);
@@ -136,6 +147,7 @@ class TestMapDownstreamController {
         let finish;
         const f = this.fixture(() => new Promise(resolve => { finish = resolve; }));
         const pending = f.controller.toggle(f.source);
+        await this.waitForPaint();
         await f.controller.toggle(f.source);
         finish({ ok: true, json: async () => f.result });
         await pending;
@@ -143,6 +155,7 @@ class TestMapDownstreamController {
         assert.equal(f.controller.overlay.layers.length, 0);
         assert.equal(f.status.textContent, "");
         assert.equal(f.requests[0][1].signal.aborted, true);
+        assert.equal(f.loading.reduce((count, item) => count + (item.visible ? 1 : -1), 0), 0);
     }
 
     static async explicitError() {
@@ -155,6 +168,36 @@ class TestMapDownstreamController {
         assert.equal(f.controller.overlay.layers.length, 0);
         assert.equal(f.markers.get("S-1").icon.red, true);
         assert.equal(f.errors.length, 1);
+        assert.equal(f.loading.at(-1).visible, false);
+    }
+
+    static async loadingIndicator() {
+        const assert = require("node:assert/strict");
+        const f = this.fixture();
+        const showing = f.controller.toggle(f.source);
+        assert.equal(f.loading.at(-1).visible, true);
+        assert.match(f.loading.at(-1).message, /Loading downstream assets/);
+        assert.equal(f.requests.length, 0);
+        await showing;
+        assert.equal(f.loading.at(-1).visible, false);
+        const hiding = f.controller.toggle(f.source);
+        assert.equal(f.loading.at(-1).visible, true);
+        assert.match(f.loading.at(-1).message, /Hiding downstream assets/);
+        assert.equal(f.controller.overlay.layers.length, 1);
+        await hiding;
+        assert.equal(f.controller.overlay.layers.length, 0);
+        assert.equal(f.loading.at(-1).visible, false);
+    }
+
+    static async supersededBeforePaint() {
+        const assert = require("node:assert/strict");
+        const f = this.fixture();
+        f.result.source = f.other;
+        f.result.assets = [];
+        await Promise.all([f.controller.toggle(f.source), f.controller.toggle(f.other)]);
+        assert.equal(f.requests.length, 1);
+        assert.equal(f.controller.root.id, f.other.id);
+        assert.equal(f.loading.reduce((count, item) => count + (item.visible ? 1 : -1), 0), 0);
     }
 
     static async refreshedRecordedOutage() {
@@ -180,6 +223,8 @@ class TestMapDownstreamController {
         test("switching roots discards stale responses and keeps one active root", () => this.staleResponses());
         test("collapsing while loading cancels expansion", () => this.cancelLoading());
         test("lookup failure is visible and restores outage styling", () => this.explicitError());
+        test("show and hide display loading before work and clear it afterward", () => this.loadingIndicator());
+        test("a selection superseded before paint does not fetch or leave loading active", () => this.supersededBeforePaint());
         test("fresh recorded outage data persists after collapse without inferring child statuses", () => this.refreshedRecordedOutage());
     }
 }

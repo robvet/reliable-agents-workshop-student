@@ -71,6 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const outageList       = document.getElementById("outage-list");
     const pageLoadingOverlay = document.getElementById("page-loading-overlay");
     const pageLoadingMessage = document.getElementById("page-loading-message");
+    let pageLoadingCount = 0;
     const suggestionsList  = document.getElementById("suggestions-list");
     const resultsArea      = document.getElementById("results-area");
     const resultsPlaceholder = document.getElementById("results-placeholder");
@@ -866,10 +867,17 @@ document.addEventListener("DOMContentLoaded", () => {
         // Caught here because both callers discard the promise - the click handler is
         // an async listener and startup uses `void showMapView()`. Without this, a
         // throw would vanish and the only symptom would be an empty map.
+        const loadingAssets = !mapAssetsLoaded;
+        if (loadingAssets) setPageLoading(true, "Loading assets...");
         try {
+            if (loadingAssets) {
+                await new Promise(resolve => requestAnimationFrame(() => setTimeout(resolve, 0)));
+            }
             await ensureAssetMap();
         } catch (err) {
             logMapDiag("error", "Map: view failed to initialise", String(err && err.message ? err.message : err));
+        } finally {
+            if (loadingAssets) setPageLoading(false);
         }
     }
 
@@ -908,10 +916,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function setPageLoading(visible, message = "Loading...") {
         if (!pageLoadingOverlay) return;
+        pageLoadingCount = Math.max(0, pageLoadingCount + (visible ? 1 : -1));
         if (visible) {
             if (pageLoadingMessage) pageLoadingMessage.textContent = message;
             pageLoadingOverlay.classList.remove("hidden");
-        } else {
+        } else if (!pageLoadingCount) {
             pageLoadingOverlay.classList.add("hidden");
         }
     }
@@ -1705,7 +1714,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 mapAssetsLoaded = false;
                 mapAssets = [];
                 showMapMessage("Retrying...");
-                ensureAssetMap();
+                void showMapView();
             });
         }
     }
@@ -1798,6 +1807,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 iconForAsset: iconForMapAsset, statusLabel: mapAssetStatusLabel,
                 apiBaseUrl: API_BASE_URL,
                 statusElement: document.getElementById("map-downstream-status"),
+                setLoading: setPageLoading,
             });
 
             if (bounds.isValid()) {
@@ -1866,7 +1876,7 @@ document.addEventListener("DOMContentLoaded", () => {
             .replace(/</g, "\\u003c")
             .replace(/\u2028/g, "\\u2028")
             .replace(/\u2029/g, "\\u2029");
-        const downstreamScriptUrl = new URL("map_downstream_controller.js?v=20261017-downstream", window.location.href).href;
+        const downstreamScriptUrl = new URL("map_downstream_controller.js?v=20261017-map-loading", window.location.href).href;
 
         const popupHtml = `<!DOCTYPE html>
 <html lang="en">
@@ -1918,9 +1928,17 @@ document.addEventListener("DOMContentLoaded", () => {
     .map-downstream-status.is-error { color: #fca5a5; }
     .map-asset-details { white-space: pre-line; }
     .map-downstream-link { display: inline-block; margin-top: .25rem; }
+    .map-loading-overlay { position: fixed; inset: 0; z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .75rem; background: inherit; opacity: .9; }
+    .map-loading-overlay.hidden { display: none; }
+    .map-loading-overlay .spinner { width: 32px; height: 32px; border: 4px solid currentColor; border-top-color: transparent; border-radius: 50%; animation: spin .8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
+  <div id="page-loading-overlay" class="map-loading-overlay hidden" role="status" aria-live="polite">
+    <div class="spinner"></div>
+    <p id="page-loading-message">Loading...</p>
+  </div>
   <div class="wrap">
     <div class="toolbar">
       <span class="chip chip-substation">S = Substation</span>
@@ -2162,6 +2180,7 @@ document.addEventListener("DOMContentLoaded", () => {
         iconForAsset: iconForPopupAsset, statusLabel: mapAssetStatusLabel,
         apiBaseUrl: API_BASE_URL,
         statusElement: document.getElementById("map-downstream-status"),
+        setLoading: setPopupLoading,
       });
       applyPopupOutageMode();
    if (plotted && bounds.isValid()) {
@@ -2173,6 +2192,13 @@ document.addEventListener("DOMContentLoaded", () => {
         map.fitBounds(texasBounds, { padding: [20, 20] });
         window.showMapError("No assets to plot. The map is empty - open the main window's Execution Trace or console for the reason.");
       }
+    }
+
+    let popupLoadingCount = 0;
+    function setPopupLoading(visible, message) {
+      popupLoadingCount = Math.max(0, popupLoadingCount + (visible ? 1 : -1));
+      if (visible) document.getElementById("page-loading-message").textContent = message;
+      document.getElementById("page-loading-overlay").classList.toggle("hidden", !popupLoadingCount);
     }
 
     function applyPopupOutageMode() {

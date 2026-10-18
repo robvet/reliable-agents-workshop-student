@@ -1,5 +1,5 @@
 class MapDownstreamController {
-    constructor({ map, assets, markers, iconForAsset, statusLabel, apiBaseUrl, statusElement }) {
+    constructor({ map, assets, markers, iconForAsset, statusLabel, apiBaseUrl, statusElement, setLoading }) {
         this.map = map;
         this.assets = assets;
         this.markers = markers;
@@ -7,6 +7,7 @@ class MapDownstreamController {
         this.statusLabel = statusLabel;
         this.apiBaseUrl = apiBaseUrl;
         this.statusElement = statusElement;
+        this.setLoading = setLoading;
         this.overlay = L.layerGroup().addTo(map);
         this.overlayMarkers = [];
         this.root = null;
@@ -85,17 +86,24 @@ class MapDownstreamController {
 
     async toggle(asset) {
         const wasExpanded = this.root && this.root.id === asset.id;
-        this.collapse();
-        if (wasExpanded) return;
-
-        this.root = asset;
-        this.loading = true;
-        const version = this.requestVersion;
-        const controller = new AbortController();
-        this.pendingRequest = controller;
-        const timer = setTimeout(() => controller.abort(), 15000);
-        this.refreshStyles();
+        let version = ++this.requestVersion;
+        if (this.pendingRequest) this.pendingRequest.abort();
+        let timer;
+        this.setLoading(true, `${wasExpanded ? "Hiding" : "Loading"} downstream assets for ${asset.name}...`);
         try {
+            // Yield through a paint before synchronous marker removal/restyling.
+            await new Promise(resolve => requestAnimationFrame(() => setTimeout(resolve, 0)));
+            if (version !== this.requestVersion) return;
+            this.collapse();
+            version = this.requestVersion;
+            if (wasExpanded) return;
+
+            this.root = asset;
+            this.loading = true;
+            const controller = new AbortController();
+            this.pendingRequest = controller;
+            timer = setTimeout(() => controller.abort(), 15000);
+            this.refreshStyles();
             const response = await fetch(
                 `${this.apiBaseUrl}/map/assets/${encodeURIComponent(asset.id)}/descendants`,
                 { signal: controller.signal, cache: "no-store" }
@@ -129,6 +137,7 @@ class MapDownstreamController {
         } finally {
             clearTimeout(timer);
             if (version === this.requestVersion) this.pendingRequest = null;
+            this.setLoading(false);
         }
     }
 
