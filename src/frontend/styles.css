@@ -390,6 +390,10 @@ body {
     border: 1px solid var(--border);
 }
 
+#agentic-panel > .generator-hero {
+    margin-bottom: 1rem;
+}
+
 .generator-hero h1 {
     margin: 0;
     font-size: 2.1rem;
