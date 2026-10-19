@@ -390,7 +390,8 @@ body {
     border: 1px solid var(--border);
 }
 
-#agentic-panel > .generator-hero {
+#agentic-panel > .generator-hero,
+#map-panel > .generator-hero {
     margin-bottom: 1rem;
 }
 
