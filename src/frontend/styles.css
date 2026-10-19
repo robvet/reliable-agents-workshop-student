@@ -284,6 +284,7 @@ body {
     flex: 1;
     display: flex;
     flex-direction: column;
+    min-width: 0;
     min-height: 100vh;
 }
 
@@ -379,6 +380,7 @@ body {
 .asset-map {
     flex: 1 1 auto;
     min-height: 0;
+    isolation: isolate;
 }
 
 .generator-hero {
@@ -387,6 +389,11 @@ body {
     border-radius: 14px;
     background: var(--bg-card);
     border: 1px solid var(--border);
+}
+
+#agentic-panel > .generator-hero,
+#map-panel > .generator-hero {
+    margin-bottom: 1rem;
 }
 
 .generator-hero h1 {
@@ -455,8 +462,20 @@ body {
     width: 28rem;
 }
 
+.outage-table-scroll {
+    overflow-x: auto;
+    padding-top: 0.5rem;
+}
+
+.outage-status-help {
+    margin: 0 0.9rem 0.5rem;
+    color: var(--text-secondary);
+    font-size: 0.8rem;
+}
+
 .outage-table {
     width: 100%;
+    min-width: 1000px;
     border-collapse: collapse;
     table-layout: fixed;
     font-size: 0.85rem;
@@ -486,7 +505,7 @@ body {
 .outage-table .col-outage-id { width: 8%; }
 .outage-table .col-event { width: 16%; }
 .outage-table .col-severity { width: 8%; }
-.outage-table .col-status { width: 12%; }
+.outage-table .col-status { width: 24%; }
 .outage-table .col-crew { width: 13%; }
 .outage-table .col-impact { width: 8%; }
 .outage-table .col-action { width: 10%; }
@@ -544,7 +563,6 @@ body {
 .impact-badge.impact-medium { background: #4a3a12; color: #f0c05a; }
 .impact-badge.impact-high { background: #4a1616; color: #f08a8a; }
 
-.outage-row-status,
 .outage-row-crew {
     padding: 0.3rem 0.4rem;
     border: 1px solid var(--border);
@@ -552,10 +570,144 @@ body {
     max-width: 100%;
 }
 
-.outage-row-status.status-reported { background: #e84057; color: #fff; }
-.outage-row-status.status-confirmed { background: #fef9c3; color: #713f12; }
-.outage-row-status.status-crew_assigned { background: #fde047; color: #422006; }
-.outage-row-status.status-restored { background: #bbf7d0; color: #14532d; }
+.outage-table .outage-status-cell {
+    overflow: visible;
+    white-space: normal;
+}
+
+.outage-status-strip {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    width: max-content;
+}
+
+.outage-status-button {
+    position: relative;
+    display: grid;
+    place-items: center;
+    flex: 0 0 36px;
+    width: 36px;
+    height: 36px;
+    padding: 0;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg-card);
+    color: var(--text-secondary);
+    cursor: pointer;
+}
+
+.outage-status-button:hover:not(:disabled) {
+    border-color: var(--text-secondary);
+    color: var(--text-primary);
+}
+
+.outage-status-button:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+    z-index: 2;
+}
+
+.outage-status-button svg {
+    width: 22px;
+    height: 22px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.outage-status-button.is-current {
+    background: var(--accent);
+    color: var(--text-primary);
+    border: 2px solid var(--accent);
+}
+
+.outage-status-button.is-pending {
+    background: var(--bg-input);
+    color: var(--accent);
+    border: 2px dashed var(--accent);
+}
+
+.outage-status-button:disabled {
+    cursor: wait;
+}
+
+.outage-status-connector {
+    width: 8px;
+    height: 1px;
+    background: var(--border);
+}
+
+.outage-status-check {
+    display: none;
+    position: absolute;
+    right: -5px;
+    top: -7px;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+    border: 1px solid var(--accent);
+    border-radius: 50%;
+    background: var(--bg-card);
+    color: var(--accent);
+}
+
+.is-current .outage-status-check {
+    display: flex;
+}
+
+.outage-status-check svg {
+    width: 11px;
+    height: 11px;
+    stroke-width: 3;
+}
+
+.outage-status-tooltip {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 3;
+    padding: 6px 8px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    background: var(--bg-sidebar);
+    color: var(--text-primary);
+    font: 0.75rem/1.4 -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    white-space: nowrap;
+    pointer-events: none;
+    visibility: hidden;
+}
+
+.outage-status-button:hover .outage-status-tooltip,
+.outage-status-button:focus-visible .outage-status-tooltip {
+    visibility: visible;
+}
+
+.outage-status-caption {
+    margin-top: 8px;
+    font: 0.7rem/1.4 -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    color: var(--text-secondary);
+}
+
+.outage-status-caption.is-pending {
+    color: var(--accent);
+}
+
+.outage-table .outage-row-btn {
+    min-width: 0;
+    padding: 0.5rem 0.75rem;
+}
+
+.outage-table .outage-row-btn:disabled {
+    background: var(--bg-input);
+    border-color: var(--border);
+    color: var(--text-muted);
+    cursor: default;
+}
 
 .generator-forecast {
     display: flex;
@@ -647,8 +799,17 @@ body {
 .asset-icon.sym-substation { background: #fee2e2; color: #991b1b; border-color: #dc2626; }
 .asset-icon.sym-feeder { background: #dbeafe; color: #1e3a8a; border-color: #2563eb; }
 .asset-icon.sym-transformer { background: #fef3c7; color: #78350f; border-color: #d97706; }
+.asset-icon.sym-meter { background: #ede9fe; color: #5b21b6; border-color: #7c3aed; }
 .asset-icon.sym-default { background: #dcfce7; color: #14532d; border-color: #166534; }
 .asset-icon.sym-outage { background: #dc2626; color: #ffffff; border-color: #7f1d1d; }
+
+.map-chip-meter { background: #ede9fe; color: #5b21b6; border-color: #7c3aed; }
+.map-chip-outage { background: #dc2626; color: #ffffff; border-color: #7f1d1d; }
+.map-downstream-status { padding: 0.5rem 0.9rem; font-size: 0.85rem; }
+.map-downstream-status:empty { display: none; }
+.map-downstream-status.is-error { color: #fca5a5; }
+.map-asset-details { white-space: pre-line; }
+.map-downstream-link { display: inline-block; margin-top: 0.25rem; }
 
 /* Header */
 .top-header {

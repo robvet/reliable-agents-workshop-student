@@ -6,7 +6,7 @@
     <title>Reliable Agents Workshop &amp; Accelerator</title>
     <link rel="icon" type="image/png" href="images/lens.png?v=20260824a">
     <link rel="apple-touch-icon" href="images/lens.png?v=20260824a">
-    <link rel="stylesheet" href="styles.css?v=20261017-ask-placeholder">
+    <link rel="stylesheet" href="styles.css?v=20261018-outage-status-icons">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 </head>
 <body>
@@ -22,7 +22,7 @@
         <!-- Navigation Links (placeholders for future features) -->
         <nav class="sidebar-nav">
             <a href="#" id="nav-home-link" class="nav-link active">Home</a>
-            <a href="#" id="nav-outages-link" class="nav-link nav-tooltip" data-tooltip="Create and manage outages">Outages</a>
+            <a href="#" id="nav-outages-link" class="nav-link nav-tooltip" data-tooltip="Create and manage outages">Outage Management</a>
             <a href="#" id="nav-agentic-link" class="nav-link nav-tooltip" data-tooltip="Submit requests and invoke agent actions">Command Center</a>
             <a href="#" id="nav-map-link" class="nav-link nav-tooltip" data-tooltip="View asset locations, status, and outages">Asset Map</a>
             <hr class="nav-separator">
@@ -82,9 +82,8 @@
     <!-- ============================================================ -->
     <main class="main-content">
 
-        <!-- Reusable full-panel loading overlay - shown while a panel's initial
-             data fetch is in flight, so landing on a page never looks frozen. -->
-        <div id="page-loading-overlay" class="page-loading-overlay hidden">
+        <!-- Shared loading indicator for Outages, Asset Map, and downstream updates. -->
+        <div id="page-loading-overlay" class="page-loading-overlay hidden" role="status" aria-live="polite">
             <div class="spinner"></div>
             <p id="page-loading-message">Loading...</p>
         </div>
@@ -105,7 +104,7 @@
         </header>
 
         <section class="top-header-extension" aria-label="Reliable Agents capability summary">
-            <p>Ask about assets, outages, crews, and restoration.</p>
+            <p>Manage outages, assets, crews, and restoration.</p>
             <!-- <p><strong>Future:</strong> Reliable Agents can be extended across the full asset lifecycle to monitor asset health, predict and detect failures, assess operational impact, coordinate restoration, and continuously improve health scoring through event and maintenance history.</p> -->
         </section>
 
@@ -114,6 +113,11 @@
         </section>
 
         <section id="agentic-panel" class="content-panel hidden">
+            <div class="generator-hero">
+                <h1>Command Center</h1>
+                <p>Manage outages, assets, crews, and restoration through chat and voice.</p>
+            </div>
+
             <!-- Prompt Suggestions Panel -->
             <div id="suggestions-panel" class="suggestions-panel">
                 <h3 class="section-label">Try Asking</h3>
@@ -181,16 +185,23 @@
         </section>
 
         <section id="map-panel" class="content-panel hidden">
+            <div class="generator-hero">
+                <h1>Asset Map</h1>
+                <p>Explore grid assets, visualize outages, and assess weather impacts across your service area.</p>
+            </div>
+
             <div class="map-toolbar">
                 <span class="map-chip map-chip-substation">S = Substation</span>
                 <span class="map-chip map-chip-feeder">F = Feeder</span>
                 <span class="map-chip map-chip-transformer">T = Transformer</span>
+                <span class="map-chip map-chip-meter">M = Meter</span>
                 <span class="map-chip map-chip-default">• = Other/Unknown</span>
                 <span id="map-weather-chip" class="map-chip map-chip-weather">Weather: loading...</span>
                 <button id="map-outage-toggle" class="map-chip map-toggle" type="button">Show Outages</button>
                 <button id="map-simulate-storm-toggle" class="map-chip map-toggle" type="button">Simulate Storm</button>
             </div>
             <div id="map-alert-panel" class="map-alert-panel hidden"></div>
+            <div id="map-downstream-status" class="map-downstream-status" role="status" aria-live="polite"></div>
             <div id="asset-map" class="asset-map"></div>
         </section>
 
@@ -233,8 +244,8 @@
             <div class="generator-hero">
                 <h1>Outage Management</h1>
                 <p>
-                    Create an outage against a grid asset, then move it through its status
-                    lifecycle as crews confirm, respond, and restore service.
+                    Create an outage against a grid asset, and manage it through its lifecycle
+                    as crews confirm, respond, and restore service.
                 </p>
             </div>
 
@@ -269,21 +280,27 @@
 
             <div id="outage-status" class="generator-status hidden"></div>
 
-            <table class="outage-table">
-                <thead>
-                    <tr>
-                        <th class="col-asset">Asset</th>
-                        <th class="col-outage-id">Outage ID</th>
-                        <th class="col-event">Event</th>
-                        <th class="col-severity">Severity</th>
-                        <th class="col-status">Status</th>
-                        <th class="col-crew">Crew</th>
-                        <th class="col-impact">Impact</th>
-                        <th class="col-action">Action</th>
-                    </tr>
-                </thead>
-                <tbody id="outage-list"></tbody>
-            </table>
+            <p class="outage-status-help">
+                Status: filled icon with a checkmark = current; dashed outline = pending.
+                Hover or focus an icon for its name. Select a status, then click Update to save.
+            </p>
+            <div class="outage-table-scroll">
+                <table class="outage-table">
+                    <thead>
+                        <tr>
+                            <th class="col-asset">Asset</th>
+                            <th class="col-outage-id">Outage ID</th>
+                            <th class="col-event">Event</th>
+                            <th class="col-severity">Severity</th>
+                            <th class="col-status">Status</th>
+                            <th class="col-crew">Crew</th>
+                            <th class="col-impact">Impact</th>
+                            <th class="col-action">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="outage-list"></tbody>
+                </table>
+            </div>
         </section>
 
         <div id="analyze-confirm" class="confirm-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="analyze-confirm-title">
@@ -302,6 +319,7 @@
     <script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/marked@15.0.12/marked.min.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
-    <script src="app.js?v=20261017-send-question"></script>
+    <script src="map_downstream_controller.js?v=20261017-map-loading"></script>
+    <script src="app.js?v=20261018-outage-status-icons"></script>
 </body>
 </html>

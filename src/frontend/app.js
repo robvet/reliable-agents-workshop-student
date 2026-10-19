@@ -71,6 +71,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const outageList       = document.getElementById("outage-list");
     const pageLoadingOverlay = document.getElementById("page-loading-overlay");
     const pageLoadingMessage = document.getElementById("page-loading-message");
+    let pageLoadingCount = 0;
     const suggestionsList  = document.getElementById("suggestions-list");
     const resultsArea      = document.getElementById("results-area");
     const resultsPlaceholder = document.getElementById("results-placeholder");
@@ -151,6 +152,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // filter needs its own lookup to restyle a marker after the fact without
     // rebuilding the whole map.
     let markersByAssetId = new Map();
+    let mapDownstreamController = null;
     let showOutagesOnly = false;
     // Frontend-only: no backend state is changed. Toggling just adds/removes
     // ?demo=true on the /map/weather fetch. Resets to false on page reload.
@@ -183,13 +185,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // ON:  outage assets -> red icon, full opacity. Healthy assets -> normal icon, dimmed.
     // OFF: every asset -> normal icon, full opacity (original render state).
     function applyOutageDimming() {
-        for (const asset of mapAssets) {
-            const marker = markersByAssetId.get(asset.id);
-            if (!marker) continue;
-            const isOutage = showOutagesOnly && asset.in_outage;
-            marker.setIcon(iconForMapAsset(asset, isOutage));
-            marker.setOpacity(showOutagesOnly && !asset.in_outage ? 0.25 : 1);
-        }
+        if (mapDownstreamController) mapDownstreamController.setOutageMode(showOutagesOnly);
     }
 
     if (navAgenticLink) {
@@ -871,10 +867,17 @@ document.addEventListener("DOMContentLoaded", () => {
         // Caught here because both callers discard the promise - the click handler is
         // an async listener and startup uses `void showMapView()`. Without this, a
         // throw would vanish and the only symptom would be an empty map.
+        const loadingAssets = !mapAssetsLoaded;
+        if (loadingAssets) setPageLoading(true, "Loading assets...");
         try {
+            if (loadingAssets) {
+                await new Promise(resolve => requestAnimationFrame(() => setTimeout(resolve, 0)));
+            }
             await ensureAssetMap();
         } catch (err) {
             logMapDiag("error", "Map: view failed to initialise", String(err && err.message ? err.message : err));
+        } finally {
+            if (loadingAssets) setPageLoading(false);
         }
     }
 
@@ -913,10 +916,11 @@ document.addEventListener("DOMContentLoaded", () => {
 
     function setPageLoading(visible, message = "Loading...") {
         if (!pageLoadingOverlay) return;
+        pageLoadingCount = Math.max(0, pageLoadingCount + (visible ? 1 : -1));
         if (visible) {
             if (pageLoadingMessage) pageLoadingMessage.textContent = message;
             pageLoadingOverlay.classList.remove("hidden");
-        } else {
+        } else if (!pageLoadingCount) {
             pageLoadingOverlay.classList.add("hidden");
         }
     }
@@ -1040,7 +1044,28 @@ document.addEventListener("DOMContentLoaded", () => {
     // CLOSED intentionally excluded - RESTORED is the terminal state an operator
     // ever needs to pick; CLOSED still exists in the backend/schema but is no
     // longer something this screen asks anyone to click.
-    const OUTAGE_STATUSES = ["REPORTED", "CONFIRMED", "CREW_ASSIGNED", "RESTORED"];
+    const OUTAGE_STATUSES = [
+        {
+            value: "REPORTED",
+            label: "Reported",
+            icon: '<path d="M9 18h6m-6 3h6M7.8 5.7A6 6 0 0 0 9 15v3h6v-3m2.6-3.8A6 6 0 0 0 10 3.3M3 3l18 18"/>',
+        },
+        {
+            value: "CONFIRMED",
+            label: "Confirmed",
+            icon: '<rect x="5" y="4" width="14" height="17" rx="2"/><rect x="9" y="2" width="6" height="4" rx="1"/><path d="m8 13 3 3 5-6"/>',
+        },
+        {
+            value: "CREW_ASSIGNED",
+            label: "Crew Assigned",
+            icon: '<circle cx="6" cy="6" r="3"/><path d="M1 21v-4a5 5 0 0 1 10 0v4M16 3v4l2 2 2-2V3a5 5 0 0 1 1 8l-1 1v8a2 2 0 0 1-4 0v-8l-1-1a5 5 0 0 1 1-8"/>',
+        },
+        {
+            value: "RESTORED",
+            label: "Restored",
+            icon: '<path d="M9 18h6m-6 3h6m-6-6a6 6 0 1 1 6 0v3H9zm3-14v1M2 9H1m22 0h-1M4 3l1 1m14 0 1-1"/>',
+        },
+    ];
     const outageAssetNames = new Map();
     const outageAssetTypes = new Map();
     const outageAssetRegions = new Map();
@@ -1178,9 +1203,9 @@ document.addEventListener("DOMContentLoaded", () => {
     // CREW_ASSIGNED, so it stays hidden otherwise. Re-fetches crews on every show -
     // availability changes as other rows get updated during the same session, so a
     // stale AVAILABLE list here could offer a crew someone just dispatched elsewhere.
-    async function updateOutageCrewFieldVisibility(statusSelect, assetRegion) {
+    async function updateOutageCrewFieldVisibility(status, assetRegion) {
         if (!outageCrewField) return;
-        const shouldShow = statusSelect.value === "CREW_ASSIGNED";
+        const shouldShow = status === "CREW_ASSIGNED";
         outageCrewField.classList.toggle("hidden", !shouldShow);
         if (shouldShow) {
             currentOutageCrewRegion = assetRegion || null;
@@ -1188,18 +1213,18 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    const STATUS_SELECT_COLOR_CLASSES = ["status-reported", "status-confirmed", "status-crew_assigned", "status-restored"];
-    const STATUS_SELECT_COLOR_MAP = {
-        REPORTED: "status-reported",
-        CONFIRMED: "status-confirmed",
-        CREW_ASSIGNED: "status-crew_assigned",
-        RESTORED: "status-restored",
-    };
+    function refreshOutageUpdateButtons() {
+        if (!outageList) return;
+        const hasNote = Boolean(outageNoteTextarea && outageNoteTextarea.value);
+        outageList.querySelectorAll(".outage-row-btn").forEach((button) => {
+            const row = button.closest("tr");
+            button.disabled = button.getAttribute("aria-busy") === "true" ||
+                (row.dataset.selectedStatus === row.dataset.currentStatus && !hasNote);
+        });
+    }
 
-    function applyStatusSelectColor(select) {
-        select.classList.remove(...STATUS_SELECT_COLOR_CLASSES);
-        const cls = STATUS_SELECT_COLOR_MAP[select.value];
-        if (cls) select.classList.add(cls);
+    if (outageNoteTextarea) {
+        outageNoteTextarea.addEventListener("input", refreshOutageUpdateButtons);
     }
 
     function renderOutageList(outages) {
@@ -1211,6 +1236,8 @@ document.addEventListener("DOMContentLoaded", () => {
         outageList.innerHTML = "";
         outages.forEach((outage) => {
             const row = document.createElement("tr");
+            row.dataset.currentStatus = outage.status;
+            row.dataset.selectedStatus = outage.status;
 
             const assetName = outageAssetNames.get(outage.asset_id) || outage.asset_id || "Unknown asset";
             const assetType = (outageAssetTypes.get(outage.asset_id) || "").toLowerCase();
@@ -1249,21 +1276,61 @@ document.addEventListener("DOMContentLoaded", () => {
             severityCell.appendChild(severityBadge);
 
             const statusCell = document.createElement("td");
-            const select = document.createElement("select");
-            select.className = "outage-row-status";
+            statusCell.className = "outage-status-cell";
+            const statusControl = document.createElement("div");
+            statusControl.className = "outage-status-strip";
+            statusControl.setAttribute("role", "group");
+            statusControl.setAttribute("aria-label", `Status for ${assetName}, outage ${outage.outage_id.slice(0, 8)}`);
+            const statusCaption = document.createElement("div");
+            statusCaption.className = "outage-status-caption";
+            statusCaption.setAttribute("aria-live", "polite");
+
+            function updateStatusControl() {
+                const currentStatus = row.dataset.currentStatus;
+                const selectedStatus = row.dataset.selectedStatus;
+                statusControl.querySelectorAll("button").forEach((statusButton) => {
+                    const status = OUTAGE_STATUSES.find((item) => item.value === statusButton.dataset.status);
+                    const current = status.value === currentStatus;
+                    const pending = status.value === selectedStatus && selectedStatus !== currentStatus;
+                    const label = status.label + (current ? " - Current status" : pending ? " - Pending selection" : "");
+                    statusButton.classList.toggle("is-current", current);
+                    statusButton.classList.toggle("is-pending", pending);
+                    statusButton.setAttribute("aria-pressed", String(status.value === selectedStatus));
+                    statusButton.setAttribute("aria-label", label);
+                    statusButton.querySelector(".outage-status-tooltip").textContent = label;
+                });
+                const pending = selectedStatus !== currentStatus;
+                const status = OUTAGE_STATUSES.find((item) => item.value === selectedStatus);
+                statusCaption.textContent = pending
+                    ? `Pending: ${status.label} - not saved`
+                    : `Current: ${status ? status.label : currentStatus}`;
+                statusCaption.classList.toggle("is-pending", pending);
+            }
+
             OUTAGE_STATUSES.forEach((status) => {
-                const option = document.createElement("option");
-                option.value = status;
-                option.textContent = status;
-                if (status === outage.status) option.selected = true;
-                select.append(option);
+                if (statusControl.children.length) {
+                    const connector = document.createElement("span");
+                    connector.className = "outage-status-connector";
+                    connector.setAttribute("aria-hidden", "true");
+                    statusControl.appendChild(connector);
+                }
+                const statusButton = document.createElement("button");
+                statusButton.type = "button";
+                statusButton.className = "outage-status-button";
+                statusButton.dataset.status = status.value;
+                statusButton.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true">${status.icon}</svg>
+                    <span class="outage-status-check" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg></span>
+                    <span class="outage-status-tooltip" aria-hidden="true"></span>`;
+                statusButton.addEventListener("click", () => {
+                    row.dataset.selectedStatus = status.value;
+                    updateStatusControl();
+                    refreshOutageUpdateButtons();
+                    updateOutageCrewFieldVisibility(status.value, outageAssetRegions.get(outage.asset_id));
+                });
+                statusControl.appendChild(statusButton);
             });
-            select.addEventListener("change", () => {
-                updateOutageCrewFieldVisibility(select, outageAssetRegions.get(outage.asset_id));
-                applyStatusSelectColor(select);
-            });
-            applyStatusSelectColor(select);
-            statusCell.appendChild(select);
+            updateStatusControl();
+            statusCell.append(statusControl, statusCaption);
 
             const crewCell = document.createElement("td");
             crewCell.textContent = outage.crew_name || "-";
@@ -1286,19 +1353,24 @@ document.addEventListener("DOMContentLoaded", () => {
             button.type = "button";
             button.textContent = "Update";
             button.addEventListener("click", async () => {
+                const toStatus = row.dataset.selectedStatus;
+                button.setAttribute("aria-busy", "true");
                 button.disabled = true;
+                statusControl.querySelectorAll("button").forEach((statusButton) => { statusButton.disabled = true; });
                 try {
                     const res = await fetch(`${API_BASE_URL}/outages/${outage.outage_id}/transition`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
-                            to_status: select.value,
+                            to_status: toStatus,
                             note: outageNoteTextarea && outageNoteTextarea.value ? outageNoteTextarea.value : null,
-                            crew_id: select.value === "CREW_ASSIGNED" && outageCrewSelect ? outageCrewSelect.value : null,
+                            crew_id: toStatus === "CREW_ASSIGNED" && outageCrewSelect ? outageCrewSelect.value : null,
                         }),
                     });
                     if (!res.ok) throw new Error((await res.json()).detail || `HTTP ${res.status}`);
-                    setOutageStatus("success", `Outage ${outage.outage_id.slice(0, 8)} moved to ${select.value}.`);
+                    row.dataset.currentStatus = toStatus;
+                    updateStatusControl();
+                    setOutageStatus("success", `Outage ${outage.outage_id.slice(0, 8)} moved to ${toStatus}.`);
                     if (outageNoteTextarea) outageNoteTextarea.value = "";
                     if (outageCrewField) outageCrewField.classList.add("hidden");
                     await loadOutages();
@@ -1307,7 +1379,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 } catch (err) {
                     setOutageStatus("error", `Update failed: ${err && err.message ? err.message : err}`);
                 } finally {
-                    button.disabled = false;
+                    button.setAttribute("aria-busy", "false");
+                    statusControl.querySelectorAll("button").forEach((statusButton) => { statusButton.disabled = false; });
+                    refreshOutageUpdateButtons();
                 }
             });
             actionCell.appendChild(button);
@@ -1315,6 +1389,7 @@ document.addEventListener("DOMContentLoaded", () => {
             row.append(assetCell, idCell, eventCell, severityCell, statusCell, crewCell, impactCell, actionCell);
             outageList.appendChild(row);
         });
+        refreshOutageUpdateButtons();
     }
 
     if (btnOutageCreate) {
@@ -1634,6 +1709,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (t.includes("substation")) return { symbol: "S", className: "sym-substation" };
         if (t.includes("feeder")) return { symbol: "F", className: "sym-feeder" };
         if (t.includes("transformer")) return { symbol: "T", className: "sym-transformer" };
+        if (t.includes("meter")) return { symbol: "M", className: "sym-meter" };
         return { symbol: "•", className: "sym-default" };
     }
 
@@ -1688,6 +1764,10 @@ document.addEventListener("DOMContentLoaded", () => {
     // with a Retry button that re-runs the (bounded) load.
     function showMapError() {
         if (!mapContainer) return;
+        if (mapDownstreamController) {
+            mapDownstreamController.collapse();
+            mapDownstreamController = null;
+        }
         if (assetMap) { assetMap.remove(); assetMap = null; }
         mapContainer.innerHTML =
             '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;' +
@@ -1705,7 +1785,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 mapAssetsLoaded = false;
                 mapAssets = [];
                 showMapMessage("Retrying...");
-                ensureAssetMap();
+                void showMapView();
             });
         }
     }
@@ -1793,6 +1873,13 @@ document.addEventListener("DOMContentLoaded", () => {
                 });
                 bounds.extend([asset.lat, asset.lng]);
             }
+            mapDownstreamController = new MapDownstreamController({
+                map: assetMap, assets: mapAssets, markers: markersByAssetId,
+                iconForAsset: iconForMapAsset, statusLabel: mapAssetStatusLabel,
+                apiBaseUrl: API_BASE_URL,
+                statusElement: document.getElementById("map-downstream-status"),
+                setLoading: setPageLoading,
+            });
 
             if (bounds.isValid()) {
                 setTimeout(() => {
@@ -1841,8 +1928,8 @@ document.addEventListener("DOMContentLoaded", () => {
         // map was fixed, that copy was missed and kept the original bug: it awaited
         // the weather overlay first, so a slow api.weather.gov call meant /map/assets
         // was never requested, and it reported the failure with console.error into
-        // the popup's own console where nobody looks. The popup now receives finished
-        // data and does no fetching at all, so there is only one loader left to break.
+        // the popup's own console where nobody looks. The popup receives finished
+        // base-map data; downstream lookups happen only on an explicit user action.
         let assets = [];
         try {
             assets = await loadMapAssets();
@@ -1860,6 +1947,7 @@ document.addEventListener("DOMContentLoaded", () => {
             .replace(/</g, "\\u003c")
             .replace(/\u2028/g, "\\u2028")
             .replace(/\u2029/g, "\\u2029");
+        const downstreamScriptUrl = new URL("map_downstream_controller.js?v=20261017-map-loading", window.location.href).href;
 
         const popupHtml = `<!DOCTYPE html>
 <html lang="en">
@@ -1876,6 +1964,10 @@ document.addEventListener("DOMContentLoaded", () => {
     .chip-substation { color: #7f1d1d; background: #fee2e2; border-color: #fecaca; }
     .chip-feeder { color: #1e3a8a; background: #dbeafe; border-color: #bfdbfe; }
     .chip-transformer { color: #78350f; background: #fef3c7; border-color: #fde68a; }
+    .chip-meter { color: #5b21b6; background: #ede9fe; border-color: #7c3aed; }
+    .chip-outage { color: #ffffff; background: #dc2626; border-color: #7f1d1d; }
+    .chip-toggle { cursor: pointer; color: #e2e8f0; background: #1e293b; border-color: #64748b; }
+    .chip-toggle.is-active { background: #7f1d1d; border-color: #dc2626; }
     .chip-default { color: #14532d; background: #dcfce7; border-color: #bbf7d0; }
     .chip-weather { color: #075985; background: #e0f2fe; border-color: #bae6fd; }
     #fatal { display: none; padding: .6rem .9rem; background: #7f1d1d; color: #fee2e2; font-size: .84rem; font-weight: 600; border-bottom: 1px solid #dc2626; white-space: pre-wrap; }
@@ -1899,19 +1991,37 @@ document.addEventListener("DOMContentLoaded", () => {
     .asset-icon.sym-substation { background: #fee2e2; color: #991b1b; border-color: #dc2626; }
     .asset-icon.sym-feeder { background: #dbeafe; color: #1e3a8a; border-color: #2563eb; }
     .asset-icon.sym-transformer { background: #fef3c7; color: #78350f; border-color: #d97706; }
+    .asset-icon.sym-meter { background: #ede9fe; color: #5b21b6; border-color: #7c3aed; }
+    .asset-icon.sym-outage { background: #dc2626; color: #ffffff; border-color: #7f1d1d; }
     .asset-icon.sym-default { background: #dcfce7; color: #14532d; border-color: #166534; }
+    .map-downstream-status { padding: .5rem .9rem; font-size: .85rem; }
+    .map-downstream-status:empty { display: none; }
+    .map-downstream-status.is-error { color: #fca5a5; }
+    .map-asset-details { white-space: pre-line; }
+    .map-downstream-link { display: inline-block; margin-top: .25rem; }
+    .map-loading-overlay { position: fixed; inset: 0; z-index: 2000; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: .75rem; background: inherit; opacity: .9; }
+    .map-loading-overlay.hidden { display: none; }
+    .map-loading-overlay .spinner { width: 32px; height: 32px; border: 4px solid currentColor; border-top-color: transparent; border-radius: 50%; animation: spin .8s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
+  <div id="page-loading-overlay" class="map-loading-overlay hidden" role="status" aria-live="polite">
+    <div class="spinner"></div>
+    <p id="page-loading-message">Loading...</p>
+  </div>
   <div class="wrap">
     <div class="toolbar">
       <span class="chip chip-substation">S = Substation</span>
       <span class="chip chip-feeder">F = Feeder</span>
       <span class="chip chip-transformer">T = Transformer</span>
+      <span class="chip chip-meter">M = Meter</span>
       <span class="chip chip-default">• = Other/Unknown</span>
       <span id="weather-chip" class="chip chip-weather">Weather: loading...</span>
+      <button id="popup-outage-toggle" class="chip chip-toggle" type="button">Show Outages</button>
     </div>
     <div id="fatal"></div>
+    <div id="map-downstream-status" class="map-downstream-status" role="status" aria-live="polite"></div>
     <div id="map"></div>
   </div>
 
@@ -1968,8 +2078,14 @@ document.addEventListener("DOMContentLoaded", () => {
   <\/script>
 
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""><\/script>
+  <script src="${downstreamScriptUrl}"><\/script>
   <script>
     const ASSETS = ${assetsJson};
+    const API_BASE_URL = ${JSON.stringify(API_BASE_URL)};
+    let showOutagesOnly = ${JSON.stringify(showOutagesOnly)};
+    let downstreamController = null;
+    const markersByAssetId = new Map();
+    const normalizedAssets = [];
     const texasBounds = L.latLngBounds(
       [25.8, -106.8],  // SW
       [36.7, -93.5]    // NE
@@ -2064,19 +2180,19 @@ document.addEventListener("DOMContentLoaded", () => {
       if (t.includes("substation")) return { symbol: "S", className: "sym-substation" };
       if (t.includes("feeder")) return { symbol: "F", className: "sym-feeder" };
       if (t.includes("transformer")) return { symbol: "T", className: "sym-transformer" };
+      if (t.includes("meter")) return { symbol: "M", className: "sym-meter" };
       return { symbol: "•", className: "sym-default" };
     }
 
-    function markerForAsset(asset) {
+    function iconForPopupAsset(asset, outageStyled) {
       const typeSymbol = symbolForAssetType(asset.asset_type);
-      const icon = L.divIcon({
+      return L.divIcon({
         className: "asset-icon-wrap",
-        html: '<div class="asset-icon ' + typeSymbol.className + '">' + typeSymbol.symbol + '</div>',
+        html: '<div class="asset-icon ' + (outageStyled ? "sym-outage" : typeSymbol.className) + '">' + typeSymbol.symbol + '</div>',
         iconSize: [30, 30],
         iconAnchor: [15, 15],
         popupAnchor: [0, -14],
       });
-      return L.marker([asset.lat, asset.lng], { icon });
     }
 
     function esc(value) {
@@ -2092,6 +2208,7 @@ document.addEventListener("DOMContentLoaded", () => {
         name: String(row.name ?? row.asset_name ?? row.id ?? "Asset"),
         asset_type: String(row.asset_type ?? ""),
         status: String(row.status ?? "NORMAL"),
+        in_outage: Boolean(row.in_outage),
         crew_name: row.crew_name || null,
         lat,
         lng
@@ -2108,15 +2225,16 @@ document.addEventListener("DOMContentLoaded", () => {
       return MAP_ASSET_STATUS_LABELS[status] || status || "unknown";
     }
 
-    // No fetching here, on purpose. ASSETS was loaded by the opener and injected as
-    // data. Rendering is synchronous, so nothing external can stop the map drawing.
+    // Base assets are injected by the opener; downstream data loads on demand.
     function renderAssets() {
       const bounds = L.latLngBounds();
       let plotted = 0;
       for (const row of ASSETS) {
         const asset = normalizeAsset(row);
         if (!asset) continue;
-        const marker = markerForAsset(asset).addTo(map);
+        const marker = L.marker([asset.lat, asset.lng], { icon: iconForPopupAsset(asset, false) }).addTo(map);
+        markersByAssetId.set(asset.id, marker);
+        normalizedAssets.push(asset);
         marker.bindPopup(
           "<strong>" + esc(asset.name || asset.id || "Asset") + "</strong><br>" +
           "ID: " + esc(asset.id || "-") + "<br>" +
@@ -2128,6 +2246,14 @@ document.addEventListener("DOMContentLoaded", () => {
         bounds.extend([asset.lat, asset.lng]);
         plotted++;
       }
+      downstreamController = new MapDownstreamController({
+        map, assets: normalizedAssets, markers: markersByAssetId,
+        iconForAsset: iconForPopupAsset, statusLabel: mapAssetStatusLabel,
+        apiBaseUrl: API_BASE_URL,
+        statusElement: document.getElementById("map-downstream-status"),
+        setLoading: setPopupLoading,
+      });
+      applyPopupOutageMode();
    if (plotted && bounds.isValid()) {
     setTimeout(function () {
      map.invalidateSize();
@@ -2138,6 +2264,24 @@ document.addEventListener("DOMContentLoaded", () => {
         window.showMapError("No assets to plot. The map is empty - open the main window's Execution Trace or console for the reason.");
       }
     }
+
+    let popupLoadingCount = 0;
+    function setPopupLoading(visible, message) {
+      popupLoadingCount = Math.max(0, popupLoadingCount + (visible ? 1 : -1));
+      if (visible) document.getElementById("page-loading-message").textContent = message;
+      document.getElementById("page-loading-overlay").classList.toggle("hidden", !popupLoadingCount);
+    }
+
+    function applyPopupOutageMode() {
+      const toggle = document.getElementById("popup-outage-toggle");
+      toggle.textContent = showOutagesOnly ? "Show All" : "Show Outages";
+      toggle.classList.toggle("is-active", showOutagesOnly);
+      if (downstreamController) downstreamController.setOutageMode(showOutagesOnly);
+    }
+    document.getElementById("popup-outage-toggle").addEventListener("click", () => {
+      showOutagesOnly = !showOutagesOnly;
+      applyPopupOutageMode();
+    });
 
     try {
       renderAssets();

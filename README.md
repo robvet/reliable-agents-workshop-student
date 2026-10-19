@@ -16,6 +16,13 @@ The current utility-focused implementation supports asset, event, crew, reliabil
   <img src="docs/images/responseiq-ui.png" alt="Reliable Agents user interface placeholder" width="900" />
 </p>
 
+The Outage Management Status column uses four icon buttons: a slashed bulb
+(Reported), a checked clipboard (Confirmed), a person with a wrench (Crew Assigned),
+and a lit bulb (Restored). Hover or keyboard-focus an icon to see its status name.
+A filled icon with a checkmark identifies the saved status; a dashed outline marks
+a pending selection. Click **Update** to save. Crew selection and Field Notes still
+apply to that update; entering a note also enables Update without a status change.
+
 ## Architecture
 
 <p align="center">
