@@ -6,7 +6,7 @@
     <title>Reliable Agents Workshop &amp; Accelerator</title>
     <link rel="icon" type="image/png" href="images/lens.png?v=20260824a">
     <link rel="apple-touch-icon" href="images/lens.png?v=20260824a">
-    <link rel="stylesheet" href="styles.css?v=20261017-map-loading">
+    <link rel="stylesheet" href="styles.css?v=20261018-outage-status-icons">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
 </head>
 <body>
@@ -280,21 +280,27 @@
 
             <div id="outage-status" class="generator-status hidden"></div>
 
-            <table class="outage-table">
-                <thead>
-                    <tr>
-                        <th class="col-asset">Asset</th>
-                        <th class="col-outage-id">Outage ID</th>
-                        <th class="col-event">Event</th>
-                        <th class="col-severity">Severity</th>
-                        <th class="col-status">Status</th>
-                        <th class="col-crew">Crew</th>
-                        <th class="col-impact">Impact</th>
-                        <th class="col-action">Action</th>
-                    </tr>
-                </thead>
-                <tbody id="outage-list"></tbody>
-            </table>
+            <p class="outage-status-help">
+                Status: filled icon with a checkmark = current; dashed outline = pending.
+                Hover or focus an icon for its name. Select a status, then click Update to save.
+            </p>
+            <div class="outage-table-scroll">
+                <table class="outage-table">
+                    <thead>
+                        <tr>
+                            <th class="col-asset">Asset</th>
+                            <th class="col-outage-id">Outage ID</th>
+                            <th class="col-event">Event</th>
+                            <th class="col-severity">Severity</th>
+                            <th class="col-status">Status</th>
+                            <th class="col-crew">Crew</th>
+                            <th class="col-impact">Impact</th>
+                            <th class="col-action">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="outage-list"></tbody>
+                </table>
+            </div>
         </section>
 
         <div id="analyze-confirm" class="confirm-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="analyze-confirm-title">
@@ -314,6 +320,6 @@
     <script src="https://cdn.jsdelivr.net/npm/marked@15.0.12/marked.min.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="map_downstream_controller.js?v=20261017-map-loading"></script>
-    <script src="app.js?v=20261017-map-loading"></script>
+    <script src="app.js?v=20261018-outage-status-icons"></script>
 </body>
 </html>

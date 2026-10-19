@@ -1044,7 +1044,28 @@ document.addEventListener("DOMContentLoaded", () => {
     // CLOSED intentionally excluded - RESTORED is the terminal state an operator
     // ever needs to pick; CLOSED still exists in the backend/schema but is no
     // longer something this screen asks anyone to click.
-    const OUTAGE_STATUSES = ["REPORTED", "CONFIRMED", "CREW_ASSIGNED", "RESTORED"];
+    const OUTAGE_STATUSES = [
+        {
+            value: "REPORTED",
+            label: "Reported",
+            icon: '<path d="M9 18h6m-6 3h6M7.8 5.7A6 6 0 0 0 9 15v3h6v-3m2.6-3.8A6 6 0 0 0 10 3.3M3 3l18 18"/>',
+        },
+        {
+            value: "CONFIRMED",
+            label: "Confirmed",
+            icon: '<rect x="5" y="4" width="14" height="17" rx="2"/><rect x="9" y="2" width="6" height="4" rx="1"/><path d="m8 13 3 3 5-6"/>',
+        },
+        {
+            value: "CREW_ASSIGNED",
+            label: "Crew Assigned",
+            icon: '<circle cx="6" cy="6" r="3"/><path d="M1 21v-4a5 5 0 0 1 10 0v4M16 3v4l2 2 2-2V3a5 5 0 0 1 1 8l-1 1v8a2 2 0 0 1-4 0v-8l-1-1a5 5 0 0 1 1-8"/>',
+        },
+        {
+            value: "RESTORED",
+            label: "Restored",
+            icon: '<path d="M9 18h6m-6 3h6m-6-6a6 6 0 1 1 6 0v3H9zm3-14v1M2 9H1m22 0h-1M4 3l1 1m14 0 1-1"/>',
+        },
+    ];
     const outageAssetNames = new Map();
     const outageAssetTypes = new Map();
     const outageAssetRegions = new Map();
@@ -1182,9 +1203,9 @@ document.addEventListener("DOMContentLoaded", () => {
     // CREW_ASSIGNED, so it stays hidden otherwise. Re-fetches crews on every show -
     // availability changes as other rows get updated during the same session, so a
     // stale AVAILABLE list here could offer a crew someone just dispatched elsewhere.
-    async function updateOutageCrewFieldVisibility(statusSelect, assetRegion) {
+    async function updateOutageCrewFieldVisibility(status, assetRegion) {
         if (!outageCrewField) return;
-        const shouldShow = statusSelect.value === "CREW_ASSIGNED";
+        const shouldShow = status === "CREW_ASSIGNED";
         outageCrewField.classList.toggle("hidden", !shouldShow);
         if (shouldShow) {
             currentOutageCrewRegion = assetRegion || null;
@@ -1192,18 +1213,18 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
-    const STATUS_SELECT_COLOR_CLASSES = ["status-reported", "status-confirmed", "status-crew_assigned", "status-restored"];
-    const STATUS_SELECT_COLOR_MAP = {
-        REPORTED: "status-reported",
-        CONFIRMED: "status-confirmed",
-        CREW_ASSIGNED: "status-crew_assigned",
-        RESTORED: "status-restored",
-    };
+    function refreshOutageUpdateButtons() {
+        if (!outageList) return;
+        const hasNote = Boolean(outageNoteTextarea && outageNoteTextarea.value);
+        outageList.querySelectorAll(".outage-row-btn").forEach((button) => {
+            const row = button.closest("tr");
+            button.disabled = button.getAttribute("aria-busy") === "true" ||
+                (row.dataset.selectedStatus === row.dataset.currentStatus && !hasNote);
+        });
+    }
 
-    function applyStatusSelectColor(select) {
-        select.classList.remove(...STATUS_SELECT_COLOR_CLASSES);
-        const cls = STATUS_SELECT_COLOR_MAP[select.value];
-        if (cls) select.classList.add(cls);
+    if (outageNoteTextarea) {
+        outageNoteTextarea.addEventListener("input", refreshOutageUpdateButtons);
     }
 
     function renderOutageList(outages) {
@@ -1215,6 +1236,8 @@ document.addEventListener("DOMContentLoaded", () => {
         outageList.innerHTML = "";
         outages.forEach((outage) => {
             const row = document.createElement("tr");
+            row.dataset.currentStatus = outage.status;
+            row.dataset.selectedStatus = outage.status;
 
             const assetName = outageAssetNames.get(outage.asset_id) || outage.asset_id || "Unknown asset";
             const assetType = (outageAssetTypes.get(outage.asset_id) || "").toLowerCase();
@@ -1253,21 +1276,61 @@ document.addEventListener("DOMContentLoaded", () => {
             severityCell.appendChild(severityBadge);
 
             const statusCell = document.createElement("td");
-            const select = document.createElement("select");
-            select.className = "outage-row-status";
+            statusCell.className = "outage-status-cell";
+            const statusControl = document.createElement("div");
+            statusControl.className = "outage-status-strip";
+            statusControl.setAttribute("role", "group");
+            statusControl.setAttribute("aria-label", `Status for ${assetName}, outage ${outage.outage_id.slice(0, 8)}`);
+            const statusCaption = document.createElement("div");
+            statusCaption.className = "outage-status-caption";
+            statusCaption.setAttribute("aria-live", "polite");
+
+            function updateStatusControl() {
+                const currentStatus = row.dataset.currentStatus;
+                const selectedStatus = row.dataset.selectedStatus;
+                statusControl.querySelectorAll("button").forEach((statusButton) => {
+                    const status = OUTAGE_STATUSES.find((item) => item.value === statusButton.dataset.status);
+                    const current = status.value === currentStatus;
+                    const pending = status.value === selectedStatus && selectedStatus !== currentStatus;
+                    const label = status.label + (current ? " - Current status" : pending ? " - Pending selection" : "");
+                    statusButton.classList.toggle("is-current", current);
+                    statusButton.classList.toggle("is-pending", pending);
+                    statusButton.setAttribute("aria-pressed", String(status.value === selectedStatus));
+                    statusButton.setAttribute("aria-label", label);
+                    statusButton.querySelector(".outage-status-tooltip").textContent = label;
+                });
+                const pending = selectedStatus !== currentStatus;
+                const status = OUTAGE_STATUSES.find((item) => item.value === selectedStatus);
+                statusCaption.textContent = pending
+                    ? `Pending: ${status.label} - not saved`
+                    : `Current: ${status ? status.label : currentStatus}`;
+                statusCaption.classList.toggle("is-pending", pending);
+            }
+
             OUTAGE_STATUSES.forEach((status) => {
-                const option = document.createElement("option");
-                option.value = status;
-                option.textContent = status;
-                if (status === outage.status) option.selected = true;
-                select.append(option);
+                if (statusControl.children.length) {
+                    const connector = document.createElement("span");
+                    connector.className = "outage-status-connector";
+                    connector.setAttribute("aria-hidden", "true");
+                    statusControl.appendChild(connector);
+                }
+                const statusButton = document.createElement("button");
+                statusButton.type = "button";
+                statusButton.className = "outage-status-button";
+                statusButton.dataset.status = status.value;
+                statusButton.innerHTML = `<svg viewBox="0 0 24 24" aria-hidden="true">${status.icon}</svg>
+                    <span class="outage-status-check" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="m5 12 4 4L19 6"/></svg></span>
+                    <span class="outage-status-tooltip" aria-hidden="true"></span>`;
+                statusButton.addEventListener("click", () => {
+                    row.dataset.selectedStatus = status.value;
+                    updateStatusControl();
+                    refreshOutageUpdateButtons();
+                    updateOutageCrewFieldVisibility(status.value, outageAssetRegions.get(outage.asset_id));
+                });
+                statusControl.appendChild(statusButton);
             });
-            select.addEventListener("change", () => {
-                updateOutageCrewFieldVisibility(select, outageAssetRegions.get(outage.asset_id));
-                applyStatusSelectColor(select);
-            });
-            applyStatusSelectColor(select);
-            statusCell.appendChild(select);
+            updateStatusControl();
+            statusCell.append(statusControl, statusCaption);
 
             const crewCell = document.createElement("td");
             crewCell.textContent = outage.crew_name || "-";
@@ -1290,19 +1353,24 @@ document.addEventListener("DOMContentLoaded", () => {
             button.type = "button";
             button.textContent = "Update";
             button.addEventListener("click", async () => {
+                const toStatus = row.dataset.selectedStatus;
+                button.setAttribute("aria-busy", "true");
                 button.disabled = true;
+                statusControl.querySelectorAll("button").forEach((statusButton) => { statusButton.disabled = true; });
                 try {
                     const res = await fetch(`${API_BASE_URL}/outages/${outage.outage_id}/transition`, {
                         method: "POST",
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({
-                            to_status: select.value,
+                            to_status: toStatus,
                             note: outageNoteTextarea && outageNoteTextarea.value ? outageNoteTextarea.value : null,
-                            crew_id: select.value === "CREW_ASSIGNED" && outageCrewSelect ? outageCrewSelect.value : null,
+                            crew_id: toStatus === "CREW_ASSIGNED" && outageCrewSelect ? outageCrewSelect.value : null,
                         }),
                     });
                     if (!res.ok) throw new Error((await res.json()).detail || `HTTP ${res.status}`);
-                    setOutageStatus("success", `Outage ${outage.outage_id.slice(0, 8)} moved to ${select.value}.`);
+                    row.dataset.currentStatus = toStatus;
+                    updateStatusControl();
+                    setOutageStatus("success", `Outage ${outage.outage_id.slice(0, 8)} moved to ${toStatus}.`);
                     if (outageNoteTextarea) outageNoteTextarea.value = "";
                     if (outageCrewField) outageCrewField.classList.add("hidden");
                     await loadOutages();
@@ -1311,7 +1379,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 } catch (err) {
                     setOutageStatus("error", `Update failed: ${err && err.message ? err.message : err}`);
                 } finally {
-                    button.disabled = false;
+                    button.setAttribute("aria-busy", "false");
+                    statusControl.querySelectorAll("button").forEach((statusButton) => { statusButton.disabled = false; });
+                    refreshOutageUpdateButtons();
                 }
             });
             actionCell.appendChild(button);
@@ -1319,6 +1389,7 @@ document.addEventListener("DOMContentLoaded", () => {
             row.append(assetCell, idCell, eventCell, severityCell, statusCell, crewCell, impactCell, actionCell);
             outageList.appendChild(row);
         });
+        refreshOutageUpdateButtons();
     }
 
     if (btnOutageCreate) {
