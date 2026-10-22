@@ -1,232 +1,417 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="100%" height="auto" viewBox="0 0 1600 1400" preserveAspectRatio="xMidYMid meet" font-family="Arial, 'Liberation Sans', sans-serif" xmlns:c2pa="http://c2pa.org/manifest"><metadata><c2pa:manifest>AAAWgmp1bWIAAAAeanVtZGMycGEAEQAQgAAAqgA4m3EDYzJwYQAAABZcanVtYgAAAEdqdW1kYzJtYQARABCAAACqADibcQN1cm46YzJwYTplZjIyOGVmNy05NzI3LTQ4NTctODRjZi1kMGY5NTc5MTI5ODUAAAADl2p1bWIAAAApanVtZGMyYXMAEQAQgAAAqgA4m3EDYzJwYS5hc3NlcnRpb25zAAAAALxqdW1iAAAARGp1bWRjYm9yABEAEIAAAKoAOJtxE2MycGEuaW5ncmVkaWVudC52MwAAAAAYYzJzaP1GA2NfUNJJ2qPhAQnjksYAAABwY2JvcqNpZGM6Zm9ybWF0bWltYWdlL3N2Zyt4bWxqaW5zdGFuY2VJRHgseG1wOmlpZDpiYzhjMzRlYy1lNDk2LTQ4ZDYtODFmZi01YTFkM2EzZGRiOGJscmVsYXRpb25zaGlwaHBhcmVudE9mAAAB4mp1bWIAAABBanVtZGNib3IAEQAQgAAAqgA4m3ETYzJwYS5hY3Rpb25zLnYyAAAAABhjMnNoouC7LSUQTySna5dnQkmydAAAAZljYm9yomdhY3Rpb25zgqJmYWN0aW9ua2MycGEub3BlbmVkanBhcmFtZXRlcnOha2luZ3JlZGllbnRzgaJjdXJseC1zZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmluZ3JlZGllbnQudjNkaGFzaFggYzry3AbEU4RpjCLj1LlbmhY1oRKEgQEMVa7LJPZuRc+kZmFjdGlvbngdY29tLmFudGhyb3BpYy5jbGF1ZGUucHJvdmlkZWRqcGFyYW1ldGVyc6F4H2NvbS5hbnRocm9waWMub3JpZ2luLWNvbmZpZGVuY2VndW5rbm93bmtkZXNjcmlwdGlvbnhmQ2xhdWRlIHByb3ZpZGVkIHRoaXMgZmlsZSBhdCB0aGUgcmVxdWVzdCBvZiBhIHVzZXIgYW5kIG1heSBoYXZlIGNyZWF0ZWQgb3IgbW9kaWZpZWQgdGhlIGZpbGUgY29udGVudHMubXNvZnR3YXJlQWdlbnShZG5hbWVmQ2xhdWRlcmFsbEFjdGlvbnNJbmNsdWRlZPUAAADIanVtYgAAAEBqdW1kY2JvcgARABCAAACqADibcRNjMnBhLmhhc2guZGF0YQAAAAAYYzJzaPXUC05tBXGTzFWnxpXg6r4AAACAY2JvcqVjYWxnZnNoYTI1NmNwYWRNAAAAAAAAAAAAAAAAAGRoYXNoWCBtDG/eb/IDSdfSt1XIRj6JxOg6QIt3mAoBDJuPbtNY4GRuYW1lbmp1bWJmIG1hbmlmZXN0amV4Y2x1c2lvbnOBomVzdGFydBjNZmxlbmd0aBkeBAAAAj5qdW1iAAAAJ2p1bWRjMmNsABEAEIAAAKoAOJtxA2MycGEuY2xhaW0udjIAAAACD2Nib3KlY2FsZ2ZzaGEyNTZpc2lnbmF0dXJleE1zZWxmI2p1bWJmPS9jMnBhL3VybjpjMnBhOmVmMjI4ZWY3LTk3MjctNDg1Ny04NGNmLWQwZjk1NzkxMjk4NS9jMnBhLnNpZ25hdHVyZWppbnN0YW5jZUlEeCx4bXA6aWlkOmZhNjZkZGFkLWEyN2UtNDFhNi05Y2I5LTVkOGFmMTgyODI2MHJjcmVhdGVkX2Fzc2VydGlvbnODomN1cmx4LXNlbGYjanVtYmY9YzJwYS5hc3NlcnRpb25zL2MycGEuaW5ncmVkaWVudC52M2RoYXNoWCBjOvLcBsRThGmMIuPUuVuaFjWhEoSBAQxVrssk9m5Fz6JjdXJseCpzZWxmI2p1bWJmPWMycGEuYXNzZXJ0aW9ucy9jMnBhLmFjdGlvbnMudjJkaGFzaFggSJ0rAjRP2narztm+XgER2OugxKeWe5weqDLeJh9HeqWiY3VybHgpc2VsZiNqdW1iZj1jMnBhLmFzc2VydGlvbnMvYzJwYS5oYXNoLmRhdGFkaGFzaFgge4MbFqjCZLulAaqoQEyhyKyY1BTvp9ktVnMY0njSL/p0Y2xhaW1fZ2VuZXJhdG9yX2luZm+jZG5hbWVvQW50aHJvcGljIEZpbGVzZ3ZlcnNpb25lMS4wLjBrc3BlY1ZlcnNpb25lMi40LjAAABA4anVtYgAAAChqdW1kYzJjcwARABCAAACqADibcQNjMnBhLnNpZ25hdHVyZQAAABAIY2JvctKEWQISogEmGCFZAgowggIGMIIBjaADAgECAhRA5aAK7sI50L64g/oGQgU9Z1UTADAKBggqhkjOPQQDAzBJMRcwFQYDVQQKEw5BbnRocm9waWMsIFBCQzEuMCwGA1UEAxMlQW50aHJvcGljIENvbnRlbnQgQ3JlZGVudGlhbHMgUm9vdCBDQTAeFw0yNjA4MDcxODQzNTZaFw0yODA4MDYxOTQzNTZaMEQxFzAVBgNVBAoTDkFudGhyb3BpYywgUEJDMSkwJwYDVQQDEyBBbnRocm9waWMgQ2xhdWRlIENvbnRlbnQgU2lnbmluZzBZMBMGByqGSM49AgEGCCqGSM49AwEHA0IABJh6CmvLUBgFFNU0vUKlOVtE6djd17L5SuwX0LemFisBM3dkd/3cyjxFA3Qo5S46fX0/ihY0VZ7mfb9KF703t5OjWDBWMA4GA1UdDwEB/wQEAwIHgDAVBgNVHSUEDjAMBgorBgEEAYPoXgIBMAwGA1UdEwEB/wQCMAAwHwYDVR0jBBgwFoAUzlHiBIFOZFsj+OPEz5o+nMHXXMIwCgYIKoZIzj0EAwMDZwAwZAIwMXMdFJ4BetLLVY7ORuE9noqbbAZOZn/aArXyTwFAZfKrPzxF2vPoJNf1+UCdg1XGAjBwX1zd9WGqYkqmL5SFqw1QySjr1zJfpJM9+1rdDwSPLMOPOjKuiXjoU/pUUeG9RwmhY3BhZFkNngAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAPZYQBd2oCzA5YyCNyUv9EY4Moir4hIzT0nKnQgcNJxYGbDwA9avivBNU5pBLPAXxvlEGlglBT7Fz2TQXSyDW8hlP5U=</c2pa:manifest></metadata>
-<defs>
-<linearGradient id="hg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3f7bff"/><stop offset="0.45" stop-color="#7d4dd6"/><stop offset="0.78" stop-color="#c8408f"/><stop offset="1" stop-color="#e0447f"/></linearGradient>
-<linearGradient id="pg1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ece2fb"/><stop offset="1" stop-color="#ddccf6"/></linearGradient>
-<linearGradient id="pg2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e3effc"/><stop offset="1" stop-color="#cadffb"/></linearGradient>
-<linearGradient id="pg3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e0f2ef"/><stop offset="1" stop-color="#c6e7e0"/></linearGradient>
-<linearGradient id="probg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#2a0814" stop-opacity="0.55"/><stop offset="1" stop-color="#12060a" stop-opacity="0.2"/></linearGradient><linearGradient id="solg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#061e22" stop-opacity="0.55"/><stop offset="1" stop-color="#06121a" stop-opacity="0.2"/></linearGradient><filter id="cardsh" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#1e1446" flood-opacity="0.18"/></filter>
-<radialGradient id="glow1" cx="20%" cy="0%" r="90%"><stop offset="0" stop-color="#6366f1" stop-opacity="0.18"/><stop offset="0.6" stop-color="#6366f1" stop-opacity="0"/></radialGradient>
-<radialGradient id="topglow" cx="94%" cy="10%" r="38%"><stop offset="0" stop-color="#5a2fb5" stop-opacity="0.6"/><stop offset="0.55" stop-color="#5028a0" stop-opacity="0"/></radialGradient>
-<radialGradient id="topglow2" cx="101%" cy="5%" r="26%"><stop offset="0" stop-color="#d0308a" stop-opacity="0.35"/><stop offset="0.55" stop-color="#be2878" stop-opacity="0"/></radialGradient>
-</defs>
-<rect width="1600" height="1400" fill="#05060a"/>
-<rect width="1600" height="640" fill="url(#topglow)"/>
-<rect width="1600" height="640" fill="url(#topglow2)"/>
-<path d="M1020 720 Q 1400 500 1600 120" stroke="#39c6d6" stroke-width="1.6" fill="none" stroke-dasharray="2 8" stroke-linecap="round"/>
-<path d="M1080 740 Q 1440 520 1600 175" stroke="#4da6ff" stroke-width="2" fill="none" stroke-dasharray="2 8" stroke-linecap="round"/>
-<path d="M1140 758 Q 1470 530 1600 235" stroke="#7d6bff" stroke-width="2" fill="none" stroke-dasharray="2 8" stroke-linecap="round"/>
-<path d="M1200 772 Q 1500 540 1600 300" stroke="#b15bff" stroke-width="2" fill="none" stroke-dasharray="2 8" stroke-linecap="round"/>
-<path d="M1260 785 Q 1520 560 1600 365" stroke="#d24fd0" stroke-width="1.8" fill="none" stroke-dasharray="2 8" stroke-linecap="round"/>
-<text x="40" y="45" font-size="18" fill="#cfd6e4" font-weight="700" text-anchor="start">RELIABLE AGENTS / WORKSHOP + ACCELERATOR</text>
-<rect x="630.0" y="24" width="340" height="34" rx="17" fill="rgba(10,30,40,0.4)" stroke="#1d7a86"/>
-<text x="800.0" y="46" font-size="16" fill="#39c6d6" font-weight="700" text-anchor="middle">✦ THE AI RELIABILITY GAP</text>
-<text x="800.0" y="108" font-size="54" fill="#ffffff" font-weight="800" text-anchor="middle">You Proved Agents Can Work.</text>
-<text x="800.0" y="168" font-size="54" fill="url(#hg)" font-weight="800" text-anchor="middle">Now Prove They Can Be Trusted.</text>
-<text x="800.0" y="214" font-size="21" fill="#e6e9f2" font-weight="400" text-anchor="middle">Building agents is easy. Engineering accurate, consistent, reliable behavior—</text>
-<text x="800.0" y="244" font-size="21" fill="#e6e9f2" font-weight="400" text-anchor="middle">under real-world conditions—is the hard part.</text>
-<line x1="570.0" y1="252" x2="1030.0" y2="252" stroke="#6d3bd0" stroke-width="2"/>
-<text x="800.0" y="296" font-size="20" fill="#39c6d6" font-weight="800" text-anchor="middle">RELIABILITY IS THE BRIDGE FROM PILOT TO PRODUCTION</text>
-<rect x="40" y="330" width="747.0" height="150" rx="14" fill="url(#probg)" stroke="#7a1f45"/>
-<g transform="translate(60,380) scale(1.67)" stroke="#e0447f" fill="none" stroke-width="1.4" stroke-linecap="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="#e0447f"/></g>
-<text x="120" y="368" font-size="15" fill="#e0447f" font-weight="800" text-anchor="start">PROBLEM</text>
-<text x="120" y="396" font-size="24" fill="#ffffff" font-weight="800" text-anchor="start">Agents are easy to build. Hard to trust.</text>
-<text x="120" y="422" font-size="15" fill="#c3c9d6" font-weight="400" text-anchor="start">Probabilistic behavior, multi-agent complexity,</text>
-<text x="120" y="444" font-size="15" fill="#c3c9d6" font-weight="400" text-anchor="start">and real-world failures create unpredictable</text>
-<text x="120" y="466" font-size="15" fill="#c3c9d6" font-weight="400" text-anchor="start">outcomes that block production adoption.</text>
-<rect x="813.0" y="330" width="747.0" height="150" rx="14" fill="url(#solg)" stroke="#16616e"/>
-<circle cx="853.0" cy="400" r="10" fill="none" stroke="#39c6d6" stroke-width="2"/>
-<line x1="867.0" y1="400.0" x2="872.0" y2="400.0" stroke="#39c6d6" stroke-width="2" stroke-linecap="round"/>
-<line x1="862.9" y1="409.9" x2="866.4" y2="413.4" stroke="#39c6d6" stroke-width="2" stroke-linecap="round"/>
-<line x1="853.0" y1="414.0" x2="853.0" y2="419.0" stroke="#39c6d6" stroke-width="2" stroke-linecap="round"/>
-<line x1="843.1" y1="409.9" x2="839.6" y2="413.4" stroke="#39c6d6" stroke-width="2" stroke-linecap="round"/>
-<line x1="839.0" y1="400.0" x2="834.0" y2="400.0" stroke="#39c6d6" stroke-width="2" stroke-linecap="round"/>
-<line x1="843.1" y1="390.1" x2="839.6" y2="386.6" stroke="#39c6d6" stroke-width="2" stroke-linecap="round"/>
-<line x1="853.0" y1="386.0" x2="853.0" y2="381.0" stroke="#39c6d6" stroke-width="2" stroke-linecap="round"/>
-<line x1="862.9" y1="390.1" x2="866.4" y2="386.6" stroke="#39c6d6" stroke-width="2" stroke-linecap="round"/>
-<text x="893.0" y="368" font-size="15" fill="#39c6d6" font-weight="800" text-anchor="start">SOLUTION</text>
-<text x="893.0" y="396" font-size="24" fill="#ffffff" font-weight="800" text-anchor="start">Engineer reliability into the system.</text>
-<text x="893.0" y="422" font-size="15" fill="#c3c9d6" font-weight="400" text-anchor="start">Combine deterministic controls, structured contracts,</text>
-<text x="893.0" y="444" font-size="15" fill="#c3c9d6" font-weight="400" text-anchor="start">validation, guardrails, observability, and evaluation</text>
-<text x="893.0" y="466" font-size="15" fill="#c3c9d6" font-weight="400" text-anchor="start">to earn trust in every outcome.</text>
-<rect x="565.0" y="520" width="470" height="48" rx="24" fill="rgba(20,10,35,0.4)" stroke="#6d3bd0"/>
-<text x="800.0" y="551" font-size="20" font-weight="800" text-anchor="middle"><tspan fill="#e0447f">Probabilistic Intelligence</tspan><tspan fill="#c9cede">  -  </tspan><tspan fill="#39c6d6">Deterministic Control</tspan></text>
-<rect x="40" y="608" width="422.85714285714283" height="470" rx="16" fill="url(#pg1)" stroke="#c4b0ee"/>
-<rect x="40" y="608" width="422.85714285714283" height="470" rx="16" fill="url(#glow1)"/>
-<rect x="482.85714285714283" y="608" width="634.2857142857142" height="470" rx="16" fill="url(#pg2)" stroke="#aecbf3"/>
-<rect x="1137.142857142857" y="608" width="422.85714285714283" height="470" rx="16" fill="url(#pg3)" stroke="#a9d8cf"/>
-<circle cx="70" cy="638" r="14" fill="#5b34c9"/>
-<text x="70" y="643" font-size="15" fill="#ffffff" font-weight="800" text-anchor="middle">1</text>
-<text x="94" y="645" font-size="20" fill="#5b34c9" font-weight="800" text-anchor="start">WHAT YOU'LL LEARN</text>
-<text x="60" y="674" font-size="13" fill="#44495a" font-weight="400" text-anchor="start">Widely accepted industry patterns</text>
-<text x="60" y="694" font-size="13" fill="#44495a" font-weight="400" text-anchor="start">and practices for engineering</text>
-<text x="60" y="714" font-size="13" fill="#44495a" font-weight="400" text-anchor="start">reliable agentic systems.</text>
-<rect x="60.0" y="736" width="185.42857142857142" height="98" rx="10" fill="#ffffff" filter="url(#cardsh)"/>
-<circle cx="152.71428571428572" cy="758" r="20" fill="#5b34c9" opacity="0.12"/>
-<circle cx="152.71428571428572" cy="758" r="15" fill="#5b34c9"/>
-<g transform="translate(144.2,749.5) scale(0.708)" stroke="#fff" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4.5"/><circle cx="12" cy="12" r="1" fill="#fff"/></g>
-<text x="152.71428571428572" y="788" font-size="11" fill="#5b34c9" font-weight="800" text-anchor="middle">INTENT</text>
-<line x1="144.71428571428572" y1="794" x2="160.71428571428572" y2="794" stroke="#5b34c9" stroke-width="2"/>
-<text x="152.71428571428572" y="808" font-size="10" fill="#4a5061" font-weight="400" text-anchor="middle">Recognize and</text>
-<text x="152.71428571428572" y="821" font-size="10" fill="#4a5061" font-weight="400" text-anchor="middle">structure user intent.</text>
-<rect x="257.42857142857144" y="736" width="185.42857142857142" height="98" rx="10" fill="#ffffff" filter="url(#cardsh)"/>
-<circle cx="350.14285714285717" cy="758" r="20" fill="#2f6bed" opacity="0.12"/>
-<circle cx="350.14285714285717" cy="758" r="15" fill="#2f6bed"/>
-<g transform="translate(341.6,749.5) scale(0.708)" stroke="#fff" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="8" x2="20" y2="8"/><circle cx="9" cy="8" r="2.3" fill="#fff" stroke="none"/><line x1="4" y1="16" x2="20" y2="16"/><circle cx="15" cy="16" r="2.3" fill="#fff" stroke="none"/></g>
-<text x="350.14285714285717" y="788" font-size="11" fill="#2f6bed" font-weight="800" text-anchor="middle">CONTROL</text>
-<line x1="342.14285714285717" y1="794" x2="358.14285714285717" y2="794" stroke="#2f6bed" stroke-width="2"/>
-<text x="350.14285714285717" y="808" font-size="10" fill="#4a5061" font-weight="400" text-anchor="middle">Bound autonomy</text>
-<text x="350.14285714285717" y="821" font-size="10" fill="#4a5061" font-weight="400" text-anchor="middle">and execution.</text>
-<rect x="60.0" y="845" width="185.42857142857142" height="98" rx="10" fill="#ffffff" filter="url(#cardsh)"/>
-<circle cx="152.71428571428572" cy="867" r="20" fill="#1f9d55" opacity="0.12"/>
-<circle cx="152.71428571428572" cy="867" r="15" fill="#1f9d55"/>
-<g transform="translate(144.2,858.5) scale(0.708)" stroke="#fff" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="5" rx="1"/><rect x="3" y="16" width="6" height="5" rx="1"/><rect x="15" y="16" width="6" height="5" rx="1"/><path d="M12 8v4M6 16v-2h12v2"/></g>
-<text x="152.71428571428572" y="897" font-size="11" fill="#1f9d55" font-weight="800" text-anchor="middle">STRUCTURE</text>
-<line x1="144.71428571428572" y1="903" x2="160.71428571428572" y2="903" stroke="#1f9d55" stroke-width="2"/>
-<text x="152.71428571428572" y="917" font-size="10" fill="#4a5061" font-weight="400" text-anchor="middle">Typed contracts</text>
-<text x="152.71428571428572" y="930" font-size="10" fill="#4a5061" font-weight="400" text-anchor="middle">and handoffs.</text>
-<rect x="257.42857142857144" y="845" width="185.42857142857142" height="98" rx="10" fill="#ffffff" filter="url(#cardsh)"/>
-<circle cx="350.14285714285717" cy="867" r="20" fill="#5b34c9" opacity="0.12"/>
-<circle cx="350.14285714285717" cy="867" r="15" fill="#5b34c9"/>
-<g transform="translate(341.6,858.5) scale(0.708)" stroke="#fff" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/><path d="M9 12l2 2 4-4"/></g>
-<text x="350.14285714285717" y="897" font-size="11" fill="#5b34c9" font-weight="800" text-anchor="middle">VALIDATE</text>
-<line x1="342.14285714285717" y1="903" x2="358.14285714285717" y2="903" stroke="#5b34c9" stroke-width="2"/>
-<text x="350.14285714285717" y="917" font-size="10" fill="#4a5061" font-weight="400" text-anchor="middle">Verify inputs,</text>
-<text x="350.14285714285717" y="930" font-size="10" fill="#4a5061" font-weight="400" text-anchor="middle">outputs and actions.</text>
-<rect x="60.0" y="954" width="185.42857142857142" height="98" rx="10" fill="#ffffff" filter="url(#cardsh)"/>
-<circle cx="152.71428571428572" cy="976" r="20" fill="#e8571f" opacity="0.12"/>
-<circle cx="152.71428571428572" cy="976" r="15" fill="#e8571f"/>
-<g transform="translate(144.2,967.5) scale(0.708)" stroke="#fff" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v5c0 4.5-3 7.5-7 9-4-1.5-7-4.5-7-9V6z"/><rect x="9" y="10.5" width="6" height="5" rx="1"/><path d="M10.3 10.5V9a1.7 1.7 0 0 1 3.4 0v1.5"/></g>
-<text x="152.71428571428572" y="1006" font-size="11" fill="#e8571f" font-weight="800" text-anchor="middle">PROTECT</text>
-<line x1="144.71428571428572" y1="1012" x2="160.71428571428572" y2="1012" stroke="#e8571f" stroke-width="2"/>
-<text x="152.71428571428572" y="1026" font-size="10" fill="#4a5061" font-weight="400" text-anchor="middle">Guardrails and</text>
-<text x="152.71428571428572" y="1039" font-size="10" fill="#4a5061" font-weight="400" text-anchor="middle">authorization.</text>
-<rect x="257.42857142857144" y="954" width="185.42857142857142" height="98" rx="10" fill="#ffffff" filter="url(#cardsh)"/>
-<circle cx="350.14285714285717" cy="976" r="20" fill="#2f6bed" opacity="0.12"/>
-<circle cx="350.14285714285717" cy="976" r="15" fill="#2f6bed"/>
-<g transform="translate(341.6,967.5) scale(0.708)" stroke="#fff" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="16" y1="16" x2="21" y2="21"/></g>
-<text x="350.14285714285717" y="1006" font-size="11" fill="#2f6bed" font-weight="800" text-anchor="middle">OBSERVE</text>
-<line x1="342.14285714285717" y1="1012" x2="358.14285714285717" y2="1012" stroke="#2f6bed" stroke-width="2"/>
-<text x="350.14285714285717" y="1026" font-size="10" fill="#4a5061" font-weight="400" text-anchor="middle">Trace decisions</text>
-<text x="350.14285714285717" y="1039" font-size="10" fill="#4a5061" font-weight="400" text-anchor="middle">and execution.</text>
-<circle cx="1167.142857142857" cy="638" r="14" fill="#0f8a9c"/>
-<text x="1167.142857142857" y="643" font-size="15" fill="#ffffff" font-weight="800" text-anchor="middle">3</text>
-<text x="1191.142857142857" y="645" font-size="18" fill="#0f8a9c" font-weight="800" text-anchor="start">WHAT YOU'LL TAKE AWAY</text>
-<text x="1157.142857142857" y="678" font-size="13" fill="#44495a" font-weight="400" text-anchor="start">Build once. Reuse everywhere.</text>
-<rect x="1157.142857142857" y="704" width="185.42857142857142" height="158" rx="10" fill="#ffffff" filter="url(#cardsh)"/>
-<circle cx="1249.857142857143" cy="734" r="23" fill="#5b34c9" opacity="0.12"/>
-<circle cx="1249.857142857143" cy="734" r="17" fill="#5b34c9"/>
-<g transform="translate(1240.4,724.5) scale(0.792)" stroke="#fff" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2 3h-4z"/><path d="M6 22V8l6-4 6 4v14M3 22h18M9 22v-5h6v5"/></g>
-<text x="1249.857142857143" y="768" font-size="12" fill="#5b34c9" font-weight="800" text-anchor="middle">REFERENCE</text>
-<text x="1249.857142857143" y="784" font-size="12" fill="#5b34c9" font-weight="800" text-anchor="middle">ARCHITECTURE</text>
-<line x1="1240.857142857143" y1="794" x2="1258.857142857143" y2="794" stroke="#5b34c9" stroke-width="2"/>
-<text x="1249.857142857143" y="812" font-size="11" fill="#4a5061" font-weight="400" text-anchor="middle">Proven blueprint</text>
-<text x="1249.857142857143" y="827" font-size="11" fill="#4a5061" font-weight="400" text-anchor="middle">you can adopt.</text>
-<rect x="1354.5714285714284" y="704" width="185.42857142857142" height="158" rx="10" fill="#ffffff" filter="url(#cardsh)"/>
-<circle cx="1447.2857142857142" cy="734" r="23" fill="#2f6bed" opacity="0.12"/>
-<circle cx="1447.2857142857142" cy="734" r="17" fill="#2f6bed"/>
-<g transform="translate(1437.8,724.5) scale(0.792)" stroke="#fff" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 5C10 3 6 3 3 4v15c3-1 7-1 10 1 3-2 7-2 10-1V4c-3-1-7-1-10 1z"/><path d="M13 5v16"/></g>
-<text x="1447.2857142857142" y="768" font-size="12" fill="#2f6bed" font-weight="800" text-anchor="middle">ENGINEERING</text>
-<text x="1447.2857142857142" y="784" font-size="12" fill="#2f6bed" font-weight="800" text-anchor="middle">PATTERNS</text>
-<line x1="1438.2857142857142" y1="794" x2="1456.2857142857142" y2="794" stroke="#2f6bed" stroke-width="2"/>
-<text x="1447.2857142857142" y="812" font-size="11" fill="#4a5061" font-weight="400" text-anchor="middle">Reusable patterns</text>
-<text x="1447.2857142857142" y="827" font-size="11" fill="#4a5061" font-weight="400" text-anchor="middle">you can apply.</text>
-<rect x="1157.142857142857" y="874" width="185.42857142857142" height="158" rx="10" fill="#ffffff" filter="url(#cardsh)"/>
-<circle cx="1249.857142857143" cy="904" r="23" fill="#1f9d55" opacity="0.12"/>
-<circle cx="1249.857142857143" cy="904" r="17" fill="#1f9d55"/>
-<g transform="translate(1240.4,894.5) scale(0.792)" stroke="#fff" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="7" r="3"/><path d="M5 21c0-3.5 3-6 7-6s7 2.5 7 6"/></g>
-<text x="1249.857142857143" y="938" font-size="12" fill="#1f9d55" font-weight="800" text-anchor="middle">HANDS-ON</text>
-<text x="1249.857142857143" y="954" font-size="12" fill="#1f9d55" font-weight="800" text-anchor="middle">EXPERIENCE</text>
-<line x1="1240.857142857143" y1="964" x2="1258.857142857143" y2="964" stroke="#1f9d55" stroke-width="2"/>
-<text x="1249.857142857143" y="982" font-size="11" fill="#4a5061" font-weight="400" text-anchor="middle">Real skills.</text>
-<text x="1249.857142857143" y="997" font-size="11" fill="#4a5061" font-weight="400" text-anchor="middle">Real scenarios.</text>
-<rect x="1354.5714285714284" y="874" width="185.42857142857142" height="158" rx="10" fill="#ffffff" filter="url(#cardsh)"/>
-<circle cx="1447.2857142857142" cy="904" r="23" fill="#e8571f" opacity="0.12"/>
-<circle cx="1447.2857142857142" cy="904" r="17" fill="#e8571f"/>
-<g transform="translate(1437.8,894.5) scale(0.792)" stroke="#fff" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c4 2 6 6 6 11l-3 3H9l-3-3c0-5 2-9 6-11z"/><circle cx="12" cy="10" r="2"/><path d="M9 19l-3 3M15 19l3 3"/></g>
-<text x="1447.2857142857142" y="938" font-size="12" fill="#e8571f" font-weight="800" text-anchor="middle">ACCELERATOR</text>
-<text x="1447.2857142857142" y="954" font-size="12" fill="#e8571f" font-weight="800" text-anchor="middle">FOUNDATION</text>
-<line x1="1438.2857142857142" y1="964" x2="1456.2857142857142" y2="964" stroke="#e8571f" stroke-width="2"/>
-<text x="1447.2857142857142" y="982" font-size="11" fill="#4a5061" font-weight="400" text-anchor="middle">A generic harness</text>
-<text x="1447.2857142857142" y="997" font-size="11" fill="#4a5061" font-weight="400" text-anchor="middle">for your new use cases.</text>
-<circle cx="512.8571428571429" cy="642" r="14" fill="#2f6bed"/>
-<text x="512.8571428571429" y="647" font-size="15" fill="#ffffff" font-weight="800" text-anchor="middle">2</text>
-<text x="536.8571428571429" y="648" font-size="21" fill="#2f6bed" font-weight="800" text-anchor="start">HOW YOU'LL LEARN IT</text>
-<text x="502.85714285714283" y="676" font-size="13" fill="#44495a" font-weight="400" text-anchor="start">Learn by building a functioning multi-agent reference application in a</text>
-<text x="502.85714285714283" y="694" font-size="13" fill="#44495a" font-weight="400" text-anchor="start">realistic operational scenario.</text>
-<rect x="502.85714285714283" y="708" width="594.2857142857142" height="56" rx="9" fill="#ffffff" stroke="#b9cdf5"/>
-<g transform="translate(513.9,725.0) scale(0.917)" stroke="#2f6bed" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l8 4.5v9L12 20l-8-4.5v-9z"/><path d="M12 2v18M4 6.5l8 4.5 8-4.5"/></g>
-<text x="544.8571428571429" y="732" font-size="13" fill="#2f6bed" font-weight="700" text-anchor="start">You'll start with a pre-built infrastructure and a harness, so you can</text>
-<text x="544.8571428571429" y="750" font-size="13" fill="#2f6bed" font-weight="700" text-anchor="start">focus on engineering reliability.</text>
-<circle cx="562.2857142857142" cy="798" r="26" fill="#5b34c9" opacity="0.12"/>
-<circle cx="562.2857142857142" cy="798" r="20" fill="#5b34c9"/>
-<g transform="translate(552.3,788.0) scale(0.833)" stroke="#fff" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 5h16v10H10l-4 4v-4H4z"/></g>
-<text x="562.2857142857142" y="838" font-size="11" fill="#5b34c9" font-weight="800" text-anchor="middle">INTENT</text>
-<text x="562.2857142857142" y="852" font-size="11" fill="#5b34c9" font-weight="800" text-anchor="middle">RECOGNITION</text>
-<text x="562.2857142857142" y="870" font-size="10" fill="#4a5061" font-weight="400" text-anchor="middle">Understand the</text>
-<text x="562.2857142857142" y="884" font-size="10" fill="#4a5061" font-weight="400" text-anchor="middle">operator's</text>
-<text x="562.2857142857142" y="898" font-size="10" fill="#4a5061" font-weight="400" text-anchor="middle">natural language</text>
-<text x="562.2857142857142" y="912" font-size="10" fill="#4a5061" font-weight="400" text-anchor="middle">request.</text>
-<path d="M613.7142857142857 798 h12 M622.7142857142857 794 l4 4 -4 4" stroke="#2f6bed" stroke-width="2" fill="none"/>
-<circle cx="681.1428571428571" cy="798" r="26" fill="#2f6bed" opacity="0.12"/>
-<circle cx="681.1428571428571" cy="798" r="20" fill="#2f6bed"/>
-<g transform="translate(671.1,788.0) scale(0.833)" stroke="#fff" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2.5"/><circle cx="5" cy="18" r="2.5"/><circle cx="19" cy="18" r="2.5"/><path d="M12 7.5v4M12 11.5l-6 4M12 11.5l6 4"/></g>
-<text x="681.1428571428571" y="838" font-size="11" fill="#2f6bed" font-weight="800" text-anchor="middle">ORCHESTRATOR</text>
-<text x="681.1428571428571" y="856" font-size="10" fill="#4a5061" font-weight="400" text-anchor="middle">Route the request</text>
-<text x="681.1428571428571" y="870" font-size="10" fill="#4a5061" font-weight="400" text-anchor="middle">and coordinate</text>
-<text x="681.1428571428571" y="884" font-size="10" fill="#4a5061" font-weight="400" text-anchor="middle">the right agents</text>
-<text x="681.1428571428571" y="898" font-size="10" fill="#4a5061" font-weight="400" text-anchor="middle">and data.</text>
-<path d="M732.5714285714286 798 h12 M741.5714285714286 794 l4 4 -4 4" stroke="#2f6bed" stroke-width="2" fill="none"/>
-<circle cx="800.0" cy="798" r="26" fill="#0f8a9c" opacity="0.12"/>
-<circle cx="800.0" cy="798" r="20" fill="#0f8a9c"/>
-<g transform="translate(790.0,788.0) scale(0.833)" stroke="#fff" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.3-5.6"/><path d="M20 4v4h-4"/></g>
-<text x="800.0" y="838" font-size="11" fill="#0f8a9c" font-weight="800" text-anchor="middle">REACT</text>
-<text x="800.0" y="852" font-size="11" fill="#0f8a9c" font-weight="800" text-anchor="middle">LOOP</text>
-<text x="800.0" y="870" font-size="10" fill="#4a5061" font-weight="400" text-anchor="middle">Plan, act,</text>
-<text x="800.0" y="884" font-size="10" fill="#4a5061" font-weight="400" text-anchor="middle">observe, and</text>
-<text x="800.0" y="898" font-size="10" fill="#4a5061" font-weight="400" text-anchor="middle">adapt until the</text>
-<text x="800.0" y="912" font-size="10" fill="#4a5061" font-weight="400" text-anchor="middle">goal is achieved.</text>
-<path d="M851.4285714285713 798 h12 M860.4285714285713 794 l4 4 -4 4" stroke="#2f6bed" stroke-width="2" fill="none"/>
-<circle cx="918.8571428571428" cy="798" r="26" fill="#1f9d55" opacity="0.12"/>
-<circle cx="918.8571428571428" cy="798" r="20" fill="#1f9d55"/>
-<g transform="translate(908.9,788.0) scale(0.833)" stroke="#fff" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="3" width="14" height="18" rx="2"/><path d="M9 8h6M9 12h6M9 16h4"/></g>
-<text x="918.8571428571428" y="838" font-size="11" fill="#1f9d55" font-weight="800" text-anchor="middle">STRUCTURED</text>
-<text x="918.8571428571428" y="852" font-size="11" fill="#1f9d55" font-weight="800" text-anchor="middle">OUTPUTS</text>
-<text x="918.8571428571428" y="870" font-size="10" fill="#4a5061" font-weight="400" text-anchor="middle">Return consistent,</text>
-<text x="918.8571428571428" y="884" font-size="10" fill="#4a5061" font-weight="400" text-anchor="middle">typed results for</text>
-<text x="918.8571428571428" y="898" font-size="10" fill="#4a5061" font-weight="400" text-anchor="middle">downstream</text>
-<text x="918.8571428571428" y="912" font-size="10" fill="#4a5061" font-weight="400" text-anchor="middle">systems.</text>
-<path d="M970.2857142857142 798 h12 M979.2857142857142 794 l4 4 -4 4" stroke="#2f6bed" stroke-width="2" fill="none"/>
-<circle cx="1037.7142857142856" cy="798" r="26" fill="#e8571f" opacity="0.12"/>
-<circle cx="1037.7142857142856" cy="798" r="20" fill="#e8571f"/>
-<g transform="translate(1027.7,788.0) scale(0.833)" stroke="#fff" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.3"/><path d="M3 20c0-3.3 2.7-6 6-6s6 2.7 6 6M15 20c0-2 .8-3.8 2-5"/></g>
-<text x="1037.7142857142856" y="838" font-size="11" fill="#e8571f" font-weight="800" text-anchor="middle">DOMAIN</text>
-<text x="1037.7142857142856" y="852" font-size="11" fill="#e8571f" font-weight="800" text-anchor="middle">AGENTS</text>
-<text x="1037.7142857142856" y="870" font-size="10" fill="#4a5061" font-weight="400" text-anchor="middle">Specialized agents</text>
-<text x="1037.7142857142856" y="884" font-size="10" fill="#4a5061" font-weight="400" text-anchor="middle">apply domain</text>
-<text x="1037.7142857142856" y="898" font-size="10" fill="#4a5061" font-weight="400" text-anchor="middle">knowledge and</text>
-<text x="1037.7142857142856" y="912" font-size="10" fill="#4a5061" font-weight="400" text-anchor="middle">tools.</text>
-<rect x="502.85714285714283" y="1000" width="594.2857142857142" height="62" rx="9" fill="#ffffff" stroke="#b9cdf5"/>
-<g transform="translate(513.9,1019.0) scale(0.917)" stroke="#2f6bed" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3 5-3 2-3-2z"/><path d="M9 9l-3 13M15 9l3 13M7 15h10"/></g>
-<text x="544.8571428571429" y="1022" font-size="13" fill="#2f6bed" font-weight="800" text-anchor="start">Context: Asset Outage Tracking and Restoration Service</text>
-<text x="544.8571428571429" y="1044" font-size="11" fill="#44495a" font-weight="400" text-anchor="start">Track outages, affected assets, crew assignments, and restoration.</text>
-<circle cx="55" cy="1133" r="19" fill="none" stroke="#39c6d6" stroke-width="2"/>
-<g transform="translate(42.0,1120.0) scale(1.083)" stroke="#39c6d6" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3"/><circle cx="16" cy="9" r="2.3"/><path d="M3 19c0-3 2.7-5.5 6-5.5s6 2.5 6 5.5M14 19c0-1.8 .7-3.4 1.8-4.6"/></g>
-<text x="88" y="1138" font-size="16" fill="#39c6d6" font-weight="800" text-anchor="start">WHO IT'S FOR</text>
-<text x="420.0" y="1118" font-size="13" fill="#39c6d6" font-weight="800" text-anchor="middle">TECHNOLOGY LEADERS</text>
-<text x="420.0" y="1138" font-size="12" fill="#aeb4c4" font-weight="400" text-anchor="middle">Set technical standards for</text>
-<text x="420.0" y="1154" font-size="12" fill="#aeb4c4" font-weight="400" text-anchor="middle">trustworthy AI at scale.</text>
-<text x="632.0" y="1118" font-size="13" fill="#39c6d6" font-weight="800" text-anchor="middle">SOLUTION ARCHITECTS</text>
-<text x="632.0" y="1138" font-size="12" fill="#aeb4c4" font-weight="400" text-anchor="middle">Design resilient</text>
-<text x="632.0" y="1154" font-size="12" fill="#aeb4c4" font-weight="400" text-anchor="middle">architectures with confidence.</text>
-<text x="844.0" y="1118" font-size="13" fill="#39c6d6" font-weight="800" text-anchor="middle">DEVELOPERS</text>
-<text x="844.0" y="1138" font-size="12" fill="#aeb4c4" font-weight="400" text-anchor="middle">Build reliable agents with</text>
-<text x="844.0" y="1154" font-size="12" fill="#aeb4c4" font-weight="400" text-anchor="middle">patterns and tooling.</text>
-<text x="1056.0" y="1118" font-size="13" fill="#39c6d6" font-weight="800" text-anchor="middle">DATA &amp; AI TEAMS</text>
-<text x="1056.0" y="1138" font-size="12" fill="#aeb4c4" font-weight="400" text-anchor="middle">Operationalize AI with</text>
-<text x="1056.0" y="1154" font-size="12" fill="#aeb4c4" font-weight="400" text-anchor="middle">guardrails, evaluation, and</text>
-<text x="1056.0" y="1170" font-size="12" fill="#aeb4c4" font-weight="400" text-anchor="middle">observability.</text>
-<g transform="translate(1250.0,1116.0) scale(1.167)" stroke="#39c6d6" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2c4 2 6 6 6 11l-3 3H9l-3-3c0-5 2-9 6-11z"/><circle cx="12" cy="10" r="2"/><path d="M9 19l-3 3M15 19l3 3"/></g>
-<text x="1292" y="1118" font-size="14" fill="#39c6d6" font-weight="800" text-anchor="start">LET'S BUILD WHAT YOU CAN TRUST.</text>
-<text x="1292" y="1138" font-size="13" fill="#dfe3ee" font-weight="400" text-anchor="start">Engage with your Microsoft team</text>
-<text x="1292" y="1154" font-size="13" fill="#dfe3ee" font-weight="400" text-anchor="start">to get started.</text>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 1160" width="100%" height="100%">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#05050a" />
+      <stop offset="50%" stop-color="#0a0918" />
+      <stop offset="100%" stop-color="#070b19" />
+    </linearGradient>
+
+    <radialGradient id="topGlow" cx="65%" cy="12%" r="45%">
+      <stop offset="0%" stop-color="#3b1d6e" stop-opacity="0.55" />
+      <stop offset="50%" stop-color="#1a103c" stop-opacity="0.25" />
+      <stop offset="100%" stop-color="#05050a" stop-opacity="0" />
+    </radialGradient>
+
+    <linearGradient id="titleGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#4e73df" />
+      <stop offset="35%" stop-color="#8f5fe8" />
+      <stop offset="70%" stop-color="#d63384" />
+      <stop offset="100%" stop-color="#e83e8c" />
+    </linearGradient>
+
+    <linearGradient id="probGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#1a091e" stop-opacity="0.85" />
+      <stop offset="100%" stop-color="#0d0614" stop-opacity="0.85" />
+    </linearGradient>
+
+    <linearGradient id="solGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#071924" stop-opacity="0.85" />
+      <stop offset="100%" stop-color="#060f18" stop-opacity="0.85" />
+    </linearGradient>
+
+    <linearGradient id="col1Grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ede7f6" />
+      <stop offset="100%" stop-color="#e1d5f5" />
+    </linearGradient>
+
+    <linearGradient id="col2Grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#e3f2fd" />
+      <stop offset="100%" stop-color="#d4e8fc" />
+    </linearGradient>
+
+    <linearGradient id="col3Grad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#e0f2f1" />
+      <stop offset="100%" stop-color="#ccece8" />
+    </linearGradient>
+
+    <filter id="cardShadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="3" stdDeviation="4" flood-color="#000000" flood-opacity="0.08" />
+    </filter>
+
+    <style>
+      .font-sans { font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif; }
+      .kicker { font-size: 16px; font-weight: 700; fill: #d0d4dc; letter-spacing: 1px; }
+      .pill-text { font-size: 14px; font-weight: 700; fill: #26c6da; letter-spacing: 1.2px; }
+      .hero-1 { font-size: 54px; font-weight: 800; fill: #ffffff; }
+      .hero-2 { font-size: 54px; font-weight: 800; fill: url(#titleGrad); }
+      .subtitle { font-size: 21px; font-weight: 400; fill: #d8dee9; }
+      .bridge-tag { font-size: 18px; font-weight: 800; fill: #26c6da; letter-spacing: 1.2px; }
+      
+      .box-label-prob { font-size: 14px; font-weight: 800; fill: #ec407a; letter-spacing: 1.2px; }
+      .box-label-sol { font-size: 14px; font-weight: 800; fill: #26c6da; letter-spacing: 1.2px; }
+      .box-title { font-size: 26px; font-weight: 800; fill: #ffffff; }
+      .box-body { font-size: 16px; font-weight: 400; fill: #cfd8dc; }
+      
+      .col-header-1 { font-size: 21px; font-weight: 800; fill: #5e35b1; letter-spacing: 0.5px; }
+      .col-header-2 { font-size: 21px; font-weight: 800; fill: #1565c0; letter-spacing: 0.5px; }
+      .col-header-3 { font-size: 21px; font-weight: 800; fill: #00695c; letter-spacing: 0.5px; }
+      .col-sub { font-size: 15px; font-weight: 500; fill: #37474f; }
+      
+      .card-title-purple { font-size: 14.5px; font-weight: 800; fill: #5e35b1; }
+      .card-title-blue { font-size: 14.5px; font-weight: 800; fill: #1565c0; }
+      .card-title-green { font-size: 14.5px; font-weight: 800; fill: #2e7d32; }
+      .card-title-orange { font-size: 14.5px; font-weight: 800; fill: #ef6c00; }
+      .card-desc { font-size: 12.5px; font-weight: 500; fill: #455a64; }
+      
+      .flow-title-purple { font-size: 13.5px; font-weight: 800; fill: #5e35b1; }
+      .flow-title-blue { font-size: 13.5px; font-weight: 800; fill: #1565c0; }
+      .flow-title-teal { font-size: 13.5px; font-weight: 800; fill: #00838f; }
+      .flow-title-green { font-size: 13.5px; font-weight: 800; fill: #2e7d32; }
+      .flow-title-orange { font-size: 13.5px; font-weight: 800; fill: #ef6c00; }
+      .flow-desc { font-size: 12.5px; font-weight: 500; fill: #455a64; }
+
+      .footer-role { font-size: 14px; font-weight: 800; fill: #26c6da; letter-spacing: 0.8px; }
+      .footer-desc { font-size: 13.5px; font-weight: 400; fill: #cfd8dc; }
+    </style>
+  </defs>
+
+  <rect width="1600" height="1160" fill="url(#bgGrad)" />
+  <rect width="1600" height="1160" fill="url(#topGlow)" />
+
+  <g stroke-dasharray="3,8" stroke-width="1.5" opacity="0.45">
+    <line x1="1600" y1="80" x2="1050" y2="620" stroke="#26c6da" />
+    <line x1="1600" y1="130" x2="1100" y2="620" stroke="#ec407a" />
+    <line x1="1600" y1="180" x2="1150" y2="620" stroke="#8f5fe8" />
+    <line x1="0" y1="220" x2="320" y2="600" stroke="#ec407a" opacity="0.5" />
+  </g>
+
+  <g class="font-sans">
+    <text x="28" y="38" class="kicker">MULTI-AGENT ARCHITECTURE / WORKSHOP + ACCELERATOR</text>
+
+    <rect x="610" y="14" width="380" height="34" rx="17" fill="#091e26" stroke="#1de9b6" stroke-width="1" stroke-opacity="0.5" />
+    <text x="800" y="36" text-anchor="middle" class="pill-text">+ BEYOND SINGLE-AGENT PILOTS</text>
+
+    <text x="800" y="105" text-anchor="middle" class="hero-1">You Proved a Single Agent Can Work.</text>
+    <text x="800" y="168" text-anchor="middle" class="hero-2">Now Architect Multiple Agents to Work Together.</text>
+
+    <text x="800" y="215" text-anchor="middle" class="subtitle">Building a single agent is straightforward. Designing coordinated, reliable multi-agent</text>
+    <text x="800" y="244" text-anchor="middle" class="subtitle">systems under real-world conditions is hard.</text>
+    <line x1="570" y1="258" x2="1030" y2="258" stroke="#455a64" stroke-width="1.5" />
+
+    <text x="800" y="294" text-anchor="middle" class="bridge-tag">WELL-ENGINEERED SYSTEMS ARE THE BRIDGE FROM PILOT TO PRODUCTION</text>
+  </g>
+
+  <!-- UPDATE 1: Shortened Problem & Solution boxes from 175px to 140px to remove excess bottom padding -->
+  <g class="font-sans">
+    <rect x="24" y="325" width="760" height="140" rx="14" fill="url(#probGrad)" stroke="#ad1457" stroke-width="1.5" stroke-opacity="0.7" />
+    <g transform="translate(404, 355)">
+      <circle cx="-55" cy="-5" r="10" fill="none" stroke="#ec407a" stroke-width="2" />
+      <circle cx="-55" cy="-5" r="4" fill="#ec407a" />
+      <text x="12" y="0" text-anchor="middle" class="box-label-prob">PROBLEM</text>
+      
+      <text x="0" y="32" text-anchor="middle" class="box-title">Single agents hit a ceiling.</text>
+      <text x="0" y="62" text-anchor="middle" class="box-body">Isolated prompts can't solve enterprise problems. Single-agent limitations,</text>
+      <text x="0" y="84" text-anchor="middle" class="box-body">context bottlenecks, and unpredictable handoffs block production scale.</text>
+    </g>
+
+    <rect x="816" y="325" width="760" height="140" rx="14" fill="url(#solGrad)" stroke="#00838f" stroke-width="1.5" stroke-opacity="0.7" />
+    <g transform="translate(1196, 355)">
+      <circle cx="-58" cy="-5" r="8" fill="none" stroke="#26c6da" stroke-width="2" />
+      <text x="12" y="0" text-anchor="middle" class="box-label-sol">SOLUTION</text>
+      
+      <text x="0" y="32" text-anchor="middle" class="box-title">Architect reliable multi-agent systems.</text>
+      <text x="0" y="62" text-anchor="middle" class="box-body">Combine orchestration, MCP integration, context engineering, and</text>
+      <text x="0" y="84" text-anchor="middle" class="box-body">deterministic guardrails to deliver trusted outcomes at scale.</text>
+    </g>
+  </g>
+
+  <!-- Columns pulled up cleanly to y="505" after removing the center pill from the gap -->
+  <g class="font-sans" transform="translate(24, 505)">
+    <rect x="0" y="0" width="420" height="535" rx="18" fill="url(#col1Grad)" />
+    
+    <circle cx="38" cy="38" r="14" fill="#5e35b1" />
+    <text x="38" y="43" text-anchor="middle" fill="#ffffff" font-size="15" font-weight="800">1</text>
+    <text x="64" y="45" class="col-header-1">WHAT YOU'LL LEARN</text>
+    
+    <text x="24" y="75" class="col-sub">Widely accepted industry patterns and practices</text>
+    <text x="24" y="95" class="col-sub">for engineering reliable multi-agent systems.</text>
+
+    <g transform="translate(24, 118)">
+      <rect width="178" height="118" rx="12" fill="#ffffff" filter="url(#cardShadow)" />
+      <circle cx="89" cy="28" r="15" fill="#5e35b1" />
+      <circle cx="89" cy="28" r="6" fill="none" stroke="#ffffff" stroke-width="2" />
+      <text x="89" y="60" text-anchor="middle" class="card-title-purple">ORCHESTRATE</text>
+      <text x="89" y="80" text-anchor="middle" class="card-desc">Multi-agent routing,</text>
+      <text x="89" y="97" text-anchor="middle" class="card-desc">handoffs, and state.</text>
+    </g>
+
+    <g transform="translate(218, 118)">
+      <rect width="178" height="118" rx="12" fill="#ffffff" filter="url(#cardShadow)" />
+      <circle cx="89" cy="28" r="15" fill="#1e88e5" />
+      <line x1="82" y1="25" x2="96" y2="25" stroke="#ffffff" stroke-width="2" />
+      <line x1="82" y1="31" x2="96" y2="31" stroke="#ffffff" stroke-width="2" />
+      <text x="89" y="60" text-anchor="middle" class="card-title-blue">CONTEXT</text>
+      <text x="89" y="80" text-anchor="middle" class="card-desc">Dynamic context</text>
+      <text x="89" y="97" text-anchor="middle" class="card-desc">engineering and memory.</text>
+    </g>
+
+    <g transform="translate(24, 254)">
+      <rect width="178" height="118" rx="12" fill="#ffffff" filter="url(#cardShadow)" />
+      <circle cx="89" cy="28" r="15" fill="#43a047" />
+      <circle cx="89" cy="23" r="3" fill="#ffffff" />
+      <circle cx="83" cy="32" r="3" fill="#ffffff" />
+      <circle cx="95" cy="32" r="3" fill="#ffffff" />
+      <text x="89" y="60" text-anchor="middle" class="card-title-green">CONNECT (MCP)</text>
+      <text x="89" y="80" text-anchor="middle" class="card-desc">Standardized tools and</text>
+      <text x="89" y="97" text-anchor="middle" class="card-desc">enterprise integration.</text>
+    </g>
+
+    <g transform="translate(218, 254)">
+      <rect width="178" height="118" rx="12" fill="#ffffff" filter="url(#cardShadow)" />
+      <circle cx="89" cy="26" r="15" fill="#5e35b1" />
+      <path d="M84,26 L88,30 L95,22" fill="none" stroke="#ffffff" stroke-width="2.2" />
+      <text x="89" y="56" text-anchor="middle" class="card-title-purple">INTELLIGENCE</text>
+      <text x="89" y="74" text-anchor="middle" class="card-desc">Extract structured,</text>
+      <text x="89" y="89" text-anchor="middle" class="card-desc">unstructured, and</text>
+      <text x="89" y="104" text-anchor="middle" class="card-desc">contextual insights.</text>
+    </g>
+
+    <g transform="translate(24, 390)">
+      <rect width="178" height="118" rx="12" fill="#ffffff" filter="url(#cardShadow)" />
+      <circle cx="89" cy="28" r="15" fill="#fb8c00" />
+      <path d="M89,20 L96,23 L96,29 C96,33 89,36 89,36 C89,36 82,33 82,29 L82,23 Z" fill="none" stroke="#ffffff" stroke-width="1.8" />
+      <text x="89" y="60" text-anchor="middle" class="card-title-orange">CONTROL</text>
+      <text x="89" y="80" text-anchor="middle" class="card-desc">Typed contracts,</text>
+      <text x="89" y="97" text-anchor="middle" class="card-desc">validation, and guardrails.</text>
+    </g>
+
+    <g transform="translate(218, 390)">
+      <rect width="178" height="118" rx="12" fill="#ffffff" filter="url(#cardShadow)" />
+      <circle cx="89" cy="28" r="15" fill="#1e88e5" />
+      <circle cx="87" cy="26" r="5" fill="none" stroke="#ffffff" stroke-width="2" />
+      <line x1="91" y1="30" x2="96" y2="35" stroke="#ffffff" stroke-width="2" />
+      <text x="89" y="60" text-anchor="middle" class="card-title-blue">OBSERVE</text>
+      <text x="89" y="80" text-anchor="middle" class="card-desc">Trace multi-agent</text>
+      <text x="89" y="97" text-anchor="middle" class="card-desc">decisions and execution.</text>
+    </g>
+  </g>
+
+  <g class="font-sans" transform="translate(464, 505)">
+    <rect x="0" y="0" width="672" height="535" rx="18" fill="url(#col2Grad)" />
+    
+    <circle cx="38" cy="38" r="14" fill="#1565c0" />
+    <text x="38" y="43" text-anchor="middle" fill="#ffffff" font-size="15" font-weight="800">2</text>
+    <text x="64" y="45" class="col-header-2">HOW YOU'LL LEARN IT</text>
+    
+    <text x="24" y="75" class="col-sub">Learn by building a functional multi-agent reference application in a</text>
+    <text x="24" y="95" class="col-sub">realistic operational scenario.</text>
+
+    <g transform="translate(24, 115)">
+      <rect width="624" height="64" rx="10" fill="#ffffff" filter="url(#cardShadow)" />
+      <circle cx="28" cy="32" r="10" fill="none" stroke="#1565c0" stroke-width="2" />
+      <circle cx="28" cy="32" r="3" fill="#1565c0" />
+      <text x="52" y="28" font-size="14.5" font-weight="700" fill="#1565c0">Start with a pre-built harness and focus on multi-agent architecture,</text>
+      <text x="52" y="48" font-size="14.5" font-weight="700" fill="#1565c0">MCP, and engineering reliability.</text>
+    </g>
+
+    <!-- Node 1: INTENT + CONTEXT -->
+    <g transform="translate(80, 222)">
+      <circle cx="0" cy="0" r="24" fill="#5e35b1" />
+      <rect x="-8" y="-7" width="16" height="12" rx="2" fill="none" stroke="#ffffff" stroke-width="2" />
+      <text x="0" y="44" text-anchor="middle" class="flow-title-purple">INTENT +</text>
+      <text x="0" y="60" text-anchor="middle" class="flow-title-purple">CONTEXT</text>
+      <text x="0" y="82" text-anchor="middle" class="flow-desc">Understand request</text>
+      <text x="0" y="98" text-anchor="middle" class="flow-desc">and engineer</text>
+      <text x="0" y="114" text-anchor="middle" class="flow-desc">dynamic context.</text>
+    </g>
+
+    <g transform="translate(144, 222)">
+      <line x1="-10" y1="0" x2="8" y2="0" stroke="#1565c0" stroke-width="2" />
+      <polyline points="3,-5 9,0 3,5" fill="none" stroke="#1565c0" stroke-width="2" />
+    </g>
+
+    <!-- UPDATE 3: Node 2 (ORCHESTRATOR) description text moved down to y=82, 98, 114 to align horizontally with Columns 1, 3, 4, and 5 -->
+    <g transform="translate(208, 222)">
+      <circle cx="0" cy="0" r="24" fill="#1e88e5" />
+      <circle cx="0" cy="-6" r="3" fill="#ffffff" />
+      <circle cx="-6" cy="5" r="3" fill="#ffffff" />
+      <circle cx="6" cy="5" r="3" fill="#ffffff" />
+      <line x1="0" y1="-3" x2="-5" y2="3" stroke="#ffffff" stroke-width="1.8" />
+      <line x1="0" y1="-3" x2="5" y2="3" stroke="#ffffff" stroke-width="1.8" />
+      <text x="0" y="52" text-anchor="middle" class="flow-title-blue">ORCHESTRATOR</text>
+      <text x="0" y="82" text-anchor="middle" class="flow-desc">Route requests,</text>
+      <text x="0" y="98" text-anchor="middle" class="flow-desc">manage state, and</text>
+      <text x="0" y="114" text-anchor="middle" class="flow-desc">coordinate agents.</text>
+    </g>
+
+    <g transform="translate(272, 222)">
+      <line x1="-10" y1="0" x2="8" y2="0" stroke="#1565c0" stroke-width="2" />
+      <polyline points="3,-5 9,0 3,5" fill="none" stroke="#1565c0" stroke-width="2" />
+    </g>
+
+    <!-- Node 3: DOMAIN AGENTS -->
+    <g transform="translate(336, 222)">
+      <circle cx="0" cy="0" r="24" fill="#00897b" />
+      <path d="M-7,-3 A7,7 0 1,1 5,5" fill="none" stroke="#ffffff" stroke-width="2.2" />
+      <polygon points="5,1 9,6 2,7" fill="#ffffff" />
+      <text x="0" y="44" text-anchor="middle" class="flow-title-teal">DOMAIN</text>
+      <text x="0" y="60" text-anchor="middle" class="flow-title-teal">AGENTS</text>
+      <text x="0" y="82" text-anchor="middle" class="flow-desc">Specialized agents</text>
+      <text x="0" y="98" text-anchor="middle" class="flow-desc">plan, reason, and</text>
+      <text x="0" y="114" text-anchor="middle" class="flow-desc">act on tasks.</text>
+    </g>
+
+    <g transform="translate(400, 222)">
+      <line x1="-10" y1="0" x2="8" y2="0" stroke="#1565c0" stroke-width="2" />
+      <polyline points="3,-5 9,0 3,5" fill="none" stroke="#1565c0" stroke-width="2" />
+    </g>
+
+    <!-- UPDATE 4a: Node 4 renamed from MCP + INTELLIGENCE to TOOLS + INTELLIGENCE -->
+    <g transform="translate(464, 222)">
+      <circle cx="0" cy="0" r="24" fill="#43a047" />
+      <rect x="-7" y="-8" width="14" height="16" rx="2" fill="none" stroke="#ffffff" stroke-width="2" />
+      <line x1="-4" y1="-3" x2="4" y2="-3" stroke="#ffffff" stroke-width="2" />
+      <line x1="-4" y1="2" x2="4" y2="2" stroke="#ffffff" stroke-width="2" />
+      <text x="0" y="44" text-anchor="middle" class="flow-title-green">TOOLS +</text>
+      <text x="0" y="60" text-anchor="middle" class="flow-title-green">INTELLIGENCE</text>
+      <text x="0" y="82" text-anchor="middle" class="flow-desc">Invoke MCP tools</text>
+      <text x="0" y="98" text-anchor="middle" class="flow-desc">and extract domain</text>
+      <text x="0" y="114" text-anchor="middle" class="flow-desc">intelligence.</text>
+    </g>
+
+    <g transform="translate(528, 222)">
+      <line x1="-10" y1="0" x2="8" y2="0" stroke="#1565c0" stroke-width="2" />
+      <polyline points="3,-5 9,0 3,5" fill="none" stroke="#1565c0" stroke-width="2" />
+    </g>
+
+    <!-- UPDATE 4b: Node 5 renamed from STRUCTURED OUTPUTS to VALIDATED OUTPUT -->
+    <g transform="translate(592, 222)">
+      <circle cx="0" cy="0" r="24" fill="#fb8c00" />
+      <path d="M-7,0 L-2,5 L8,-5" fill="none" stroke="#ffffff" stroke-width="2.5" />
+      <text x="0" y="44" text-anchor="middle" class="flow-title-orange">VALIDATED</text>
+      <text x="0" y="60" text-anchor="middle" class="flow-title-orange">OUTPUT</text>
+      <text x="0" y="82" text-anchor="middle" class="flow-desc">Return consistent,</text>
+      <text x="0" y="98" text-anchor="middle" class="flow-desc">validated, typed</text>
+      <text x="0" y="114" text-anchor="middle" class="flow-desc">results.</text>
+    </g>
+
+    <!-- UPDATE 2: Relocated "Probabilistic Intelligence - Deterministic Control" pill inside Column 2 below the 5-step workflow -->
+    <g transform="translate(66, 366)">
+      <rect x="0" y="0" width="540" height="44" rx="22" fill="#0d111a" stroke="#37474f" stroke-width="1.5" filter="url(#cardShadow)" />
+      <text x="270" y="28" text-anchor="middle" font-size="19" font-weight="700">
+        <tspan fill="#ec407a">Probabilistic Intelligence</tspan>
+        <tspan fill="#ffffff"> - </tspan>
+        <tspan fill="#26c6da">Deterministic Control</tspan>
+      </text>
+    </g>
+
+    <g transform="translate(24, 436)">
+      <rect width="624" height="68" rx="10" fill="#ffffff" filter="url(#cardShadow)" />
+      <path d="M28,20 L18,48 M28,20 L38,48 M21,38 L35,38 M23,29 L33,29" stroke="#1565c0" stroke-width="2.2" fill="none" />
+      <text x="54" y="29" font-size="15.5" font-weight="800" fill="#1565c0">Business Use Case: Asset Outage Management</text>
+      <text x="54" y="50" font-size="14" font-weight="500" fill="#455a64">Track outages, affected assets, crew assignments, and restoration.</text>
+    </g>
+  </g>
+
+  <g class="font-sans" transform="translate(1156, 505)">
+    <rect x="0" y="0" width="420" height="535" rx="18" fill="url(#col3Grad)" />
+    
+    <circle cx="38" cy="38" r="14" fill="#00695c" />
+    <text x="38" y="43" text-anchor="middle" fill="#ffffff" font-size="15" font-weight="800">3</text>
+    <text x="64" y="45" class="col-header-3">WHAT YOU'LL TAKE AWAY</text>
+    
+    <text x="24" y="80" class="col-sub">Build once. Reuse everywhere.</text>
+
+    <g transform="translate(24, 118)">
+      <rect width="178" height="182" rx="12" fill="#ffffff" filter="url(#cardShadow)" />
+      <circle cx="89" cy="40" r="18" fill="#5e35b1" />
+      <rect x="81" y="32" width="16" height="16" rx="2" fill="none" stroke="#ffffff" stroke-width="2" />
+      <text x="89" y="82" text-anchor="middle" class="card-title-purple">REFERENCE</text>
+      <text x="89" y="100" text-anchor="middle" class="card-title-purple">ARCHITECTURE</text>
+      <text x="89" y="128" text-anchor="middle" class="card-desc">Proven multi-agent</text>
+      <text x="89" y="146" text-anchor="middle" class="card-desc">blueprint you can adopt.</text>
+    </g>
+
+    <g transform="translate(218, 118)">
+      <rect width="178" height="182" rx="12" fill="#ffffff" filter="url(#cardShadow)" />
+      <circle cx="89" cy="40" r="18" fill="#1e88e5" />
+      <rect x="80" y="33" width="18" height="14" rx="2" fill="none" stroke="#ffffff" stroke-width="2" />
+      <line x1="89" y1="33" x2="89" y2="47" stroke="#ffffff" stroke-width="1.8" />
+      <text x="89" y="82" text-anchor="middle" class="card-title-blue">ENGINEERING</text>
+      <text x="89" y="100" text-anchor="middle" class="card-title-blue">PATTERNS</text>
+      <text x="89" y="128" text-anchor="middle" class="card-desc">Reusable designs for MCP,</text>
+      <text x="89" y="146" text-anchor="middle" class="card-desc">context, and reliability.</text>
+    </g>
+
+    <g transform="translate(24, 326)">
+      <rect width="178" height="182" rx="12" fill="#ffffff" filter="url(#cardShadow)" />
+      <circle cx="89" cy="40" r="18" fill="#43a047" />
+      <circle cx="89" cy="36" r="4" fill="none" stroke="#ffffff" stroke-width="2" />
+      <path d="M81,47 C81,42 97,42 97,47" fill="none" stroke="#ffffff" stroke-width="2" />
+      <text x="89" y="82" text-anchor="middle" class="card-title-green">HANDS-ON</text>
+      <text x="89" y="100" text-anchor="middle" class="card-title-green">EXPERIENCE</text>
+      <text x="89" y="128" text-anchor="middle" class="card-desc">Real multi-agent skills.</text>
+      <text x="89" y="146" text-anchor="middle" class="card-desc">Real scenarios.</text>
+    </g>
+
+    <g transform="translate(218, 326)">
+      <rect width="178" height="182" rx="12" fill="#ffffff" filter="url(#cardShadow)" />
+      <circle cx="89" cy="40" r="18" fill="#fb8c00" />
+      <path d="M89,30 L95,42 L83,42 Z" fill="none" stroke="#ffffff" stroke-width="2" />
+      <text x="89" y="82" text-anchor="middle" class="card-title-orange">ACCELERATOR</text>
+      <text x="89" y="100" text-anchor="middle" class="card-title-orange">FOUNDATION</text>
+      <text x="89" y="128" text-anchor="middle" class="card-desc">A generic harness</text>
+      <text x="89" y="146" text-anchor="middle" class="card-desc">for your new use cases.</text>
+    </g>
+  </g>
+
+  <g class="font-sans" transform="translate(0, 1080)">
+    <circle cx="42" cy="28" r="18" fill="none" stroke="#26c6da" stroke-width="1.8" />
+    <circle cx="37" cy="25" r="3.5" fill="none" stroke="#26c6da" stroke-width="1.5" />
+    <circle cx="47" cy="25" r="3.5" fill="none" stroke="#26c6da" stroke-width="1.5" />
+    <path d="M31,35 C31,30 43,30 43,35" fill="none" stroke="#26c6da" stroke-width="1.5" />
+    <path d="M41,35 C41,30 53,30 53,35" fill="none" stroke="#26c6da" stroke-width="1.5" />
+    <text x="72" y="34" font-size="18" font-weight="800" fill="#ffffff" letter-spacing="0.8px">WHO IT'S FOR</text>
+
+    <g transform="translate(360, 12)">
+      <text x="0" y="0" text-anchor="middle" class="footer-role">TECHNOLOGY LEADERS</text>
+      <text x="0" y="22" text-anchor="middle" class="footer-desc">Set technical standards for</text>
+      <text x="0" y="40" text-anchor="middle" class="footer-desc">scalable multi-agent AI.</text>
+    </g>
+
+    <g transform="translate(600, 12)">
+      <text x="0" y="0" text-anchor="middle" class="footer-role">SOLUTION ARCHITECTS</text>
+      <text x="0" y="22" text-anchor="middle" class="footer-desc">Design resilient multi-agent</text>
+      <text x="0" y="40" text-anchor="middle" class="footer-desc">architectures with confidence.</text>
+    </g>
+
+    <g transform="translate(835, 12)">
+      <text x="0" y="0" text-anchor="middle" class="footer-role">DEVELOPERS</text>
+      <text x="0" y="22" text-anchor="middle" class="footer-desc">Build reliable agentic systems</text>
+      <text x="0" y="40" text-anchor="middle" class="footer-desc">with MCP, patterns, and tooling.</text>
+    </g>
+
+    <g transform="translate(1095, 12)">
+      <text x="0" y="0" text-anchor="middle" class="footer-role">DATA + AI TEAMS</text>
+      <text x="0" y="22" text-anchor="middle" class="footer-desc">Operationalize AI with intelligence,</text>
+      <text x="0" y="40" text-anchor="middle" class="footer-desc">guardrails, and observability.</text>
+    </g>
+
+    <g transform="translate(1285, 12)">
+      <circle cx="-22" cy="18" r="10" fill="none" stroke="#26c6da" stroke-width="1.8" />
+      <text x="0" y="0" font-size="14" font-weight="800" fill="#26c6da" letter-spacing="0.6px">ARCHITECT AGENTS YOU CAN TRUST.</text>
+      <text x="0" y="22" font-size="13.5" font-weight="600" fill="#ffffff">Engage with your Microsoft team</text>
+      <text x="0" y="40" font-size="13.5" font-weight="600" fill="#ffffff">to get started.</text>
+    </g>
+  </g>
 </svg>
